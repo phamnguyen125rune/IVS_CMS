@@ -1,0 +1,21 @@
+// Root layout — minimal wrapper required by Next.js App Router.
+//
+// NOTE: `lang` attribute is intentionally left as "vi" here as a fallback.
+// The actual locale is set in src/app/[locale]/layout.tsx via the URL param.
+// This root layout only renders when a request bypasses the [locale] segment
+// (e.g., 404 page, before middleware redirect).
+
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'CMS',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="vi">
+      <body>{children}</body>
+    </html>
+  );
+}
