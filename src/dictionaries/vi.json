@@ -1,0 +1,30 @@
+{
+  "common": {
+    "logout": "Đăng xuất"
+  },
+  "navbar": {
+    "home": "Trang chủ",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất"
+  },
+  "login": {
+    "title": "Đăng Nhập Hệ Thống",
+    "username": "Email hoặc Mã nhân viên",
+    "username_placeholder": "Nhập email/mã nhân viên",
+    "password": "Mật khẩu",
+    "password_placeholder": "Nhập mật khẩu",
+    "button": "Đăng Nhập",
+    "loading": "Đang xử lý...",
+    "error_failed": "Đăng nhập không thành công"
+  },
+  "profile": {
+    "title": "Hồ Sơ Cá Nhân",
+    "employee_code": "Mã nhân viên",
+    "fullname": "Họ và tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "logout": "Đăng xuất tài khoản"
+  }
+}

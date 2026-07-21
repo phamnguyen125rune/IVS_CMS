@@ -1,0 +1,30 @@
+{
+  "common": {
+    "logout": "Logout"
+  },
+  "navbar": {
+    "home": "Home",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "System Login",
+    "username": "Email or Employee Code",
+    "username_placeholder": "Enter email/employee code",
+    "password": "Password",
+    "password_placeholder": "Enter password",
+    "button": "Login",
+    "loading": "Processing...",
+    "error_failed": "Login failed"
+  },
+  "profile": {
+    "title": "Personal Profile",
+    "employee_code": "Employee Code",
+    "fullname": "Full Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "role": "Role",
+    "status": "Status",
+    "logout": "Logout Account"
+  }
+}

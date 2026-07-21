@@ -14,7 +14,7 @@
 // ----------------------------
 
 export interface User {
-  id: string;
+  id: number;
   fullname: string;
   email: string;
   role: Role;
@@ -24,21 +24,53 @@ export interface User {
 }
 
 export interface Role {
-  id: string;
-  name: string;           // VD: 'ADMIN', 'EDITOR', 'VIEWER'
-  permissions: string[];  // VD: ['post:create', 'post:publish']
+  id: number;
+  name: string; // VD: 'ADMIN', 'EDITOR', 'VIEWER'
+  permissions: string[]; // VD: ['post:create', 'post:publish']
+}
+
+export interface RoleLogin {
+  id: number;
+  name: string;
+  permissions: string[];
 }
 
 export interface UserLogin {
-  id: string;
+  id: number;
   fullname: string;
   email: string;
-  role: Role;
+  role?: RoleLogin | null;
+  employeeCode?: string;
+  avatarUrl?: string;
 }
 
 export interface AuthResponse {
-  accessToken: string;
+  access_token: string;
   user: UserLogin;
+}
+
+export interface RoleUser {
+  id: number;
+  name: string;
+}
+
+export interface ResUserDTO {
+  id: number;
+  fullname: string;
+  email: string;
+  avatarUrl?: string | null;
+  phone?: string | null;
+  age?: number;
+  address?: string | null;
+  gender?: string | null;
+  employeeCode?: string | null;
+  dateOfBirth?: string | null;
+  status: string;
+  role?: RoleUser | null;
+  createdAt?: string;
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 }
 
 // ----------------------------
@@ -50,14 +82,14 @@ export interface Post {
   id: string;
   title: string;
   slug: string;
-  content: string;           // HTML từ rich text editor
-  excerpt?: string;          // Tóm tắt ngắn
+  content: string; // HTML từ rich text editor
+  excerpt?: string; // Tóm tắt ngắn
   status: ContentStatus;
   authorId: string;
   categoryId?: string;
   tags: Tag[];
-  featuredImageId?: string;  // ID trong MediaFile
-  locale: string;            // VD: 'vi', 'en'
+  featuredImageId?: string; // ID trong MediaFile
+  locale: string; // VD: 'vi', 'en'
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
@@ -75,7 +107,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  parentId?: string;   // hỗ trợ danh mục lồng nhau
+  parentId?: string; // hỗ trợ danh mục lồng nhau
   locale: string;
 }
 
@@ -95,11 +127,11 @@ export interface MediaFile {
   id: string;
   filename: string;
   originalName: string;
-  mimeType: string;     // VD: 'image/webp', 'application/pdf'
+  mimeType: string; // VD: 'image/webp', 'application/pdf'
   sizeBytes: number;
-  url: string;          // URL public để hiển thị
+  url: string; // URL public để hiển thị
   storageType: 'LOCAL' | 'S3' | 'CLOUDINARY';
-  width?: number;       // chỉ có nếu là ảnh
+  width?: number; // chỉ có nếu là ảnh
   height?: number;
   uploadedAt: string;
 }
@@ -112,7 +144,7 @@ export interface MediaFile {
 export interface SystemSettings {
   siteName: string;
   logoUrl?: string;
-  supportedLocales: string[];  // VD: ['vi', 'en']
+  supportedLocales: string[]; // VD: ['vi', 'en']
   defaultLocale: string;
   contactEmail?: string;
   contactPhone?: string;
