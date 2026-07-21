@@ -1,0 +1,30 @@
+{
+  "common": {
+    "logout": "ログアウト"
+  },
+  "navbar": {
+    "home": "ホーム",
+    "login": "ログイン",
+    "logout": "ログアウト"
+  },
+  "login": {
+    "title": "システムログイン",
+    "username": "メールアドレスまたは社員コード",
+    "username_placeholder": "メール/社員コードを入力してください",
+    "password": "パスワード",
+    "password_placeholder": "パスワードを入力してください",
+    "button": "ログイン",
+    "loading": "処理中...",
+    "error_failed": "ログインに失敗しました"
+  },
+  "profile": {
+    "title": "個人プロフィール",
+    "employee_code": "社員コード",
+    "fullname": "氏名",
+    "email": "メールアドレス",
+    "phone": "電話番号",
+    "role": "役割",
+    "status": "ステータス",
+    "logout": "アカウントからログアウト"
+  }
+}

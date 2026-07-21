@@ -12,24 +12,26 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Hàm gọi API dùng chung, tự động xử lý cấu hình base URL, chèn Authorization token
+ * ở phía server, và chuẩn hóa lỗi phản hồi.
+ */
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  // 1. Determine base URL
-  const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8080';
-  
-  // Format path (ensure it starts with /)
+  const backendUrl =
+    process.env.JAVA_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8080';
+
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   const url = `${backendUrl}${cleanPath}`;
 
-  // 2. Set headers
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
-  // 3. Server-side token insertion
+  // Tự động chèn token session khi gọi API từ phía Server (Server Components / API Routes)
   if (isServer) {
     try {
-      // Dynamically import next/headers to prevent bundle errors on client-side compilation
+      // Import động next/headers để tránh lỗi đóng gói trên trình duyệt client
       const { cookies } = await import('next/headers');
       const cookieStore = await cookies();
       const token = cookieStore.get('session_token')?.value;
@@ -37,7 +39,9 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
         headers.set('Authorization', `Bearer ${token}`);
       }
     } catch {
-      console.warn('Unable to access cookies on server-side request (likely not in request context)');
+      console.warn(
+        'Unable to access cookies on server-side request (likely not in request context)'
+      );
     }
   }
 
@@ -49,7 +53,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   try {
     const res = await fetch(url, fetchOptions);
 
-    // 4. Global Error Interceptor
+    // Xử lý kiểm tra phản hồi lỗi HTTP
     if (!res.ok) {
       let errorInfo;
       try {
@@ -59,19 +63,16 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
       }
 
       const errorMessage = errorInfo?.message || `HTTP error! status: ${res.status}`;
-      
-      // Centralized error log
       console.error(`[API ERROR] ${res.status} ${url}:`, errorInfo);
-      
+
       throw new ApiError(errorMessage, res.status, errorInfo);
     }
 
-    // 5. Handle empty responses
     if (res.status === 204) {
       return {} as T;
     }
 
-    return await res.json() as T;
+    return (await res.json()) as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

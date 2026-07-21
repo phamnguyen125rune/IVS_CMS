@@ -182,9 +182,9 @@ interface PingData {
 }
 
 export default function PingLivePage() {
-  const [data, setData]       = useState<PingData | null>(null);
+  const [data, setData] = useState<PingData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [error, setError] = useState('');
 
   // useEffect chỉ chạy phía client — server không thực thi đoạn này
   useEffect(() => {
@@ -212,7 +212,7 @@ export default function PingLivePage() {
   }, []); // [] = chỉ chạy 1 lần khi component mount
 
   if (loading) return <p>Đang tải từ Java...</p>;
-  if (error)   return <p style={{ color: 'red' }}>{error}</p>;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
     <div>
@@ -226,11 +226,11 @@ export default function PingLivePage() {
 
 ### So sánh 5a vs 5b
 
-| | 5a — SSR | 5b — CSR |
-|---|---|---|
-| **Ai gọi Java?** | Server Next.js (qua Service + Action) | Browser (fetch trong useEffect) |
-| **Khi nào gọi?** | Trước khi gửi HTML về browser | Sau khi browser nhận HTML |
-| **Dữ liệu thấy trong nguồn trang?** | ✅ Có (đã render sẵn) | ❌ Không (JS điền sau) |
-| **SEO** | ✅ Tốt | ❌ Kém |
-| **Phù hợp với** | Dữ liệu tĩnh / kết quả action | Dashboard real-time, bộ lọc động |
-| **Cần `'use client'`?** | ❌ Không | ✅ Bắt buộc |
+|                                     | 5a — SSR                              | 5b — CSR                         |
+| ----------------------------------- | ------------------------------------- | -------------------------------- |
+| **Ai gọi Java?**                    | Server Next.js (qua Service + Action) | Browser (fetch trong useEffect)  |
+| **Khi nào gọi?**                    | Trước khi gửi HTML về browser         | Sau khi browser nhận HTML        |
+| **Dữ liệu thấy trong nguồn trang?** | ✅ Có (đã render sẵn)                 | ❌ Không (JS điền sau)           |
+| **SEO**                             | ✅ Tốt                                | ❌ Kém                           |
+| **Phù hợp với**                     | Dữ liệu tĩnh / kết quả action         | Dashboard real-time, bộ lọc động |
+| **Cần `'use client'`?**             | ❌ Không                              | ✅ Bắt buộc                      |

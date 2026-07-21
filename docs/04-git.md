@@ -24,15 +24,15 @@ hotfix ─► main (bypass dev, chỉ dùng khẩn cấp)
 
 ### Vai trò từng nhánh
 
-| Nhánh | Tồn tại | Mục đích | Ai được merge vào |
-|-------|---------|----------|-------------------|
-| `main` | Vĩnh viễn | Code đang chạy production, luôn ổn định | Chỉ từ `dev` (khi release) hoặc `hotfix/*` |
-| `dev` | Vĩnh viễn | Nhánh tích hợp — tất cả tính năng hội tụ về đây | Từ `feat/*`, `bugfix/*`, `refactor/*` |
-| `feat/*` | Tạm thời | Phát triển 1 tính năng cụ thể | Xóa sau khi merge vào `dev` |
-| `bugfix/*` | Tạm thời | Sửa lỗi phát hiện trên `dev` | Xóa sau khi merge vào `dev` |
-| `hotfix/*` | Tạm thời | Sửa lỗi khẩn cấp trực tiếp từ `main` | Merge vào cả `main` lẫn `dev` |
-| `refactor/*` | Tạm thời | Tái cấu trúc không thay đổi tính năng | Xóa sau khi merge vào `dev` |
-| `docs/*` | Tạm thời | Cập nhật tài liệu thuần túy | Xóa sau khi merge vào `dev` |
+| Nhánh        | Tồn tại   | Mục đích                                        | Ai được merge vào                          |
+| ------------ | --------- | ----------------------------------------------- | ------------------------------------------ |
+| `main`       | Vĩnh viễn | Code đang chạy production, luôn ổn định         | Chỉ từ `dev` (khi release) hoặc `hotfix/*` |
+| `dev`        | Vĩnh viễn | Nhánh tích hợp — tất cả tính năng hội tụ về đây | Từ `feat/*`, `bugfix/*`, `refactor/*`      |
+| `feat/*`     | Tạm thời  | Phát triển 1 tính năng cụ thể                   | Xóa sau khi merge vào `dev`                |
+| `bugfix/*`   | Tạm thời  | Sửa lỗi phát hiện trên `dev`                    | Xóa sau khi merge vào `dev`                |
+| `hotfix/*`   | Tạm thời  | Sửa lỗi khẩn cấp trực tiếp từ `main`            | Merge vào cả `main` lẫn `dev`              |
+| `refactor/*` | Tạm thời  | Tái cấu trúc không thay đổi tính năng           | Xóa sau khi merge vào `dev`                |
+| `docs/*`     | Tạm thời  | Cập nhật tài liệu thuần túy                     | Xóa sau khi merge vào `dev`                |
 
 ---
 
@@ -74,11 +74,11 @@ hotfix ─► main (bypass dev, chỉ dùng khẩn cấp)
 
 ### Quy tắc bảo vệ nhánh
 
-| Quy tắc | `main` | `dev` |
-|---------|--------|-------|
-| Push trực tiếp | ❌ Cấm | ❌ Cấm |
-| Merge phải qua PR | ✅ Bắt buộc | ✅ Bắt buộc |
-| CI phải pass trước khi merge | ✅ | ✅ |
+| Quy tắc                      | `main`      | `dev`       |
+| ---------------------------- | ----------- | ----------- |
+| Push trực tiếp               | ❌ Cấm      | ❌ Cấm      |
+| Merge phải qua PR            | ✅ Bắt buộc | ✅ Bắt buộc |
+| CI phải pass trước khi merge | ✅          | ✅          |
 
 > **Không bao giờ** commit thẳng vào `main` hoặc `dev`, dù là admin.
 
@@ -88,13 +88,13 @@ hotfix ─► main (bypass dev, chỉ dùng khẩn cấp)
 
 Tên nhánh viết thường, không dấu, phân cách bằng `-`, tiền tố theo loại công việc:
 
-| Tiền tố | Tạo từ nhánh | Dùng khi | Ví dụ |
-|---------|-------------|----------|-------|
-| `feat/` | `dev` | Tính năng mới | `feat/auth-login` |
-| `bugfix/` | `dev` | Sửa lỗi phát hiện trên dev/staging | `bugfix/auth-cookie-refresh` |
-| `hotfix/` | `main` | Sửa lỗi khẩn cấp trên production | `hotfix/login-crash` |
-| `refactor/` | `dev` | Tái cấu trúc, không đổi tính năng | `refactor/service-layer` |
-| `docs/` | `dev` | Cập nhật tài liệu thuần túy | `docs/update-git-guidelines` |
+| Tiền tố     | Tạo từ nhánh | Dùng khi                           | Ví dụ                        |
+| ----------- | ------------ | ---------------------------------- | ---------------------------- |
+| `feat/`     | `dev`        | Tính năng mới                      | `feat/auth-login`            |
+| `bugfix/`   | `dev`        | Sửa lỗi phát hiện trên dev/staging | `bugfix/auth-cookie-refresh` |
+| `hotfix/`   | `main`       | Sửa lỗi khẩn cấp trên production   | `hotfix/login-crash`         |
+| `refactor/` | `dev`        | Tái cấu trúc, không đổi tính năng  | `refactor/service-layer`     |
+| `docs/`     | `dev`        | Cập nhật tài liệu thuần túy        | `docs/update-git-guidelines` |
 
 ```bash
 # Tạo nhánh tính năng từ dev (trường hợp thông thường)
@@ -110,8 +110,6 @@ git checkout -b hotfix/login-crash
 
 ---
 
-
-
 ## Định dạng Commit Message (Conventional Commits)
 
 ```
@@ -120,15 +118,15 @@ type(branch-name): mô tả ngắn gọn bằng tiếng Anh
 
 ### Các `type` thường dùng
 
-| Type | Ý nghĩa |
-|------|---------|
-| `feat` | Tính năng mới |
-| `fix` | Sửa lỗi |
-| `docs` | Cập nhật tài liệu |
-| `style` | Sửa format code (không đổi logic) |
-| `refactor` | Tái cấu trúc code |
-| `test` | Thêm / sửa test |
-| `chore` | Cấu hình build, dependency... |
+| Type       | Ý nghĩa                           |
+| ---------- | --------------------------------- |
+| `feat`     | Tính năng mới                     |
+| `fix`      | Sửa lỗi                           |
+| `docs`     | Cập nhật tài liệu                 |
+| `style`    | Sửa format code (không đổi logic) |
+| `refactor` | Tái cấu trúc code                 |
+| `test`     | Thêm / sửa test                   |
+| `chore`    | Cấu hình build, dependency...     |
 
 ### Ví dụ commit đúng
 
@@ -166,9 +164,10 @@ git pull origin dev
 git checkout -b feat/ten-tinh-nang
 
 # 2. Viết code xong — kiểm tra trước khi commit
+# (Dự án đã tích hợp Husky tự động kiểm tra Lint, Format và Build khi bạn chạy git commit)
 npm run format       # format code tự động
 npm run lint         # kiểm tra lỗi ESLint
-npm run build        # phát hiện lỗi TypeScript tĩnh
+npm run build        # phát hiện lỗi TypeScript tĩnh và lỗi build Next.js
 
 # 3. Commit
 git add .

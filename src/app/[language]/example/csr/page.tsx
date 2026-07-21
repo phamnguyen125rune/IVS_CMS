@@ -8,7 +8,7 @@
 //                   <---JSON----
 //
 // Ưu điểm: không cần server Next.js xử lý, nhẹ.
-// Nhược điểm: lộ địa chỉ Java API ra trình duyệt; không SEO. Tuy nhiên nó có thể gọi tới endpoint của Next.js API route, 
+// Nhược điểm: lộ địa chỉ Java API ra trình duyệt; không SEO. Tuy nhiên nó có thể gọi tới endpoint của Next.js API route,
 // sau đó mới gọi tới Java API
 // ============================================================
 
@@ -52,18 +52,8 @@ export default function CsrPage() {
       <h1>CSR — browser gọi Java trực tiếp</h1>
 
       <form onSubmit={handleSubmit}>
-        <input
-          type="number"
-          value={a}
-          onChange={(e) => setA(e.target.value)}
-          placeholder="Số a"
-        />
-        <input
-          type="number"
-          value={b}
-          onChange={(e) => setB(e.target.value)}
-          placeholder="Số b"
-        />
+        <input type="number" value={a} onChange={(e) => setA(e.target.value)} placeholder="Số a" />
+        <input type="number" value={b} onChange={(e) => setB(e.target.value)} placeholder="Số b" />
         <button type="submit">Tính</button>
       </form>
 
