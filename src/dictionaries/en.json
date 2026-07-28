@@ -1,0 +1,35 @@
+{
+  "common": {
+    "logout": "Logout"
+  },
+  "navbar": {
+    "home": "Home",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "System Login",
+    "subtitle": "VietCMS Management System",
+    "username": "Email or Employee Code",
+    "username_placeholder": "Enter email/employee code",
+    "password": "Password",
+    "password_placeholder": "Enter password",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "button": "Login",
+    "loading": "Processing...",
+    "demo_account": "Demo account",
+    "back_to_client": "Back to Client Website",
+    "error_failed": "Login failed"
+  },
+  "profile": {
+    "title": "Personal Profile",
+    "employee_code": "Employee Code",
+    "fullname": "Full Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "role": "Role",
+    "status": "Status",
+    "logout": "Logout Account"
+  }
+}

@@ -1,33 +1,19 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-// ============================================================
-// Proxy (Next.js 16) — Runs before every request
-//
-// NOTE: Previously called "middleware" — renamed to "proxy" in Next.js 16.
-//       Function export name must also be "proxy" (not "middleware").
-//
-// Two responsibilities:
-//   1. Locale  — detect language, redirect to URL with locale prefix
-//                e.g. /users → /vi/users
-//   2. Auth    — protect routes that require login
-// ============================================================
-
-// Các ngôn ngữ được hỗ trợ — phải khớp với supportedLocales trong [locale]/layout.tsx
-const SUPPORTED_LOCALES = ['vi', 'en'] as const;
+const SUPPORTED_LOCALES = ['vi', 'en', 'ja'] as const;
 const DEFAULT_LOCALE = 'vi';
 type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-// Các path yêu cầu đăng nhập (sau khi có locale prefix)
-// VD: /vi/users, /en/profile
 const PROTECTED_PATHS = ['/users', '/profile'];
-
-// Các path không cần thêm locale prefix (API routes, static files)
 const PUBLIC_FILE_REGEX = /\.(.*)$/;
 
+/**
+ * Xử lý định tuyến đa ngôn ngữ và kiểm soát truy cập (Auth Guard) cho các yêu cầu đến hệ thống.
+ */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // --- Bỏ qua: file tĩnh và API routes ---
+  // Cho phép đi qua không cần xử lý đối với tài nguyên tĩnh hoặc API nội bộ
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
@@ -36,52 +22,45 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // --- BƯỚC 1: Xử lý Locale ---
-
-  // Kiểm tra URL đã có locale prefix chưa (vd: /vi/..., /en/...)
+  // Tự động chèn mã ngôn ngữ vào URL nếu phát hiện thiếu tiền tố ngôn ngữ (locale prefix)
   const pathnameHasLocale = SUPPORTED_LOCALES.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
   if (!pathnameHasLocale) {
-    // Detect ngôn ngữ ưu tiên từ header Accept-Language của browser
     const acceptLanguage = request.headers.get('accept-language') ?? '';
     const preferredLocale = detectLocale(acceptLanguage);
-
-    // Redirect về URL có locale prefix
-    // VD: /users → /vi/users
     const redirectUrl = new URL(`/${preferredLocale}${pathname}`, request.url);
-    redirectUrl.search = request.nextUrl.search; // giữ nguyên query string
+
+    redirectUrl.search = request.nextUrl.search;
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Lấy locale từ URL để dùng ở bước kiểm tra auth
   const locale = pathname.split('/')[1] as Locale;
 
-  // --- BƯỚC 2: Xử lý Auth ---
+  // Kiểm tra trạng thái đăng nhập bằng cách trích xuất token lưu trong Cookie 'session_token'
   const token = request.cookies.get('session_token')?.value;
-
-  // Kiểm tra path hiện tại (bỏ tiền tố locale) có cần bảo vệ không
   const pathWithoutLocale = `/${pathname.split('/').slice(2).join('/')}`;
   const isProtected = PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p));
 
+  // Yêu cầu đăng nhập đối với các truy cập chưa xác thực vào vùng giới hạn (PROTECTED_PATHS)
   if (isProtected && !token) {
-    // Chưa đăng nhập → redirect về trang login cùng locale
     const loginUrl = new URL(`/${locale}/login`, request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Đã đăng nhập mà vào trang login → redirect về trang chính
+  // Chuyển thẳng về trang cá nhân nếu người dùng đã có phiên đăng nhập hợp lệ nhưng cố tình quay lại trang /login
   if (pathWithoutLocale.startsWith('/login') && token) {
-    return NextResponse.redirect(new URL(`/${locale}/users`, request.url));
+    return NextResponse.redirect(new URL(`/${locale}/profile`, request.url));
   }
 
   return NextResponse.next();
 }
 
-// Hàm phát hiện ngôn ngữ từ Accept-Language header
-// VD: "en-US,en;q=0.9,vi;q=0.8" → 'en'
+/**
+ * Phân tích header 'Accept-Language' để trích xuất ngôn ngữ ưu tiên của trình duyệt người dùng.
+ */
 function detectLocale(acceptLanguage: string): Locale {
   const langs = acceptLanguage
     .split(',')
@@ -96,6 +75,5 @@ function detectLocale(acceptLanguage: string): Locale {
 }
 
 export const config = {
-  // Apply proxy to all paths except API routes and static assets
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

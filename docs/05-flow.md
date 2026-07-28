@@ -12,14 +12,14 @@ Next.js đóng vai trò **trung gian** giữa browser và Java. Tuỳ từng tr�
 
 ## So sánh CSR và SSR
 
-| | CSR | SSR |
-|---|---|---|
-| **Ai gọi Java?** | Browser | Next.js server (Node.js) |
-| **Khi nào gọi?** | Sau khi browser nhận HTML | Trước khi gửi HTML về browser |
-| **Java API lộ ra browser?** | ✅ Có (thấy trong DevTools) | ❌ Không |
-| **SEO** | ❌ Kém (nội dung điền sau) | ✅ Tốt (HTML đã có dữ liệu) |
-| **Cần `'use client'`?** | ✅ Bắt buộc | ❌ Không |
-| **Phù hợp với** | Dashboard real-time, filter động | Trang kết quả, trang profile |
+|                             | CSR                              | SSR                           |
+| --------------------------- | -------------------------------- | ----------------------------- |
+| **Ai gọi Java?**            | Browser                          | Next.js server (Node.js)      |
+| **Khi nào gọi?**            | Sau khi browser nhận HTML        | Trước khi gửi HTML về browser |
+| **Java API lộ ra browser?** | ✅ Có (thấy trong DevTools)      | ❌ Không                      |
+| **SEO**                     | ❌ Kém (nội dung điền sau)       | ✅ Tốt (HTML đã có dữ liệu)   |
+| **Cần `'use client'`?**     | ✅ Bắt buộc                      | ❌ Không                      |
+| **Phù hợp với**             | Dashboard real-time, filter động | Trang kết quả, trang profile  |
 
 ---
 
@@ -32,6 +32,7 @@ Browser --[useEffect/onClick]--> Java :8080/api/addition?a=3&b=5
 ```
 
 ### Yêu cầu phía Java
+
 Java phải bật `@CrossOrigin` để browser được phép gọi (CORS):
 
 ```java
@@ -60,8 +61,8 @@ export default function CsrPage() {
   useEffect(() => {
     // Browser gọi Java sau khi component mount
     fetch('http://localhost:8080/api/addition?a=3&b=5')
-      .then(res => res.json())
-      .then(data => setResult(data.result));
+      .then((res) => res.json())
+      .then((data) => setResult(data.result));
   }, []);
 
   return <p>Kết quả: {result ?? 'Đang tải...'}</p>;
@@ -188,10 +189,7 @@ export default function PingButton() {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <button
-      onClick={() => startTransition(() => sendPingAction())}
-      disabled={isPending}
-    >
+    <button onClick={() => startTransition(() => sendPingAction())} disabled={isPending}>
       {isPending ? 'Đang gửi...' : 'Gửi Ping'}
     </button>
   );
@@ -233,24 +231,24 @@ interface PingData {
 }
 
 export default function PingLivePage() {
-  const [data, setData]       = useState<PingData | null>(null);
+  const [data, setData] = useState<PingData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // CSR: browser tự gọi Java sau khi component mount
     fetch('http://localhost:8080/api/v1/ping', { method: 'POST' })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error(`Lỗi ${res.status}`);
         return res.json();
       })
       .then(setData)
-      .catch(err => setError(err.message))
+      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []); // [] = chỉ chạy 1 lần khi mount
 
   if (loading) return <p>Đang tải...</p>;
-  if (error)   return <p style={{ color: 'red' }}>{error}</p>;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
     <div>

@@ -1,15 +1,40 @@
-// PLACEHOLDER — POST /api/auth/login
-//
-// Receives loginId + password from client, calls Java Spring Boot auth endpoint,
-// sets session_token cookie on success.
-//
-// Mapped from: docs/06-features.md → Phân hệ Admin → Xác thực (JWT)
-//
-// TODO: Implement when Java auth API is ready
-
 import { NextResponse } from 'next/server';
+import { authService } from '@/services/auth.service';
+import { cookies } from 'next/headers';
+import { ApiError } from '@/utils/api-client';
 
-export async function POST() {
-  // TODO: Forward credentials to Java, receive JWT, set cookie
-  return NextResponse.json({ message: 'Not implemented' }, { status: 501 });
+export async function POST(request: Request) {
+  try {
+    const { loginId, password } = await request.json();
+    if (!loginId || !password) {
+      return NextResponse.json(
+        { message: 'Tên đăng nhập và mật khẩu không được để trống' },
+        { status: 400 }
+      );
+    }
+
+    const authData = await authService.login(loginId, password);
+
+    const cookieStore = await cookies();
+    cookieStore.set('session_token', authData.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 8640000,
+    });
+
+    return NextResponse.json({ user: authData.user });
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      return NextResponse.json({ message: err.message }, { status: err.status });
+    }
+    const rawMessage = err instanceof Error ? err.message : '';
+    const isFetchError =
+      rawMessage.toLowerCase().includes('fetch') || rawMessage.toLowerCase().includes('connect');
+    const message = isFetchError
+      ? 'Không thể kết nối đến máy chủ backend Java (Spring Boot: 8080)'
+      : rawMessage || 'Có lỗi kết nối đến máy chủ';
+    return NextResponse.json({ message }, { status: 500 });
+  }
 }

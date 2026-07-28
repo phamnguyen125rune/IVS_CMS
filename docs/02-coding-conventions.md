@@ -3,6 +3,7 @@
 ## TypeScript — Strict Mode
 
 ### Bắt buộc khai báo kiểu dữ liệu
+
 Tất cả props, state, tham số hàm, và giá trị trả về từ API phải có type rõ ràng.
 Interface dùng chung đặt trong `src/types/index.ts`.
 
@@ -21,6 +22,7 @@ async function getUser(id: any): Promise<any> { ... }
 ```
 
 ### Cấm dùng `any`
+
 Thay bằng `unknown` khi kiểu chưa xác định, sau đó dùng type guard để thu hẹp:
 
 ```typescript
@@ -108,6 +110,7 @@ async function loadProfile(userId: string) { ... }
 ```
 
 **Quy ước đặt tên biến boolean:** Luôn bắt đầu bằng `is`, `has`, `can`, `should`:
+
 ```typescript
 const isLoggedIn = true;
 const hasPermission = false;
@@ -116,12 +119,13 @@ const shouldRedirect = !token;
 ```
 
 **Quy ước đặt tên hàm:** Bắt đầu bằng động từ:
+
 ```typescript
-fetchUsers()       // lấy dữ liệu từ API
-handleSubmit()     // xử lý sự kiện form
-loadProfile()      // tải dữ liệu vào state
-formatDate()       // biến đổi / xử lý dữ liệu
-buildQueryString() // tạo ra thứ gì đó
+fetchUsers(); // lấy dữ liệu từ API
+handleSubmit(); // xử lý sự kiện form
+loadProfile(); // tải dữ liệu vào state
+formatDate(); // biến đổi / xử lý dữ liệu
+buildQueryString(); // tạo ra thứ gì đó
 ```
 
 ### UPPER_SNAKE_CASE — Viết hoa toàn bộ, phân cách bằng `_`
@@ -165,15 +169,15 @@ PingButton.tsx    → export default function PingButton()
 
 ### Tổng hợp nhanh
 
-| Loại | Convention | Ví dụ cụ thể |
-|------|-----------|---------------|
-| React Component | PascalCase | `UserCard`, `LoginPage` |
-| Class / Interface / Type | PascalCase | `AuthService`, `UserProfile` |
-| Hàm / Biến / Param | camelCase | `fetchUsers`, `isLoading`, `userId` |
-| Hằng số bất biến | UPPER_SNAKE_CASE | `JAVA_API_URL`, `MAX_RETRY` |
-| File component | PascalCase | `UserCard.tsx`, `Navbar.tsx` |
-| File service / util | kebab-case | `user.service.ts`, `api-client.ts` |
-| Thư mục route | kebab-case | `ping-result/`, `user-detail/` |
+| Loại                     | Convention       | Ví dụ cụ thể                        |
+| ------------------------ | ---------------- | ----------------------------------- |
+| React Component          | PascalCase       | `UserCard`, `LoginPage`             |
+| Class / Interface / Type | PascalCase       | `AuthService`, `UserProfile`        |
+| Hàm / Biến / Param       | camelCase        | `fetchUsers`, `isLoading`, `userId` |
+| Hằng số bất biến         | UPPER_SNAKE_CASE | `JAVA_API_URL`, `MAX_RETRY`         |
+| File component           | PascalCase       | `UserCard.tsx`, `Navbar.tsx`        |
+| File service / util      | kebab-case       | `user.service.ts`, `api-client.ts`  |
+| Thư mục route            | kebab-case       | `ping-result/`, `user-detail/`      |
 
 ---
 
@@ -183,10 +187,10 @@ PingButton.tsx    → export default function PingButton()
 
 Trước khi hiểu Server/Client Component, cần hiểu Next.js có **hai môi trường chạy code**:
 
-| Môi trường | Là gì | Có quyền làm gì |
-|---|---|---|
-| **Server** (Node.js) | Máy chủ chạy Next.js | Đọc file, gọi DB, đọc cookie server, gọi API nội bộ |
-| **Browser** | Máy tính người dùng | Nhận HTML, tương tác chuột/bàn phím, dùng `localStorage`, `window` |
+| Môi trường           | Là gì                | Có quyền làm gì                                                    |
+| -------------------- | -------------------- | ------------------------------------------------------------------ |
+| **Server** (Node.js) | Máy chủ chạy Next.js | Đọc file, gọi DB, đọc cookie server, gọi API nội bộ                |
+| **Browser**          | Máy tính người dùng  | Nhận HTML, tương tác chuột/bàn phím, dùng `localStorage`, `window` |
 
 Một file `.tsx` trong Next.js **mặc định chạy trên server**. Nghĩa là: React render ra HTML trên máy chủ → gửi HTML đó về browser → browser hiển thị.
 
@@ -211,7 +215,9 @@ export default async function UsersPage() {
   // Trả về HTML đã có dữ liệu — browser nhận HTML tĩnh, không cần chạy thêm JS
   return (
     <ul>
-      {users.map(u => <li key={u.id}>{u.fullname}</li>)}
+      {users.map((u) => (
+        <li key={u.id}>{u.fullname}</li>
+      ))}
     </ul>
   );
 }
@@ -272,21 +278,22 @@ Người dùng click / nhập / scroll / hover?
 
 **Các trường hợp cụ thể:**
 
-| Tình huống | Loại | Lý do |
-|---|---|---|
-| Trang danh sách user (chỉ hiển thị) | **Server** | Fetch + render sẵn, không cần JS phía client |
-| Form đăng nhập (có `onChange`, `onSubmit`) | **Client** | Cần `useState` để lưu giá trị input |
-| Nút "Xóa user" (có `onClick`) | **Client** | Event handler chỉ chạy được trong browser |
-| Trang profile (đọc cookie rồi hiển thị) | **Server** | `next/headers` chỉ dùng được trong Server Component |
-| Dropdown bộ lọc (mở/đóng theo click) | **Client** | Cần `useState` để lưu trạng thái mở/đóng |
-| Navbar (có nút, có state active menu) | **Client** | Có tương tác người dùng |
-| Layout bọc ngoài (chỉ bố cục) | **Server** | Không có logic tương tác |
+| Tình huống                                 | Loại       | Lý do                                               |
+| ------------------------------------------ | ---------- | --------------------------------------------------- |
+| Trang danh sách user (chỉ hiển thị)        | **Server** | Fetch + render sẵn, không cần JS phía client        |
+| Form đăng nhập (có `onChange`, `onSubmit`) | **Client** | Cần `useState` để lưu giá trị input                 |
+| Nút "Xóa user" (có `onClick`)              | **Client** | Event handler chỉ chạy được trong browser           |
+| Trang profile (đọc cookie rồi hiển thị)    | **Server** | `next/headers` chỉ dùng được trong Server Component |
+| Dropdown bộ lọc (mở/đóng theo click)       | **Client** | Cần `useState` để lưu trạng thái mở/đóng            |
+| Navbar (có nút, có state active menu)      | **Client** | Có tương tác người dùng                             |
+| Layout bọc ngoài (chỉ bố cục)              | **Server** | Không có logic tương tác                            |
 
 ---
 
 ### Tại sao không đặt tất cả là Client Component cho tiện?
 
 Vì Client Component tốn tài nguyên hơn:
+
 - JavaScript phải **gửi xuống browser** → tăng kích thước trang
 - Browser phải **parse và chạy JS** → tốn thêm thời gian
 - Dữ liệu **không có trong HTML ban đầu** → SEO kém, flash trắng khi load, cần xử lí loading state
