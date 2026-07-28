@@ -29,7 +29,12 @@ export async function POST(request: Request) {
     if (err instanceof ApiError) {
       return NextResponse.json({ message: err.message }, { status: err.status });
     }
-    const message = err instanceof Error ? err.message : 'Có lỗi kết nối đến máy chủ';
+    const rawMessage = err instanceof Error ? err.message : '';
+    const isFetchError =
+      rawMessage.toLowerCase().includes('fetch') || rawMessage.toLowerCase().includes('connect');
+    const message = isFetchError
+      ? 'Không thể kết nối đến máy chủ backend Java (Spring Boot: 8080)'
+      : rawMessage || 'Có lỗi kết nối đến máy chủ';
     return NextResponse.json({ message }, { status: 500 });
   }
 }
