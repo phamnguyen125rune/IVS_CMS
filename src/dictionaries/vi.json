@@ -9,12 +9,17 @@
   },
   "login": {
     "title": "Đăng Nhập Hệ Thống",
+    "subtitle": "Hệ thống quản trị VietCMS",
     "username": "Email hoặc Mã nhân viên",
     "username_placeholder": "Nhập email/mã nhân viên",
     "password": "Mật khẩu",
     "password_placeholder": "Nhập mật khẩu",
+    "show_password": "Hiện mật khẩu",
+    "hide_password": "Ẩn mật khẩu",
     "button": "Đăng Nhập",
     "loading": "Đang xử lý...",
+    "demo_account": "Tài khoản demo",
+    "back_to_client": "Quay lại trang web Khách hàng",
     "error_failed": "Đăng nhập không thành công"
   },
   "profile": {

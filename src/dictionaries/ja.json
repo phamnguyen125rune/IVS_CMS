@@ -9,12 +9,17 @@
   },
   "login": {
     "title": "システムログイン",
+    "subtitle": "VietCMS 管理システム",
     "username": "メールアドレスまたは社員コード",
     "username_placeholder": "メール/社員コードを入力してください",
     "password": "パスワード",
     "password_placeholder": "パスワードを入力してください",
+    "show_password": "パスワードを表示",
+    "hide_password": "パスワードを非表示",
     "button": "ログイン",
     "loading": "処理中...",
+    "demo_account": "デモアカウント",
+    "back_to_client": "クライアントWebサイトに戻る",
     "error_failed": "ログインに失敗しました"
   },
   "profile": {
