@@ -4,7 +4,7 @@ const SUPPORTED_LOCALES = ['vi', 'en', 'ja'] as const;
 const DEFAULT_LOCALE = 'vi';
 type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-const PROTECTED_PATHS = ['/users', '/profile'];
+const PROTECTED_PATHS = ['/users', '/profile', '/dashboard'];
 const PUBLIC_FILE_REGEX = /\.(.*)$/;
 
 /**
