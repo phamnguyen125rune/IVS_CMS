@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from 'react';
 import {
   Search,
   Eye,
@@ -10,145 +10,226 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-} from "lucide-react";
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-const contacts = [
-  {
-    id: 1,
-    name: "Nguyễn Hoàng Nam",
-    email: "nam.nguyen@techstart.vn",
-    phone: "0908 765 432",
-    company: "TechStart Vietnam",
-    subject: "Tư vấn giải pháp phần mềm ERP",
-    message:
-      "Kính gửi Quý công ty, chúng tôi đang tìm kiếm một giải pháp ERP phù hợp với quy mô 200 nhân viên. Mong được tư vấn cụ thể về chi phí và thời gian triển khai.",
-    status: "new",
-    date: "14/07/2024 09:30",
-  },
-  {
-    id: 2,
-    name: "Trần Thị Bảo Châu",
-    email: "chau.tran@retailvn.com",
-    phone: "0912 345 678",
-    company: "RetailVN Corporation",
-    subject: "Hợp tác phát triển ứng dụng thương mại điện tử",
-    message:
-      "Chúng tôi muốn phát triển nền tảng thương mại điện tử B2B riêng. Mong được trao đổi về năng lực và kinh nghiệm của CMS trong lĩnh vực này.",
-    status: "read",
-    date: "13/07/2024 15:45",
-  },
-  {
-    id: 3,
-    name: "Lê Minh Đức",
-    email: "duc.le@fintech.io",
-    phone: "0934 567 890",
-    company: "FinTech Solutions",
-    subject: "Bảo mật hệ thống thanh toán trực tuyến",
-    message:
-      "Chúng tôi cần kiểm tra và nâng cấp hệ thống bảo mật thanh toán hiện tại. Hãy cho chúng tôi biết về dịch vụ security audit của CMS.",
-    status: "replied",
-    date: "12/07/2024 11:20",
-  },
-  {
-    id: 4,
-    name: "Phạm Văn Khoa",
-    email: "khoa.pham@logistics.vn",
-    phone: "0946 789 012",
-    company: "VN Logistics Group",
-    subject: "Hệ thống quản lý kho bãi thông minh",
-    message:
-      "Doanh nghiệp chúng tôi cần giải pháp WMS (Warehouse Management System) tích hợp với các đối tác vận chuyển. Mong nhận được báo giá chi tiết.",
-    status: "new",
-    date: "11/07/2024 08:15",
-  },
-  {
-    id: 5,
-    name: "Ngô Thanh Huyền",
-    email: "huyen.ngo@education.vn",
-    phone: "0958 901 234",
-    company: "EduTech Vietnam",
-    subject: "Nền tảng học trực tuyến cho doanh nghiệp",
-    message:
-      "Chúng tôi muốn xây dựng hệ thống LMS (Learning Management System) cho 5000 nhân viên. Cần tư vấn về kiến trúc hệ thống và phương án triển khai.",
-    status: "read",
-    date: "10/07/2024 14:00",
-  },
-];
+// 1. Khai báo Type đồng bộ với Domain & DTO Backend
+export interface Contact {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  service?: string;
+  subject: string;
+  message: string;
+  status: 'new' | 'read' | 'replied' | string;
+  replyMessage?: string;
+  createdAt: string;
+}
 
-const statusConfig: Record<
-  string,
-  { label: string; color: string; icon: any }
-> = {
-  new: { label: "Mới", color: "bg-blue-100 text-blue-700", icon: AlertCircle },
-  read: { label: "Đã xem", color: "bg-slate-100 text-slate-600", icon: Eye },
+export interface PaginationMeta {
+  page: number;
+  pageSize: number;
+  pages: number;
+  total: number;
+}
+
+const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
+  new: { label: 'Mới', color: 'bg-blue-100 text-blue-700', icon: AlertCircle },
+  read: { label: 'Đã xem', color: 'bg-slate-100 text-slate-600', icon: Eye },
   replied: {
-    label: "Đã phản hồi",
-    color: "bg-emerald-100 text-emerald-700",
+    label: 'Đã phản hồi',
+    color: 'bg-emerald-100 text-emerald-700',
     icon: CheckCircle,
   },
 };
 
 export default function Contacts() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("Tất cả");
-  const [selectedContact, setSelectedContact] = useState<
-    (typeof contacts)[0] | null
-  >(null);
-
-  const filtered = contacts.filter((c) => {
-    const matchSearch =
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase()) ||
-      c.subject.toLowerCase().includes(search.toLowerCase());
-    const matchStatus =
-      statusFilter === "Tất cả" ||
-      (statusFilter === "Mới"
-        ? c.status === "new"
-        : statusFilter === "Đã xem"
-          ? c.status === "read"
-          : c.status === "replied");
-    return matchSearch && matchStatus;
+  // States quản lý Data & Filter
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta>({
+    page: 1,
+    pageSize: 10,
+    pages: 1,
+    total: 0,
   });
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Tất cả');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // States quản lý Modal & Action
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [submittingReply, setSubmittingReply] = useState(false);
+
+  // Map status tab sang value query backend
+  const getBackendStatus = (filter: string) => {
+    switch (filter) {
+      case 'Mới':
+        return 'new';
+      case 'Đã xem':
+        return 'read';
+      case 'Đã phản hồi':
+        return 'replied';
+      default:
+        return 'ALL';
+    }
+  };
+
+  // 2. Hàm gọi API lấy danh sách Contact
+  const fetchContacts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const statusQuery = getBackendStatus(statusFilter);
+      const queryParams = new URLSearchParams({
+        page: currentPage.toString(),
+        size: '10',
+        status: statusQuery,
+        ...(search.trim() ? { search: search.trim() } : {}),
+      });
+
+      const res = await fetch(`/api/v1/contacts?${queryParams.toString()}`);
+      const json = await res.json();
+
+      if (res.ok && json.data) {
+        setContacts(json.data.result || []);
+        if (json.data.meta) {
+          setMeta(json.data.meta);
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách liên hệ:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, search, statusFilter]);
+
+  // Trigger fetch khi thay đổi filter, search, page
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchContacts();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [fetchContacts]);
+
+  // 3. Hàm xem chi tiết (Tự động chuyển status sang 'read' từ backend)
+  const handleViewDetail = async (contact: Contact) => {
+    try {
+      const res = await fetch(`/api/v1/contacts/${contact.id}`);
+      const json = await res.json();
+      if (res.ok && json.data) {
+        setSelectedContact(json.data);
+        setReplyText(json.data.replyMessage || '');
+        // Reload danh sách nếu contact vừa chuyển từ 'new' -> 'read'
+        if (contact.status === 'new') {
+          fetchContacts();
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy chi tiết liên hệ:', error);
+    }
+  };
+
+  // 4. Hàm gửi phản hồi
+  const handleSendReply = async () => {
+    if (!selectedContact || !replyText.trim()) return;
+
+    setSubmittingReply(true);
+    try {
+      const res = await fetch(`/api/v1/contacts/${selectedContact.id}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ replyMessage: replyText }),
+      });
+
+      if (res.ok) {
+        setSelectedContact(null);
+        setReplyText('');
+        fetchContacts(); // Reload danh sách
+      } else {
+        alert('Gửi phản hồi thất bại, vui lòng thử lại!');
+      }
+    } catch (error) {
+      console.error('Lỗi khi gửi phản hồi:', error);
+    } finally {
+      setSubmittingReply(false);
+    }
+  };
+
+  // 5. Hàm xóa liên hệ
+  const handleDeleteContact = async (id: number) => {
+    if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
+
+    try {
+      const res = await fetch(`/api/v1/contacts/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        fetchContacts();
+      } else {
+        alert('Xóa liên hệ thất bại!');
+      }
+    } catch (error) {
+      console.error('Lỗi khi xóa liên hệ:', error);
+    }
+  };
+
+  // Format ngày giờ hiển thị
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return 'N/A';
+    const date = new Date(dateStr);
+    return date.toLocaleString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   return (
     <div className="p-6">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-xl font-bold text-slate-900">
-            Quản lý Liên hệ
-          </h1>
+          <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Liên hệ</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            {contacts.filter((c) => c.status === "new").length} liên hệ mới chờ
-            xử lý
+            Tổng số: <span className="font-semibold">{meta.total}</span> liên hệ
           </p>
         </div>
       </div>
 
       {/* Filters */}
-      <div
-        className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3"
-        style={{ borderColor: "var(--border)" }}
-      >
+      <div className="bg-white rounded-xl border border-slate-200 p-4 mb-5 flex flex-wrap gap-3">
         <div className="flex-1 min-w-48 relative">
-          <Search
-            size={15}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Tìm theo tên, email, chủ đề..."
-            className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
-            style={{ borderColor: "var(--border)" }}
+            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500"
           />
         </div>
         <div className="flex gap-1">
-          {["Tất cả", "Mới", "Đã xem", "Đã phản hồi"].map((s) => (
+          {['Tất cả', 'Mới', 'Đã xem', 'Đã phản hồi'].map((s) => (
             <button
               key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium ${statusFilter === s ? "text-white" : "text-slate-500 hover:bg-slate-100"}`}
-              style={statusFilter === s ? { background: "var(--primary)" } : {}}
+              onClick={() => {
+                setStatusFilter(s);
+                setCurrentPage(1);
+              }}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                statusFilter === s ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-100'
+              }`}
             >
               {s}
             </button>
@@ -156,17 +237,17 @@ export default function Contacts() {
         </div>
       </div>
 
-      {/* Table */}
-      <div
-        className="bg-white rounded-xl border overflow-hidden"
-        style={{ borderColor: "var(--border)" }}
-      >
+      {/* Table & Loading State */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center">
+            <Loader2 className="animate-spin text-blue-600" size={28} />
+          </div>
+        )}
+
         <table className="w-full text-sm">
           <thead>
-            <tr
-              className="bg-slate-50 border-b"
-              style={{ borderColor: "var(--border)" }}
-            >
+            <tr className="bg-slate-50 border-b border-slate-200">
               <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 Người liên hệ
               </th>
@@ -185,79 +266,111 @@ export default function Contacts() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((contact) => {
-              const sc = statusConfig[contact.status];
-              return (
-                <tr
-                  key={contact.id}
-                  className="border-t hover:bg-slate-50 transition-colors"
-                  style={{ borderColor: "var(--border)" }}
-                >
-                  <td className="px-5 py-3.5">
-                    <div className="font-medium text-slate-800">
-                      {contact.name}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                      {contact.email} · {contact.company}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="text-slate-700 max-w-xs truncate">
-                      {contact.subject}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${sc.color}`}
-                    >
-                      {sc.label}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                      <Clock size={11} />
-                      {contact.date}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => setSelectedContact(contact)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50"
-                      >
-                        <Eye size={14} />
-                      </button>
-                      <button className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50">
-                        <Reply size={14} />
-                      </button>
-                      <button className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50">
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+            {contacts.length === 0 && !loading ? (
+              <tr>
+                <td colSpan={5} className="text-center py-8 text-slate-400">
+                  Không tìm thấy danh sách liên hệ phù hợp.
+                </td>
+              </tr>
+            ) : (
+              contacts.map((contact) => {
+                const sc = statusConfig[contact.status] || statusConfig.new;
+                return (
+                  <tr
+                    key={contact.id}
+                    className="border-t border-slate-200 hover:bg-slate-50 transition-colors"
+                  >
+                    <td className="px-5 py-3.5">
+                      <div className="font-medium text-slate-800">{contact.name}</div>
+                      <div className="text-xs text-slate-400">
+                        {contact.email} {contact.company ? `· ${contact.company}` : ''}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="text-slate-700 max-w-xs truncate">{contact.subject}</div>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${sc.color}`}>
+                        {sc.label}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                        <Clock size={11} />
+                        {formatDate(contact.createdAt)}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          title="Xem chi tiết"
+                          onClick={() => handleViewDetail(contact)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                        >
+                          <Eye size={14} />
+                        </button>
+                        <button
+                          title="Phản hồi"
+                          onClick={() => handleViewDetail(contact)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                        >
+                          <Reply size={14} />
+                        </button>
+                        <button
+                          title="Xóa"
+                          onClick={() => handleDeleteContact(contact.id)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
+
+        {/* Pagination Bar */}
+        {meta.pages > 1 && (
+          <div className="px-5 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+            <span className="text-xs text-slate-500">
+              Trang {meta.page} / {meta.pages}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+                className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 disabled:opacity-40"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                disabled={currentPage >= meta.pages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 disabled:opacity-40"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Detail modal */}
+      {/* Detail Modal */}
       {selectedContact && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={() => setSelectedContact(null)}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-xl"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div
-              className="flex items-center justify-between px-6 py-4 border-b"
-              style={{ borderColor: "var(--border)" }}
-            >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h3 className="font-display font-bold text-slate-900">
-                Chi tiết liên hệ
+                Chi tiết liên hệ #{selectedContact.id}
               </h3>
               <button
                 onClick={() => setSelectedContact(null)}
@@ -266,66 +379,67 @@ export default function Contacts() {
                 <X size={18} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4 text-sm">
-                {[
-                  { label: "Họ tên", value: selectedContact.name },
-                  { label: "Email", value: selectedContact.email },
-                  { label: "Số điện thoại", value: selectedContact.phone },
-                  { label: "Công ty", value: selectedContact.company },
-                ].map((f) => (
-                  <div key={f.label}>
-                    <span className="text-xs text-slate-400 font-medium">
-                      {f.label}
-                    </span>
-                    <p className="text-slate-800 mt-0.5">{f.value}</p>
-                  </div>
-                ))}
+                <div>
+                  <span className="text-xs text-slate-400 font-medium">Họ tên</span>
+                  <p className="text-slate-800 mt-0.5 font-medium">{selectedContact.name}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-400 font-medium">Email</span>
+                  <p className="text-slate-800 mt-0.5">{selectedContact.email}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-400 font-medium">Số điện thoại</span>
+                  <p className="text-slate-800 mt-0.5">{selectedContact.phone}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-400 font-medium">Công ty</span>
+                  <p className="text-slate-800 mt-0.5">{selectedContact.company || 'Không có'}</p>
+                </div>
               </div>
+
               <div>
-                <span className="text-xs text-slate-400 font-medium">
-                  Chủ đề
-                </span>
-                <p className="text-slate-800 mt-0.5 font-medium">
-                  {selectedContact.subject}
-                </p>
+                <span className="text-xs text-slate-400 font-medium">Chủ đề</span>
+                <p className="text-slate-800 mt-0.5 font-medium">{selectedContact.subject}</p>
               </div>
+
               <div>
-                <span className="text-xs text-slate-400 font-medium">
-                  Nội dung
-                </span>
-                <div className="mt-1.5 p-4 rounded-xl bg-slate-50 text-sm text-slate-700 leading-relaxed">
+                <span className="text-xs text-slate-400 font-medium">Nội dung tin nhắn</span>
+                <div className="mt-1.5 p-4 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-700 leading-relaxed whitespace-pre-line">
                   {selectedContact.message}
                 </div>
               </div>
+
               <div>
-                <span className="text-xs text-slate-400 font-medium">
-                  Phản hồi
-                </span>
+                <span className="text-xs text-slate-400 font-medium">Nội dung phản hồi</span>
                 <textarea
                   rows={3}
-                  placeholder="Nhập nội dung phản hồi..."
-                  className="w-full mt-1.5 px-3 py-2.5 border rounded-xl text-sm outline-none resize-none focus:border-blue-500"
-                  style={{ borderColor: "var(--border)" }}
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Nhập nội dung phản hồi tới khách hàng..."
+                  className="w-full mt-1.5 px-3 py-2.5 border border-slate-200 rounded-xl text-sm outline-none resize-none focus:border-blue-500"
                 />
               </div>
             </div>
-            <div
-              className="flex items-center justify-end gap-2 px-6 py-4 border-t"
-              style={{ borderColor: "var(--border)" }}
-            >
+
+            <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-slate-200 bg-slate-50">
               <button
                 onClick={() => setSelectedContact(null)}
-                className="px-4 py-2 rounded-xl border text-sm text-slate-600 hover:bg-slate-50"
-                style={{ borderColor: "var(--border)" }}
+                className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 Đóng
               </button>
               <button
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-sm font-semibold"
-                style={{ background: "var(--primary)" }}
+                disabled={submittingReply || !replyText.trim()}
+                onClick={handleSendReply}
+                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors"
               >
-                <Reply size={14} />
+                {submittingReply ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Reply size={14} />
+                )}
                 Gửi phản hồi
               </button>
             </div>

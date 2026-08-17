@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 // 1. Dùng routing chuẩn của Next.js
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
@@ -19,30 +19,30 @@ import {
   Bell,
   PanelLeftClose,
   PanelLeftOpen,
-} from "lucide-react";
+} from 'lucide-react';
 
 const navItems = [
-  { label: "Tổng quan", icon: LayoutDashboard, path: "/admin/tong-quan" },
-  { label: "Quản lý Nhân sự", icon: Users, path: "/admin/nhan-su" },
-  { label: "Quản lý Phân quyền", icon: ShieldCheck, path: "/admin/phan-quyen" },
-  { label: "Quản lý Bài viết", icon: FileText, path: "/admin/bai-viet" },
-  { label: "Quản lý Kiểm duyệt", icon: CheckSquare, path: "/admin/kiem-duyet" },
-  { label: "Quản lý Danh mục", icon: FolderTree, path: "/admin/danh-muc" },
-  { label: "Quản lý Media", icon: ImageIcon, path: "/admin/media" },
-  { label: "Quản lý Liên hệ", icon: Mail, path: "/admin/lien-he" },
-  { label: "Cài đặt", icon: Settings, path: "/admin/cai-dat" },
+  { label: 'Tổng quan', icon: LayoutDashboard, path: '/admin/tong-quan' },
+  { label: 'Quản lý Nhân sự', icon: Users, path: '/admin/nhan-su' },
+  { label: 'Quản lý Phân quyền', icon: ShieldCheck, path: '/admin/phan-quyen' },
+  { label: 'Quản lý Bài viết', icon: FileText, path: '/admin/bai-viet' },
+  { label: 'Quản lý Kiểm duyệt', icon: CheckSquare, path: '/admin/kiem-duyet' },
+  { label: 'Quản lý Danh mục', icon: FolderTree, path: '/admin/danh-muc' },
+  { label: 'Quản lý Media', icon: ImageIcon, path: '/admin/media' },
+  { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin/lien-he' },
+  { label: 'Cài đặt', icon: Settings, path: '/admin/cai-dat' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  
+
   // 2. Dùng useRouter và usePathname từ next/navigation
   const router = useRouter();
   const pathname = usePathname();
 
   const handleLogout = () => {
     // Xử lý xoá token/session nếu có ở đây
-    router.push("/admin/login");
+    router.push('/admin/login');
   };
 
   return (
@@ -58,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar - Dark Theme */}
       <aside
         className={`flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 z-30 shrink-0 overflow-hidden whitespace-nowrap ${
-          sidebarOpen ? "w-64" : "w-0 lg:w-20"
+          sidebarOpen ? 'w-64' : 'w-0 lg:w-20'
         }`}
       >
         {/* Logo */}
@@ -67,9 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             C
           </div>
           {sidebarOpen && (
-            <span className="font-bold text-white text-lg tracking-tight">
-              CMS Admin
-            </span>
+            <span className="font-bold text-white text-lg tracking-tight">CMS Admin</span>
           )}
         </div>
 
@@ -86,8 +84,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 title={!sidebarOpen ? item.label : undefined}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-900/20"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-900/20'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <item.icon size={20} className="shrink-0" />
@@ -101,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-4 border-t border-slate-800">
           <button
             onClick={handleLogout}
-            title={!sidebarOpen ? "Đăng xuất" : undefined}
+            title={!sidebarOpen ? 'Đăng xuất' : undefined}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
           >
             <LogOut size={20} className="shrink-0" />
@@ -133,9 +131,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Profile Avatar */}
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-slate-700">
-                  Nguyễn Văn A
-                </p>
+                <p className="text-sm font-semibold text-slate-700">Nguyễn Văn A</p>
                 <p className="text-xs text-slate-500">Quản trị viên</p>
               </div>
               <div className="w-9 h-9 shrink-0 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
@@ -146,9 +142,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* 3. Trong Next.js Layout, render {children} thay vì <Outlet /> */}
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-8">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-8">{children}</main>
 
         {/* Floating Action Button */}
         <Link

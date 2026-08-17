@@ -1,16 +1,7 @@
-﻿"use client";
+﻿'use client';
 
-import { useState } from "react";
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  Send,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-} from "lucide-react";
+import { useState } from 'react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 type FormData = {
   hoTen: string;
@@ -26,12 +17,12 @@ type FormErrors = Partial<Record<keyof FormData, string>>;
 
 export default function Contact() {
   const [form, setForm] = useState<FormData>({
-    hoTen: "",
-    email: "",
-    soDienThoai: "",
-    congTy: "",
-    dichVu: "",
-    noiDung: "",
+    hoTen: '',
+    email: '',
+    soDienThoai: '',
+    congTy: '',
+    dichVu: '',
+    noiDung: '',
     consent: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -41,18 +32,15 @@ export default function Contact() {
   // Validate form
   const validate = (): FormErrors => {
     const e: FormErrors = {};
-    if (!form.hoTen.trim()) e.hoTen = "Vui lòng nhập họ và tên";
-    if (!form.email.trim()) e.email = "Vui lòng nhập địa chỉ email";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      e.email = "Địa chỉ email không hợp lệ";
-    if (!form.soDienThoai.trim()) e.soDienThoai = "Vui lòng nhập số điện thoại";
-    else if (!/^[0-9]{9,11}$/.test(form.soDienThoai.replace(/\s/g, "")))
-      e.soDienThoai = "Số điện thoại không hợp lệ";
-    if (!form.noiDung.trim()) e.noiDung = "Vui lòng nhập nội dung tin nhắn";
-    else if (form.noiDung.trim().length < 20)
-      e.noiDung = "Nội dung phải có ít nhất 20 ký tự";
-    if (!form.consent)
-      e.consent = "Bạn cần đồng ý với điều khoản bảo mật";
+    if (!form.hoTen.trim()) e.hoTen = 'Vui lòng nhập họ và tên';
+    if (!form.email.trim()) e.email = 'Vui lòng nhập địa chỉ email';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Địa chỉ email không hợp lệ';
+    if (!form.soDienThoai.trim()) e.soDienThoai = 'Vui lòng nhập số điện thoại';
+    else if (!/^[0-9]{9,11}$/.test(form.soDienThoai.replace(/\s/g, '')))
+      e.soDienThoai = 'Số điện thoại không hợp lệ';
+    if (!form.noiDung.trim()) e.noiDung = 'Vui lòng nhập nội dung tin nhắn';
+    else if (form.noiDung.trim().length < 20) e.noiDung = 'Nội dung phải có ít nhất 20 ký tự';
+    if (!form.consent) e.consent = 'Bạn cần đồng ý với điều khoản bảo mật';
     return e;
   };
 
@@ -71,7 +59,7 @@ export default function Contact() {
       await new Promise((r) => setTimeout(r, 1500));
       setSubmitted(true);
     } catch (error) {
-      console.error("Submit error:", error);
+      console.error('Submit error:', error);
     } finally {
       setLoading(false);
     }
@@ -85,8 +73,8 @@ export default function Contact() {
   const inputClass = (key: keyof FormErrors) =>
     `w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 ${
       errors[key]
-        ? "border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100"
-        : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
+        ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
+        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
     }`;
 
   return (
@@ -101,8 +89,8 @@ export default function Contact() {
             Hãy kết nối với chúng tôi
           </h1>
           <p className="text-blue-200 text-base max-w-xl">
-            Đội ngũ chuyên gia của CMS sẵn sàng lắng nghe và tư vấn giải pháp
-            phù hợp nhất cho doanh nghiệp của bạn.
+            Đội ngũ chuyên gia của CMS sẵn sàng lắng nghe và tư vấn giải pháp phù hợp nhất cho doanh
+            nghiệp của bạn.
           </p>
         </div>
       </section>
@@ -120,27 +108,27 @@ export default function Contact() {
                 {[
                   {
                     icon: MapPin,
-                    label: "Địa chỉ",
-                    value: "Tầng 12, 141 Lê Duẩn\nQuận 1, TP. Hồ Chí Minh",
-                    color: "text-blue-600 bg-blue-50",
+                    label: 'Địa chỉ',
+                    value: 'Tầng 12, 141 Lê Duẩn\nQuận 1, TP. Hồ Chí Minh',
+                    color: 'text-blue-600 bg-blue-50',
                   },
                   {
                     icon: Phone,
-                    label: "Điện thoại",
-                    value: "+84 28 3456 7890\n+84 28 3456 7891",
-                    color: "text-emerald-600 bg-emerald-50",
+                    label: 'Điện thoại',
+                    value: '+84 28 3456 7890\n+84 28 3456 7891',
+                    color: 'text-emerald-600 bg-emerald-50',
                   },
                   {
                     icon: Mail,
-                    label: "Email",
-                    value: "info@cms.vn\nsales@cms.vn",
-                    color: "text-violet-600 bg-violet-50",
+                    label: 'Email',
+                    value: 'info@cms.vn\nsales@cms.vn',
+                    color: 'text-violet-600 bg-violet-50',
                   },
                   {
                     icon: Clock,
-                    label: "Giờ làm việc",
-                    value: "Thứ 2 – Thứ 6: 8:00 – 18:00\nThứ 7: 8:00 – 12:00",
-                    color: "text-amber-600 bg-amber-50",
+                    label: 'Giờ làm việc',
+                    value: 'Thứ 2 – Thứ 6: 8:00 – 18:00\nThứ 7: 8:00 – 12:00',
+                    color: 'text-amber-600 bg-amber-50',
                   },
                 ].map(({ icon: Icon, label, value, color }) => (
                   <div key={label} className="flex items-start gap-4">
@@ -189,18 +177,19 @@ export default function Contact() {
                     Gửi yêu cầu thành công!
                   </h3>
                   <p className="text-slate-600 mb-6 max-w-md mx-auto text-sm">
-                    Cảm ơn bạn đã liên hệ. Đội ngũ CMS đã nhận được thông tin và sẽ phản hồi cho bạn trong vòng 24 giờ làm việc.
+                    Cảm ơn bạn đã liên hệ. Đội ngũ CMS đã nhận được thông tin và sẽ phản hồi cho bạn
+                    trong vòng 24 giờ làm việc.
                   </p>
                   <button
                     onClick={() => {
                       setSubmitted(false);
                       setForm({
-                        hoTen: "",
-                        email: "",
-                        soDienThoai: "",
-                        congTy: "",
-                        dichVu: "",
-                        noiDung: "",
+                        hoTen: '',
+                        email: '',
+                        soDienThoai: '',
+                        congTy: '',
+                        dichVu: '',
+                        noiDung: '',
                         consent: false,
                       });
                     }}
@@ -228,9 +217,9 @@ export default function Contact() {
                       </label>
                       <input
                         value={form.hoTen}
-                        onChange={(e) => setField("hoTen", e.target.value)}
+                        onChange={(e) => setField('hoTen', e.target.value)}
                         placeholder="Nguyễn Văn A"
-                        className={inputClass("hoTen")}
+                        className={inputClass('hoTen')}
                       />
                       {errors.hoTen && (
                         <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
@@ -248,9 +237,9 @@ export default function Contact() {
                       <input
                         type="email"
                         value={form.email}
-                        onChange={(e) => setField("email", e.target.value)}
+                        onChange={(e) => setField('email', e.target.value)}
                         placeholder="email@company.vn"
-                        className={inputClass("email")}
+                        className={inputClass('email')}
                       />
                       {errors.email && (
                         <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
@@ -267,11 +256,9 @@ export default function Contact() {
                       </label>
                       <input
                         value={form.soDienThoai}
-                        onChange={(e) =>
-                          setField("soDienThoai", e.target.value)
-                        }
+                        onChange={(e) => setField('soDienThoai', e.target.value)}
                         placeholder="0900 000 000"
-                        className={inputClass("soDienThoai")}
+                        className={inputClass('soDienThoai')}
                       />
                       {errors.soDienThoai && (
                         <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
@@ -288,9 +275,9 @@ export default function Contact() {
                       </label>
                       <input
                         value={form.congTy}
-                        onChange={(e) => setField("congTy", e.target.value)}
+                        onChange={(e) => setField('congTy', e.target.value)}
                         placeholder="Tên công ty (nếu có)"
-                        className={inputClass("congTy")}
+                        className={inputClass('congTy')}
                       />
                     </div>
                   </div>
@@ -302,18 +289,18 @@ export default function Contact() {
                     </label>
                     <select
                       value={form.dichVu}
-                      onChange={(e) => setField("dichVu", e.target.value)}
+                      onChange={(e) => setField('dichVu', e.target.value)}
                       className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-700 transition-all"
                     >
                       <option value="">-- Chọn dịch vụ --</option>
                       {[
-                        "Phát triển phần mềm",
-                        "Thiết kế UI/UX",
-                        "Tư vấn chuyển đổi số",
-                        "Cloud & DevOps",
-                        "Bảo mật hệ thống",
-                        "Phân tích dữ liệu",
-                        "Khác",
+                        'Phát triển phần mềm',
+                        'Thiết kế UI/UX',
+                        'Tư vấn chuyển đổi số',
+                        'Cloud & DevOps',
+                        'Bảo mật hệ thống',
+                        'Phân tích dữ liệu',
+                        'Khác',
                       ].map((s) => (
                         <option key={s} value={s}>
                           {s}
@@ -330,9 +317,9 @@ export default function Contact() {
                     <textarea
                       rows={4}
                       value={form.noiDung}
-                      onChange={(e) => setField("noiDung", e.target.value)}
+                      onChange={(e) => setField('noiDung', e.target.value)}
                       placeholder="Mô tả nhu cầu, quy mô dự án và thông tin khác bạn muốn chia sẻ..."
-                      className={`${inputClass("noiDung")} resize-none`}
+                      className={`${inputClass('noiDung')} resize-none`}
                     />
                     {errors.noiDung && (
                       <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
@@ -349,14 +336,17 @@ export default function Contact() {
                         type="checkbox"
                         id="consent"
                         checked={form.consent}
-                        onChange={(e) => setField("consent", e.target.checked)}
+                        onChange={(e) => setField('consent', e.target.checked)}
                         className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                       />
-                      <label htmlFor="consent" className="text-xs text-slate-500 select-none cursor-pointer">
-                        Tôi đồng ý với{" "}
+                      <label
+                        htmlFor="consent"
+                        className="text-xs text-slate-500 select-none cursor-pointer"
+                      >
+                        Tôi đồng ý với{' '}
                         <a href="#" className="text-blue-600 hover:underline">
                           Chính sách bảo mật
-                        </a>{" "}
+                        </a>{' '}
                         và cho phép CMS liên hệ với tôi theo thông tin đã cung cấp.
                       </label>
                     </div>
