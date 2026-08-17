@@ -15,6 +15,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { apiFetch } from '@/utils/api-client';
 
 // 1. Khai báo Type đồng bộ với Domain & DTO Backend
 export interface Contact {
@@ -36,6 +37,21 @@ export interface PaginationMeta {
   pageSize: number;
   pages: number;
   total: number;
+}
+
+interface ContactPaginationResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    meta: PaginationMeta;
+    result: Contact[];
+  };
+}
+
+interface SingleContactResponse {
+  statusCode: number;
+  message: string;
+  data: Contact;
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
@@ -81,7 +97,7 @@ export default function Contacts() {
     }
   };
 
-  // 2. Hàm gọi API lấy danh sách Contact
+  // 2. Hàm gọi API lấy danh sách Contact qua apiFetch
   const fetchContacts = useCallback(async () => {
     setLoading(true);
     try {
@@ -93,13 +109,14 @@ export default function Contacts() {
         ...(search.trim() ? { search: search.trim() } : {}),
       });
 
-      const res = await fetch(`/api/v1/contacts?${queryParams.toString()}`);
-      const json = await res.json();
-
-      if (res.ok && json.data) {
-        setContacts(json.data.result || []);
-        if (json.data.meta) {
-          setMeta(json.data.meta);
+      const res = await apiFetch<ContactPaginationResponse>(
+        `/api/v1/contacts?${queryParams.toString()}`
+      );
+      console.log('API Response:', res); // Debug: Log response from backend
+      if (res?.data) {
+        setContacts(res.data.result || []);
+        if (res.data.meta) {
+          setMeta(res.data.meta);
         }
       }
     } catch (error) {
@@ -120,11 +137,10 @@ export default function Contacts() {
   // 3. Hàm xem chi tiết (Tự động chuyển status sang 'read' từ backend)
   const handleViewDetail = async (contact: Contact) => {
     try {
-      const res = await fetch(`/api/v1/contacts/${contact.id}`);
-      const json = await res.json();
-      if (res.ok && json.data) {
-        setSelectedContact(json.data);
-        setReplyText(json.data.replyMessage || '');
+      const res = await apiFetch<SingleContactResponse>(`/api/v1/contacts/${contact.id}`);
+      if (res?.data) {
+        setSelectedContact(res.data);
+        setReplyText(res.data.replyMessage || '');
         // Reload danh sách nếu contact vừa chuyển từ 'new' -> 'read'
         if (contact.status === 'new') {
           fetchContacts();
@@ -141,21 +157,17 @@ export default function Contacts() {
 
     setSubmittingReply(true);
     try {
-      const res = await fetch(`/api/v1/contacts/${selectedContact.id}/reply`, {
+      await apiFetch(`/api/v1/contacts/${selectedContact.id}/reply`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ replyMessage: replyText }),
       });
 
-      if (res.ok) {
-        setSelectedContact(null);
-        setReplyText('');
-        fetchContacts(); // Reload danh sách
-      } else {
-        alert('Gửi phản hồi thất bại, vui lòng thử lại!');
-      }
+      setSelectedContact(null);
+      setReplyText('');
+      fetchContacts(); // Reload danh sách
     } catch (error) {
       console.error('Lỗi khi gửi phản hồi:', error);
+      alert('Gửi phản hồi thất bại, vui lòng thử lại!');
     } finally {
       setSubmittingReply(false);
     }
@@ -166,17 +178,13 @@ export default function Contacts() {
     if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
 
     try {
-      const res = await fetch(`/api/v1/contacts/${id}`, {
+      await apiFetch(`/api/v1/contacts/${id}`, {
         method: 'DELETE',
       });
-
-      if (res.ok) {
-        fetchContacts();
-      } else {
-        alert('Xóa liên hệ thất bại!');
-      }
+      fetchContacts();
     } catch (error) {
       console.error('Lỗi khi xóa liên hệ:', error);
+      alert('Xóa liên hệ thất bại!');
     }
   };
 

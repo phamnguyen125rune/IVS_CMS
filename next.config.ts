@@ -1,19 +1,17 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Cho phép next/image tối ưu ảnh từ các domain bên ngoài
-  // Thêm domain khi tích hợp S3 hoặc Cloudinary
-  images: {
-    remotePatterns: [
-      // {
-      //   protocol: 'https',
-      //   hostname: '**.amazonaws.com',  // S3
-      // },
-      // {
-      //   protocol: 'https',
-      //   hostname: 'res.cloudinary.com', // Cloudinary
-      // },
-    ],
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8080";
+
+    return [
+      {
+        // Bắt mọi request từ trình duyệt bắt đầu bằng /api/v1/
+        source: "/api/v1/:path*",
+        // Chuyển tiếp thẳng sang máy chủ Spring Boot Backend
+        destination: `${backendUrl}/api/v1/:path*`,
+      },
+    ];
   },
 };
 

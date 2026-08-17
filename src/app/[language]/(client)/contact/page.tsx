@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { apiFetch } from '@/utils/api-client';
 
 type FormData = {
   hoTen: string;
@@ -28,8 +29,9 @@ export default function Contact() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  // Validate form
+  // Validate form phía Client
   const validate = (): FormErrors => {
     const e: FormErrors = {};
     if (!form.hoTen.trim()) e.hoTen = 'Vui lòng nhập họ và tên';
@@ -46,20 +48,35 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setServerError(null);
+
     const errs = validate();
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
     }
+
     setLoading(true);
 
     try {
-      // TODO: Gọi API gửi mail / lưu database thực tế ở đây
-      // await fetch('/api/contact', { method: 'POST', body: JSON.stringify(form) });
-      await new Promise((r) => setTimeout(r, 1500));
+      // Gửi API thật sang Backend Spring Boot
+      await apiFetch('/api/v1/contacts', {
+        method: 'POST',
+        body: JSON.stringify({
+          hoTen: form.hoTen,
+          email: form.email,
+          soDienThoai: form.soDienThoai,
+          congTy: form.congTy,
+          dichVu: form.dichVu,
+          noiDung: form.noiDung,
+        }),
+      });
+
       setSubmitted(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Submit error:', error);
+      const msg = error instanceof Error ? error.message : 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau!';
+      setServerError(msg);
     } finally {
       setLoading(false);
     }
@@ -207,6 +224,13 @@ export default function Contact() {
                 <p className="text-slate-500 text-sm mb-6">
                   Điền thông tin bên dưới, chúng tôi sẽ liên hệ lại trong 24 giờ.
                 </p>
+
+                {serverError && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 flex items-center gap-2">
+                    <AlertCircle size={14} className="shrink-0" />
+                    <span>{serverError}</span>
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} noValidate className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

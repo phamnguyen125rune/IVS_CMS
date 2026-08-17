@@ -11,8 +11,8 @@ export default function LoginPage() {
   const language = (params?.language as string) || 'vi';
   const dict = getDictionary(language).login;
 
-  const [loginId, setLoginId] = useState('admin@cms.local');
-  const [password, setPassword] = useState('Admin@123456');
+  const [loginId, setLoginId] = useState('cms@gmail.com');
+  const [password, setPassword] = useState('123456');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,13 +30,18 @@ export default function LoginPage() {
         body: JSON.stringify({ loginId, password }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || dict.error_failed);
+        throw new Error(data.message || dict.error_failed);
+      }
+
+     if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
       }
 
       router.refresh();
-      router.push(`/${language}/profile`);
+      router.push(`/${language}/admin-contact`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Lỗi kết nối';
       setError(message);
