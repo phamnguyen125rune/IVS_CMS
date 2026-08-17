@@ -75,7 +75,10 @@ export default function Contact() {
       setSubmitted(true);
     } catch (error: unknown) {
       console.error('Submit error:', error);
-      const msg = error instanceof Error ? error.message : 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau!';
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau!';
       setServerError(msg);
     } finally {
       setLoading(false);

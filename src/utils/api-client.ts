@@ -50,7 +50,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     } catch {
       console.warn('Unable to access cookies on server-side context');
     }
-  } 
+  }
   // 2. Phía CLIENT (Trình duyệt): Lấy token từ localStorage hoặc Cookie
   else {
     let token: string | null = null;

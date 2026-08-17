@@ -28,10 +28,7 @@ export async function POST(request: Request) {
 
     // Bóc tách token
     const accessToken =
-      data.access_token ||
-      data.accessToken ||
-      data.data?.access_token ||
-      data.data?.accessToken;
+      data.access_token || data.accessToken || data.data?.access_token || data.data?.accessToken;
 
     if (!accessToken) {
       return NextResponse.json(
@@ -58,9 +55,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('[AUTH LOGIN ROUTE ERROR]:', error);
-    return NextResponse.json(
-      { message: 'Không thể kết nối đến máy chủ Backend' },
-      { status: 503 }
-    );
+    return NextResponse.json({ message: 'Không thể kết nối đến máy chủ Backend' }, { status: 503 });
   }
 }
