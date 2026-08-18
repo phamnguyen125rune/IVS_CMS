@@ -13,6 +13,34 @@ export interface IAuthService {
    * @returns Promise chứa thông tin token truy cập và thông tin người dùng.
    */
   login(loginId: string, password: string): Promise<AuthResponse>;
+
+  requestRegisterOtp(payload: RegisterPayload): Promise<void>;
+
+  verifyRegisterOtp(email: string, otp: string): Promise<void>;
+
+  requestForgotPasswordOtp(email: string): Promise<void>;
+
+  verifyForgotPasswordOtp(email: string, otp: string): Promise<ForgotPasswordVerifyResponse>;
+
+  resetForgotPassword(payload: ResetPasswordPayload): Promise<void>;
+}
+
+export interface RegisterPayload {
+  fullname: string;
+  email: string;
+  password: string;
+}
+
+export interface ForgotPasswordVerifyResponse {
+  email: string;
+  resetToken: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  resetToken: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 /**
@@ -31,6 +59,44 @@ export class AuthService implements IAuthService {
     return apiFetch<AuthResponse>('/api/v1/auth/login', {
       method: 'POST',
       body: JSON.stringify({ loginId, password }),
+    });
+  }
+
+  async requestRegisterOtp(payload: RegisterPayload): Promise<void> {
+    await apiFetch('/api/v1/auth/register/request-otp', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async verifyRegisterOtp(email: string, otp: string): Promise<void> {
+    await apiFetch('/api/v1/auth/register/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    });
+  }
+
+  async requestForgotPasswordOtp(email: string): Promise<void> {
+    await apiFetch('/api/v1/auth/forgot-password/request-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async verifyForgotPasswordOtp(
+    email: string,
+    otp: string
+  ): Promise<ForgotPasswordVerifyResponse> {
+    return apiFetch<ForgotPasswordVerifyResponse>('/api/v1/auth/forgot-password/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    });
+  }
+
+  async resetForgotPassword(payload: ResetPasswordPayload): Promise<void> {
+    await apiFetch('/api/v1/auth/forgot-password/reset', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
     });
   }
 }
