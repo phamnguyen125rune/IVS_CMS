@@ -72,7 +72,12 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
       return {} as T;
     }
 
-    return (await res.json()) as T;
+    const text = await res.text();
+    if (!text) {
+      return {} as T;
+    }
+
+    return JSON.parse(text) as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

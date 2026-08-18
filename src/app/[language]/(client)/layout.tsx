@@ -75,56 +75,6 @@ export default function ClientLayout({ children, params }: ClientLayoutProps) {
     };
   }, []);
 
-  {
-    /* Mobile Nav Menu */
-  }
-  {
-    mobileOpen && (
-      <div
-        className="lg:hidden border-t px-4 py-3 bg-white space-y-1"
-        style={{ borderColor: 'var(--border, #e2e8f0)' }}
-      >
-        {navLinks.map((link) => {
-          const fullPath = getLocalizedPath(link.path);
-          const isActive =
-            link.path === '' ? pathname === `/${language}` : pathname.startsWith(fullPath);
-
-          return (
-            <div key={link.path}>
-              <Link
-                href={fullPath}
-                onClick={() => setMobileOpen(false)} // ✅ Đóng menu tại đây khi click link chính
-                className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
-                  isActive
-                    ? 'text-blue-600 bg-blue-50 font-semibold'
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                {link.label}
-              </Link>
-
-              {/* Render sub-links trên Mobile */}
-              {link.children && (
-                <div className="pl-4 space-y-1 my-1 border-l-2 border-slate-100 ml-3">
-                  {link.children.map((child) => (
-                    <Link
-                      key={child.path}
-                      href={getLocalizedPath(child.path)}
-                      onClick={() => setMobileOpen(false)} // ✅ Đóng menu tại đây khi click sub-link
-                      className="block px-3 py-1.5 rounded-md text-xs text-slate-500 hover:text-blue-600 hover:bg-slate-50"
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
   // Helper tạo URL có chứa param language
   const getLocalizedPath = (path: string) => {
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
