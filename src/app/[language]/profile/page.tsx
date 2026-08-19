@@ -74,7 +74,11 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {isLoading && <p className="mt-8 rounded-lg bg-slate-50 p-4 text-sm text-slate-500">Đang tải hồ sơ...</p>}
+        {isLoading && (
+          <p className="mt-8 rounded-lg bg-slate-50 p-4 text-sm text-slate-500">
+            Đang tải hồ sơ...
+          </p>
+        )}
 
         {error && (
           <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
@@ -87,7 +91,11 @@ export default function ProfilePage() {
             <InfoItem icon={<UserRound size={18} />} label="Họ và tên" value={profile.fullname} />
             <InfoItem icon={<Mail size={18} />} label="Email" value={profile.email} />
             <InfoItem label="Mã nhân viên" value={profile.employeeCode || 'Chưa có'} />
-            <InfoItem icon={<ShieldCheck size={18} />} label="Vai trò" value={profile.role?.name || 'Chưa có'} />
+            <InfoItem
+              icon={<ShieldCheck size={18} />}
+              label="Vai trò"
+              value={profile.role?.name || 'Chưa có'}
+            />
             <InfoItem label="Trạng thái" value={profile.status || 'ACTIVE'} />
             <InfoItem label="Số điện thoại" value={profile.phone || 'Chưa cập nhật'} />
           </div>

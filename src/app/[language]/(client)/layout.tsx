@@ -39,6 +39,7 @@ const navLinks = [
       { label: 'Đã hoàn thành', path: '/du-an?loai=hoan-thanh' },
     ],
   },
+  { label: 'Khách hàng', path: '/khach-hang' },
   { label: 'Tuyển dụng', path: '/tuyen-dung' },
   { label: 'Liên hệ', path: '/lien-he' },
 ];

@@ -2,21 +2,11 @@
 
 import { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-
-type FormData = {
-  hoTen: string;
-  email: string;
-  soDienThoai: string;
-  congTy: string;
-  dichVu: string;
-  noiDung: string;
-  consent: boolean;
-};
-
-type FormErrors = Partial<Record<keyof FormData, string>>;
+import type { ContactFormData, ContactFormErrors } from '@/types/contact.type';
+import { contactService } from '@/services/contact.service';
 
 export default function Contact() {
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<ContactFormData>({
     hoTen: '',
     email: '',
     soDienThoai: '',
@@ -25,13 +15,13 @@ export default function Contact() {
     noiDung: '',
     consent: false,
   });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, setErrors] = useState<ContactFormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  // Validate form
-  const validate = (): FormErrors => {
-    const e: FormErrors = {};
+  const validate = (): ContactFormErrors => {
+    const e: ContactFormErrors = {};
     if (!form.hoTen.trim()) e.hoTen = 'Vui lòng nhập họ và tên';
     if (!form.email.trim()) e.email = 'Vui lòng nhập địa chỉ email';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Địa chỉ email không hợp lệ';
@@ -46,6 +36,8 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setServerError(null);
+
     const errs = validate();
     if (Object.keys(errs).length) {
       setErrors(errs);
@@ -54,23 +46,32 @@ export default function Contact() {
     setLoading(true);
 
     try {
-      // TODO: Gọi API gửi mail / lưu database thực tế ở đây
-      // await fetch('/api/contact', { method: 'POST', body: JSON.stringify(form) });
-      await new Promise((r) => setTimeout(r, 1500));
+      await contactService.submitContactForm({
+        hoTen: form.hoTen,
+        email: form.email,
+        soDienThoai: form.soDienThoai,
+        congTy: form.congTy,
+        dichVu: form.dichVu,
+        noiDung: form.noiDung,
+      });
       setSubmitted(true);
-    } catch (error) {
-      console.error('Submit error:', error);
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau!';
+      setServerError(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  const setField = (key: keyof FormData, value: string | boolean) => {
+  const setField = (key: keyof ContactFormData, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
-  const inputClass = (key: keyof FormErrors) =>
+  const inputClass = (key: keyof ContactFormErrors) =>
     `w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 ${
       errors[key]
         ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
@@ -207,6 +208,13 @@ export default function Contact() {
                 <p className="text-slate-500 text-sm mb-6">
                   Điền thông tin bên dưới, chúng tôi sẽ liên hệ lại trong 24 giờ.
                 </p>
+
+                {serverError && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 flex items-center gap-2">
+                    <AlertCircle size={14} className="shrink-0" />
+                    <span>{serverError}</span>
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} noValidate className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

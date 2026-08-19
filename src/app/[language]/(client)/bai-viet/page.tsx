@@ -1,0 +1,5 @@
+import Blog from '@/components/mock-cms/client/Blog';
+
+export default function BlogPage() {
+  return <Blog />;
+}

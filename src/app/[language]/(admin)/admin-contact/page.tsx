@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Search,
   Eye,
@@ -15,28 +17,9 @@ import {
   Loader2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-
-// 1. Khai báo Type đồng bộ với Domain & DTO Backend
-export interface Contact {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  company?: string;
-  service?: string;
-  subject: string;
-  message: string;
-  status: 'new' | 'read' | 'replied' | string;
-  replyMessage?: string;
-  createdAt: string;
-}
-
-export interface PaginationMeta {
-  page: number;
-  pageSize: number;
-  pages: number;
-  total: number;
-}
+import type { Contact, PaginationMeta } from '@/types/contact.type';
+import { ContactApiError, contactService } from '@/services/contact.service';
+import { formatDate } from '@/utils/format';
 
 const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   new: { label: 'Mới', color: 'bg-blue-100 text-blue-700', icon: AlertCircle },
@@ -49,6 +32,10 @@ const statusConfig: Record<string, { label: string; color: string; icon: LucideI
 };
 
 export default function Contacts() {
+  const router = useRouter();
+  const params = useParams();
+  const language = (params?.language as string) || 'vi';
+
   // States quản lý Data & Filter
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>({
@@ -61,6 +48,7 @@ export default function Contacts() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('Tất cả');
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageError, setPageError] = useState<string | null>(null);
 
   // States quản lý Modal & Action
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -81,33 +69,31 @@ export default function Contacts() {
     }
   };
 
-  // 2. Hàm gọi API lấy danh sách Contact
   const fetchContacts = useCallback(async () => {
     setLoading(true);
+    setPageError(null);
     try {
       const statusQuery = getBackendStatus(statusFilter);
-      const queryParams = new URLSearchParams({
-        page: currentPage.toString(),
-        size: '10',
-        status: statusQuery,
-        ...(search.trim() ? { search: search.trim() } : {}),
-      });
+      const res = await contactService.getContacts(currentPage, 10, statusQuery, search);
 
-      const res = await fetch(`/api/v1/contacts?${queryParams.toString()}`);
-      const json = await res.json();
-
-      if (res.ok && json.data) {
-        setContacts(json.data.result || []);
-        if (json.data.meta) {
-          setMeta(json.data.meta);
+      if (res?.data) {
+        setContacts(res.data.result || []);
+        if (res.data.meta) {
+          setMeta(res.data.meta);
         }
       }
     } catch (error) {
       console.error('Lỗi khi tải danh sách liên hệ:', error);
+      if (error instanceof ContactApiError && error.status === 401) {
+        setPageError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để quản lý liên hệ.');
+        window.setTimeout(() => router.push(`/${language}/login`), 1200);
+        return;
+      }
+      setPageError(error instanceof Error ? error.message : 'Không thể tải danh sách liên hệ');
     } finally {
       setLoading(false);
     }
-  }, [currentPage, search, statusFilter]);
+  }, [currentPage, language, router, search, statusFilter]);
 
   // Trigger fetch khi thay đổi filter, search, page
   useEffect(() => {
@@ -117,15 +103,12 @@ export default function Contacts() {
     return () => clearTimeout(timer);
   }, [fetchContacts]);
 
-  // 3. Hàm xem chi tiết (Tự động chuyển status sang 'read' từ backend)
   const handleViewDetail = async (contact: Contact) => {
     try {
-      const res = await fetch(`/api/v1/contacts/${contact.id}`);
-      const json = await res.json();
-      if (res.ok && json.data) {
-        setSelectedContact(json.data);
-        setReplyText(json.data.replyMessage || '');
-        // Reload danh sách nếu contact vừa chuyển từ 'new' -> 'read'
+      const res = await contactService.getContactById(contact.id);
+      if (res?.data) {
+        setSelectedContact(res.data);
+        setReplyText(res.data.replyMessage || '');
         if (contact.status === 'new') {
           fetchContacts();
         }
@@ -135,62 +118,33 @@ export default function Contacts() {
     }
   };
 
-  // 4. Hàm gửi phản hồi
   const handleSendReply = async () => {
     if (!selectedContact || !replyText.trim()) return;
 
     setSubmittingReply(true);
     try {
-      const res = await fetch(`/api/v1/contacts/${selectedContact.id}/reply`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ replyMessage: replyText }),
-      });
-
-      if (res.ok) {
-        setSelectedContact(null);
-        setReplyText('');
-        fetchContacts(); // Reload danh sách
-      } else {
-        alert('Gửi phản hồi thất bại, vui lòng thử lại!');
-      }
+      await contactService.replyContact(selectedContact.id, replyText);
+      setSelectedContact(null);
+      setReplyText('');
+      fetchContacts();
     } catch (error) {
       console.error('Lỗi khi gửi phản hồi:', error);
+      alert('Gửi phản hồi thất bại, vui lòng thử lại!');
     } finally {
       setSubmittingReply(false);
     }
   };
 
-  // 5. Hàm xóa liên hệ
   const handleDeleteContact = async (id: number) => {
     if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
 
     try {
-      const res = await fetch(`/api/v1/contacts/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (res.ok) {
-        fetchContacts();
-      } else {
-        alert('Xóa liên hệ thất bại!');
-      }
+      await contactService.deleteContact(id);
+      fetchContacts();
     } catch (error) {
       console.error('Lỗi khi xóa liên hệ:', error);
+      alert('Xóa liên hệ thất bại!');
     }
-  };
-
-  // Format ngày giờ hiển thị
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return 'N/A';
-    const date = new Date(dateStr);
-    return date.toLocaleString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   return (
@@ -204,6 +158,18 @@ export default function Contacts() {
           </p>
         </div>
       </div>
+
+      {pageError && (
+        <div className="mb-5 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          <span>{pageError}</span>
+          <Link
+            href={`/${language}/login`}
+            className="shrink-0 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
+          >
+            Đăng nhập lại
+          </Link>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 mb-5 flex flex-wrap gap-3">

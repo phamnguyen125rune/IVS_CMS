@@ -1,5 +1,10 @@
-import AuthPage from '@/components/auth/AuthPage';
+import { redirect } from 'next/navigation';
 
-export default function RegisterPage() {
-  return <AuthPage initialMode="register" />;
+export default async function RegisterPage({
+  params,
+}: {
+  params: Promise<{ language: string }>;
+}) {
+  const { language } = await params;
+  redirect(`/${language}/login`);
 }

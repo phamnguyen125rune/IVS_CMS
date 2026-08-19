@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-// 1. Dùng routing chuẩn của Next.js
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
@@ -20,6 +19,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
+import { localizePath } from '@/components/navigation/LocalizedLink';
 
 const navItems = [
   { label: 'Tổng quan', icon: LayoutDashboard, path: '/admin/tong-quan' },
@@ -29,20 +29,22 @@ const navItems = [
   { label: 'Quản lý Kiểm duyệt', icon: CheckSquare, path: '/admin/kiem-duyet' },
   { label: 'Quản lý Danh mục', icon: FolderTree, path: '/admin/danh-muc' },
   { label: 'Quản lý Media', icon: ImageIcon, path: '/admin/media' },
-  { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin/lien-he' },
+  { label: 'Quản lý Biểu mẫu', icon: Mail, path: '/admin/bieu-mau' },
+  { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin-contact' },
   { label: 'Cài đặt', icon: Settings, path: '/admin/cai-dat' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // 2. Dùng useRouter và usePathname từ next/navigation
+  const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
+  const language = typeof params?.language === 'string' ? params.language : 'vi';
 
-  const handleLogout = () => {
-    // Xử lý xoá token/session nếu có ở đây
-    router.push('/admin/login');
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
+    router.push(`/${language}/login`);
   };
 
   return (
@@ -74,13 +76,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
           {navItems.map((item) => {
-            // Kiểm tra link active trong Next.js
-            const isActive = pathname.startsWith(item.path);
+            const href = localizePath(item.path, language);
+            const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
             return (
               <Link
                 key={item.path}
-                href={item.path}
+                href={href}
                 title={!sidebarOpen ? item.label : undefined}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   isActive
@@ -141,12 +143,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        {/* 3. Trong Next.js Layout, render {children} thay vì <Outlet /> */}
         <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-8">{children}</main>
 
         {/* Floating Action Button */}
         <Link
-          href="/"
+          href={`/${language}`}
           target="_blank"
           className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-lg shadow-blue-600/30 flex items-center gap-2 font-medium transition-transform hover:-translate-y-1 z-40"
         >
