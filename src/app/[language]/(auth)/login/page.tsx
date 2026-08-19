@@ -36,7 +36,7 @@ export default function LoginPage() {
         throw new Error(data.message || dict.error_failed);
       }
 
-     if (data.access_token) {
+      if (data.access_token) {
         localStorage.setItem('token', data.access_token);
       }
 

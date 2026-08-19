@@ -2,57 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Search,
-  Eye,
-  Trash2,
-  X,
-  Reply,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
+  Search, Eye, Trash2, X, Reply, Clock,
+  CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Loader2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { apiFetch } from '@/utils/api-client';
 
-// 1. Khai báo Type đồng bộ với Domain & DTO Backend
-export interface Contact {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  company?: string;
-  service?: string;
-  subject: string;
-  message: string;
-  status: 'new' | 'read' | 'replied' | string;
-  replyMessage?: string;
-  createdAt: string;
-}
-
-export interface PaginationMeta {
-  page: number;
-  pageSize: number;
-  pages: number;
-  total: number;
-}
-
-interface ContactPaginationResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    meta: PaginationMeta;
-    result: Contact[];
-  };
-}
-
-interface SingleContactResponse {
-  statusCode: number;
-  message: string;
-  data: Contact;
-}
+// Import từ các file đã tách
+import type { Contact, PaginationMeta } from '@/types/contact.type';
+import { contactService } from '@/services/contact.service';
+import { formatDate } from '@/utils/format';
 
 const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   new: { label: 'Mới', color: 'bg-blue-100 text-blue-700', icon: AlertCircle },
@@ -83,41 +41,25 @@ export default function Contacts() {
   const [replyText, setReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
 
-  // Map status tab sang value query backend
   const getBackendStatus = (filter: string) => {
     switch (filter) {
-      case 'Mới':
-        return 'new';
-      case 'Đã xem':
-        return 'read';
-      case 'Đã phản hồi':
-        return 'replied';
-      default:
-        return 'ALL';
+      case 'Mới': return 'new';
+      case 'Đã xem': return 'read';
+      case 'Đã phản hồi': return 'replied';
+      default: return 'ALL';
     }
   };
 
-  // 2. Hàm gọi API lấy danh sách Contact qua apiFetch
   const fetchContacts = useCallback(async () => {
     setLoading(true);
     try {
       const statusQuery = getBackendStatus(statusFilter);
-      const queryParams = new URLSearchParams({
-        page: currentPage.toString(),
-        size: '10',
-        status: statusQuery,
-        ...(search.trim() ? { search: search.trim() } : {}),
-      });
-
-      const res = await apiFetch<ContactPaginationResponse>(
-        `/api/v1/contacts?${queryParams.toString()}`
-      );
-      console.log('API Response:', res); // Debug: Log response from backend
+      // Gọi service thay vì fetch trực tiếp
+      const res = await contactService.getContacts(currentPage, 10, statusQuery, search);
+      
       if (res?.data) {
         setContacts(res.data.result || []);
-        if (res.data.meta) {
-          setMeta(res.data.meta);
-        }
+        if (res.data.meta) setMeta(res.data.meta);
       }
     } catch (error) {
       console.error('Lỗi khi tải danh sách liên hệ:', error);
@@ -126,22 +68,20 @@ export default function Contacts() {
     }
   }, [currentPage, search, statusFilter]);
 
-  // Trigger fetch khi thay đổi filter, search, page
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchContacts();
-    }, 300); // Debounce search
+    }, 300);
     return () => clearTimeout(timer);
   }, [fetchContacts]);
 
-  // 3. Hàm xem chi tiết (Tự động chuyển status sang 'read' từ backend)
   const handleViewDetail = async (contact: Contact) => {
     try {
-      const res = await apiFetch<SingleContactResponse>(`/api/v1/contacts/${contact.id}`);
+      // Gọi service
+      const res = await contactService.getContactById(contact.id);
       if (res?.data) {
         setSelectedContact(res.data);
         setReplyText(res.data.replyMessage || '');
-        // Reload danh sách nếu contact vừa chuyển từ 'new' -> 'read'
         if (contact.status === 'new') {
           fetchContacts();
         }
@@ -151,20 +91,16 @@ export default function Contacts() {
     }
   };
 
-  // 4. Hàm gửi phản hồi
   const handleSendReply = async () => {
     if (!selectedContact || !replyText.trim()) return;
 
     setSubmittingReply(true);
     try {
-      await apiFetch(`/api/v1/contacts/${selectedContact.id}/reply`, {
-        method: 'POST',
-        body: JSON.stringify({ replyMessage: replyText }),
-      });
-
+      // Gọi service
+      await contactService.replyContact(selectedContact.id, replyText);
       setSelectedContact(null);
       setReplyText('');
-      fetchContacts(); // Reload danh sách
+      fetchContacts();
     } catch (error) {
       console.error('Lỗi khi gửi phản hồi:', error);
       alert('Gửi phản hồi thất bại, vui lòng thử lại!');
@@ -173,32 +109,17 @@ export default function Contacts() {
     }
   };
 
-  // 5. Hàm xóa liên hệ
   const handleDeleteContact = async (id: number) => {
     if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
 
     try {
-      await apiFetch(`/api/v1/contacts/${id}`, {
-        method: 'DELETE',
-      });
+      // Gọi service
+      await contactService.deleteContact(id);
       fetchContacts();
     } catch (error) {
       console.error('Lỗi khi xóa liên hệ:', error);
       alert('Xóa liên hệ thất bại!');
     }
-  };
-
-  // Format ngày giờ hiển thị
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return 'N/A';
-    const date = new Date(dateStr);
-    return date.toLocaleString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   return (
@@ -256,21 +177,11 @@ export default function Contacts() {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Người liên hệ
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Chủ đề
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Trạng thái
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Thời gian
-              </th>
-              <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Hành động
-              </th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Người liên hệ</th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Chủ đề</th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Trạng thái</th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Thời gian</th>
+              <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -284,10 +195,7 @@ export default function Contacts() {
               contacts.map((contact) => {
                 const sc = statusConfig[contact.status] || statusConfig.new;
                 return (
-                  <tr
-                    key={contact.id}
-                    className="border-t border-slate-200 hover:bg-slate-50 transition-colors"
-                  >
+                  <tr key={contact.id} className="border-t border-slate-200 hover:bg-slate-50 transition-colors">
                     <td className="px-5 py-3.5">
                       <div className="font-medium text-slate-800">{contact.name}</div>
                       <div className="text-xs text-slate-400">

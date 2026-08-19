@@ -397,19 +397,37 @@ export default function ClientLayout({ children, params }: ClientLayoutProps) {
                 giúp doanh nghiệp phát triển bền vững.
               </p>
               <div className="flex items-center gap-3">
-                {[FaFacebook, FaYoutube, FaLinkedin, SiZalo].map((Icon, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-colors"
-                    style={{ background: '#1e293b' }}
-                  >
-                    <Icon size={15} />
-                  </a>
-                ))}
-              </div>
-            </div>
-
+  {[
+    {
+      Icon: FaFacebook,
+      href: "https://www.facebook.com/profile.php?id=61575912339884",
+    },
+    {
+      Icon: FaYoutube,
+      href: "https://youtube.com/@phongkevin-z3x?si=MdN8P9tX6MHN4gnU",
+    },
+    {
+      Icon: FaLinkedin,
+      href: "https://www.linkedin.com/in/t%E1%BA%A5n-phong-ng%C3%B4-8000393b8/",
+    },
+    {
+      Icon: SiZalo,
+      href: "https://zalo.me/0333840875",
+    },
+  ].map(({ Icon, href }, i) => (
+    <a
+      key={i}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+      style={{ background: '#1e293b' }}
+    >
+      <Icon size={15} />
+    </a>
+  ))}
+</div>
+</div>
             {/* Navigation Links */}
             <div>
               <h4 className="text-white font-semibold font-display mb-4 text-sm">Điều hướng</h4>
