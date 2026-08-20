@@ -1,29 +1,37 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Search, Eye, Trash2, X, Reply, Clock,
-  CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Loader2,
+  Search,
+  Eye,
+  Trash2,
+  X,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Save
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-// Import từ các file đã tách
 import type { Contact, PaginationMeta } from '@/types/contact.type';
 import { contactService } from '@/services/contact.service';
 import { formatDate } from '@/utils/format';
 
 const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
-  new: { label: 'Mới', color: 'bg-blue-100 text-blue-700', icon: AlertCircle },
-  read: { label: 'Đã xem', color: 'bg-slate-100 text-slate-600', icon: Eye },
+  new: { label: 'Chưa xử lý', color: 'bg-blue-100 text-blue-700', icon: AlertCircle },
+  read: { label: 'Đang xử lý', color: 'bg-slate-100 text-slate-600', icon: Eye },
   replied: {
-    label: 'Đã phản hồi',
+    label: 'Đã xử lý',
     color: 'bg-emerald-100 text-emerald-700',
     icon: CheckCircle,
   },
 };
 
 export default function Contacts() {
-  // States quản lý Data & Filter
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>({
     page: 1,
@@ -36,16 +44,17 @@ export default function Contacts() {
   const [statusFilter, setStatusFilter] = useState('Tất cả');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // States quản lý Modal & Action
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-  const [replyText, setReplyText] = useState('');
-  const [submittingReply, setSubmittingReply] = useState(false);
+  
+  // 1. BIẾN QUẢN LÝ TRẠNG THÁI COMBOBOX
+  const [selectedStatus, setSelectedStatus] = useState('new'); 
+  const [isUpdating, setIsUpdating] = useState(false); 
 
   const getBackendStatus = (filter: string) => {
     switch (filter) {
-      case 'Mới': return 'new';
-      case 'Đã xem': return 'read';
-      case 'Đã phản hồi': return 'replied';
+      case 'Chưa xử lý': return 'new';
+      case 'Đang xử lý': return 'read';
+      case 'Đã xử lý': return 'replied';
       default: return 'ALL';
     }
   };
@@ -54,9 +63,8 @@ export default function Contacts() {
     setLoading(true);
     try {
       const statusQuery = getBackendStatus(statusFilter);
-      // Gọi service thay vì fetch trực tiếp
       const res = await contactService.getContacts(currentPage, 10, statusQuery, search);
-      
+
       if (res?.data) {
         setContacts(res.data.result || []);
         if (res.data.meta) setMeta(res.data.meta);
@@ -77,11 +85,13 @@ export default function Contacts() {
 
   const handleViewDetail = async (contact: Contact) => {
     try {
-      // Gọi service
       const res = await contactService.getContactById(contact.id);
       if (res?.data) {
         setSelectedContact(res.data);
-        setReplyText(res.data.replyMessage || '');
+        
+        // 2. KHỞI TẠO GIÁ TRỊ COMBOBOX BẰNG DB
+        setSelectedStatus(res.data.status || 'new'); 
+
         if (contact.status === 'new') {
           fetchContacts();
         }
@@ -91,21 +101,21 @@ export default function Contacts() {
     }
   };
 
-  const handleSendReply = async () => {
-    if (!selectedContact || !replyText.trim()) return;
+  // 3. HÀM CHUYÊN DỤNG ĐỂ CẬP NHẬT TRẠNG THÁI
+  const handleUpdateStatus = async () => {
+    if (!selectedContact) return;
 
-    setSubmittingReply(true);
+    setIsUpdating(true);
     try {
-      // Gọi service
-      await contactService.replyContact(selectedContact.id, replyText);
-      setSelectedContact(null);
-      setReplyText('');
-      fetchContacts();
+      await contactService.updateContactStatus(selectedContact.id, selectedStatus);
+      
+      setSelectedContact(null); 
+      fetchContacts(); 
     } catch (error) {
-      console.error('Lỗi khi gửi phản hồi:', error);
-      alert('Gửi phản hồi thất bại, vui lòng thử lại!');
+      console.error('Lỗi khi cập nhật trạng thái:', error);
+      alert('Cập nhật trạng thái thất bại! Hãy chắc chắn API đang hoạt động.');
     } finally {
-      setSubmittingReply(false);
+      setIsUpdating(false);
     }
   };
 
@@ -113,7 +123,6 @@ export default function Contacts() {
     if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
 
     try {
-      // Gọi service
       await contactService.deleteContact(id);
       fetchContacts();
     } catch (error) {
@@ -124,7 +133,6 @@ export default function Contacts() {
 
   return (
     <div className="p-6">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Liên hệ</h1>
@@ -134,7 +142,6 @@ export default function Contacts() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 mb-5 flex flex-wrap gap-3">
         <div className="flex-1 min-w-48 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -149,7 +156,7 @@ export default function Contacts() {
           />
         </div>
         <div className="flex gap-1">
-          {['Tất cả', 'Mới', 'Đã xem', 'Đã phản hồi'].map((s) => (
+          {['Tất cả', 'Chưa xử lý', 'Đang xử lý', 'Đã xử lý'].map((s) => (
             <button
               key={s}
               onClick={() => {
@@ -166,7 +173,6 @@ export default function Contacts() {
         </div>
       </div>
 
-      {/* Table & Loading State */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden relative">
         {loading && (
           <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center">
@@ -195,7 +201,10 @@ export default function Contacts() {
               contacts.map((contact) => {
                 const sc = statusConfig[contact.status] || statusConfig.new;
                 return (
-                  <tr key={contact.id} className="border-t border-slate-200 hover:bg-slate-50 transition-colors">
+                  <tr
+                    key={contact.id}
+                    className="border-t border-slate-200 hover:bg-slate-50 transition-colors"
+                  >
                     <td className="px-5 py-3.5">
                       <div className="font-medium text-slate-800">{contact.name}</div>
                       <div className="text-xs text-slate-400">
@@ -226,13 +235,6 @@ export default function Contacts() {
                           <Eye size={14} />
                         </button>
                         <button
-                          title="Phản hồi"
-                          onClick={() => handleViewDetail(contact)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
-                        >
-                          <Reply size={14} />
-                        </button>
-                        <button
                           title="Xóa"
                           onClick={() => handleDeleteContact(contact.id)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50"
@@ -248,7 +250,6 @@ export default function Contacts() {
           </tbody>
         </table>
 
-        {/* Pagination Bar */}
         {meta.pages > 1 && (
           <div className="px-5 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
             <span className="text-xs text-slate-500">
@@ -274,7 +275,6 @@ export default function Contacts() {
         )}
       </div>
 
-      {/* Detail Modal */}
       {selectedContact && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -321,22 +321,27 @@ export default function Contacts() {
               </div>
 
               <div>
-                <span className="text-xs text-slate-400 font-medium">Nội dung tin nhắn</span>
+                <span className="text-xs text-slate-400 font-medium">Nội dung tin nhắn khách hàng gửi</span>
                 <div className="mt-1.5 p-4 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-700 leading-relaxed whitespace-pre-line">
                   {selectedContact.message}
                 </div>
               </div>
 
+              {/* 4. COMBOBOX TRẠNG THÁI CHUẨN */}
               <div>
-                <span className="text-xs text-slate-400 font-medium">Nội dung phản hồi</span>
-                <textarea
-                  rows={3}
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Nhập nội dung phản hồi tới khách hàng..."
-                  className="w-full mt-1.5 px-3 py-2.5 border border-slate-200 rounded-xl text-sm outline-none resize-none focus:border-blue-500"
-                />
+                <span className="text-xs text-slate-400 font-medium">Trạng thái xử lý</span>
+                <select
+                  value={selectedStatus} 
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2.5 border border-slate-200 rounded-xl text-sm outline-none bg-white focus:border-blue-500 cursor-pointer"
+                >
+                  {/* Backend của bạn yêu cầu tiếng Anh */}
+                  <option value="new">Chưa xử lý</option>
+                  <option value="read">Đang xử lý</option>
+                  <option value="replied">Đã xử lý</option>
+                </select>
               </div>
+
             </div>
 
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-slate-200 bg-slate-50">
@@ -346,17 +351,19 @@ export default function Contacts() {
               >
                 Đóng
               </button>
+              
+              {/* 5. NÚT GỌI HÀM UPDATE STATUS */}
               <button
-                disabled={submittingReply || !replyText.trim()}
-                onClick={handleSendReply}
+                disabled={isUpdating}
+                onClick={handleUpdateStatus}
                 className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors"
               >
-                {submittingReply ? (
+                {isUpdating ? (
                   <Loader2 size={14} className="animate-spin" />
                 ) : (
-                  <Reply size={14} />
+                  <Save size={14} />
                 )}
-                Gửi phản hồi
+                Cập nhật
               </button>
             </div>
           </div>

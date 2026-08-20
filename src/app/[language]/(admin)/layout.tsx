@@ -29,7 +29,7 @@ const navItems = [
   { label: 'Quản lý Kiểm duyệt', icon: CheckSquare, path: '/admin/kiem-duyet' },
   { label: 'Quản lý Danh mục', icon: FolderTree, path: '/admin/danh-muc' },
   { label: 'Quản lý Media', icon: ImageIcon, path: '/admin/media' },
-  { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin/lien-he' },
+  { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin-contact' },
   { label: 'Cài đặt', icon: Settings, path: '/admin/cai-dat' },
 ];
 
