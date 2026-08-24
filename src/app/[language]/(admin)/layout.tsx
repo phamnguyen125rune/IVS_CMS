@@ -19,16 +19,19 @@ import {
   Bell,
   PanelLeftClose,
   PanelLeftOpen,
+  Shield,
 } from 'lucide-react';
 
 const navItems = [
   { label: 'Tổng quan', icon: LayoutDashboard, path: '/admin/tong-quan' },
   { label: 'Quản lý Nhân sự', icon: Users, path: '/admin/nhan-su' },
+  { label: 'Quản lý Nhóm nhân sự', icon: Shield, path: '/admin/nhom-nhan-su' },
   { label: 'Quản lý Phân quyền', icon: ShieldCheck, path: '/admin/phan-quyen' },
   { label: 'Quản lý Bài viết', icon: FileText, path: '/admin/bai-viet' },
   { label: 'Quản lý Kiểm duyệt', icon: CheckSquare, path: '/admin/kiem-duyet' },
   { label: 'Quản lý Danh mục', icon: FolderTree, path: '/admin/danh-muc' },
   { label: 'Quản lý Media', icon: ImageIcon, path: '/admin/media' },
+  { label: 'Quản lý Biểu mẫu', icon: Mail, path: '/admin/bieu-mau' },
   { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin-contact' },
   { label: 'Cài đặt', icon: Settings, path: '/admin/cai-dat' },
 ];

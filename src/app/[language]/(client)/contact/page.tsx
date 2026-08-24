@@ -1,35 +1,53 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import type { ContactFormData, ContactFormErrors } from '@/types/contact.type';
-import { contactService } from '@/services/contact.service';
+import type { FormDetailFormData, FormDetailFormErrors, FormCategory } from '@/types/contact.type'; // Cập nhật tên type nếu bạn đã đổi
+import { FormDetailService } from '@/services/contact.service'; // Cập nhật import Service
 
 export default function Contact() {
-  const [form, setForm] = useState<ContactFormData>({
-    hoTen: '',
+  const [form, setForm] = useState<FormDetailFormData>({
+    fullName: '',
     email: '',
-    soDienThoai: '',
-    congTy: '',
-    dichVu: '',
-    noiDung: '',
+    phoneNumber: '',
+    company: '',
+    formCategoryId: 0, // Mặc định là 0 (chưa chọn)
+    message: '',
     consent: false,
   });
-  const [errors, setErrors] = useState<ContactFormErrors>({});
+
+  const [categories, setCategories] = useState<FormCategory[]>([]);
+  const [errors, setErrors] = useState<FormDetailFormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const validate = (): ContactFormErrors => {
-    const e: ContactFormErrors = {};
-    if (!form.hoTen.trim()) e.hoTen = 'Vui lòng nhập họ và tên';
+  // Gọi API tải danh mục ngay khi load trang
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await FormDetailService.getAllCategories();
+        if (res?.data) {
+          setCategories(res.data);
+        }
+      } catch (error) {
+        console.error('Lỗi khi tải danh mục form:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const validate = (): FormDetailFormErrors => {
+    const e: FormDetailFormErrors = {};
+    if (!form.fullName.trim()) e.fullName = 'Vui lòng nhập họ và tên';
     if (!form.email.trim()) e.email = 'Vui lòng nhập địa chỉ email';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Địa chỉ email không hợp lệ';
-    if (!form.soDienThoai.trim()) e.soDienThoai = 'Vui lòng nhập số điện thoại';
-    else if (!/^[0-9]{9,11}$/.test(form.soDienThoai.replace(/\s/g, '')))
-      e.soDienThoai = 'Số điện thoại không hợp lệ';
-    if (!form.noiDung.trim()) e.noiDung = 'Vui lòng nhập nội dung tin nhắn';
-    else if (form.noiDung.trim().length < 20) e.noiDung = 'Nội dung phải có ít nhất 20 ký tự';
+    if (!form.phoneNumber.trim()) e.phoneNumber = 'Vui lòng nhập số điện thoại';
+    else if (!/^[0-9]{9,11}$/.test(form.phoneNumber.replace(/\s/g, '')))
+      e.phoneNumber = 'Số điện thoại không hợp lệ';
+    if (form.formCategoryId === 0) e.formCategoryId = 'Vui lòng chọn danh mục dịch vụ';
+    if (!form.message.trim()) e.message = 'Vui lòng nhập nội dung tin nhắn';
+    else if (form.message.trim().length < 20) e.message = 'Nội dung phải có ít nhất 20 ký tự';
     if (!form.consent) e.consent = 'Bạn cần đồng ý với điều khoản bảo mật';
     return e;
   };
@@ -47,13 +65,13 @@ export default function Contact() {
     setLoading(true);
 
     try {
-      await contactService.submitContactForm({
-        hoTen: form.hoTen,
+      await FormDetailService.submitForm({
+        fullName: form.fullName,
         email: form.email,
-        soDienThoai: form.soDienThoai,
-        congTy: form.congTy,
-        dichVu: form.dichVu,
-        noiDung: form.noiDung,
+        phoneNumber: form.phoneNumber,
+        company: form.company,
+        formCategoryId: Number(form.formCategoryId), // Ép kiểu số đề phòng lúc nhận từ select nó thành chuỗi
+        message: form.message,
       });
       setSubmitted(true);
     } catch (error: unknown) {
@@ -67,12 +85,13 @@ export default function Contact() {
     }
   };
 
-  const setField = (key: keyof ContactFormData, value: string | boolean) => {
+  // Helper hàm setField có sử dụng Generic
+  const setField = <K extends keyof FormDetailFormData>(key: K, value: FormDetailFormData[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
-  const inputClass = (key: keyof ContactFormErrors) =>
+  const inputClass = (key: keyof FormDetailFormErrors) =>
     `w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 ${
       errors[key]
         ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
@@ -185,12 +204,12 @@ export default function Contact() {
                     onClick={() => {
                       setSubmitted(false);
                       setForm({
-                        hoTen: '',
+                        fullName: '',
                         email: '',
-                        soDienThoai: '',
-                        congTy: '',
-                        dichVu: '',
-                        noiDung: '',
+                        phoneNumber: '',
+                        company: '',
+                        formCategoryId: 0,
+                        message: '',
                         consent: false,
                       });
                     }}
@@ -223,15 +242,15 @@ export default function Contact() {
                         Họ và tên <span className="text-red-500">*</span>
                       </label>
                       <input
-                        value={form.hoTen}
-                        onChange={(e) => setField('hoTen', e.target.value)}
+                        value={form.fullName}
+                        onChange={(e) => setField('fullName', e.target.value)}
                         placeholder="Nguyễn Văn A"
-                        className={inputClass('hoTen')}
+                        className={inputClass('fullName')}
                       />
-                      {errors.hoTen && (
+                      {errors.fullName && (
                         <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
                           <AlertCircle size={11} />
-                          {errors.hoTen}
+                          {errors.fullName}
                         </p>
                       )}
                     </div>
@@ -258,15 +277,15 @@ export default function Contact() {
                         Số điện thoại <span className="text-red-500">*</span>
                       </label>
                       <input
-                        value={form.soDienThoai}
-                        onChange={(e) => setField('soDienThoai', e.target.value)}
+                        value={form.phoneNumber}
+                        onChange={(e) => setField('phoneNumber', e.target.value)}
                         placeholder="0900 000 000"
-                        className={inputClass('soDienThoai')}
+                        className={inputClass('phoneNumber')}
                       />
-                      {errors.soDienThoai && (
+                      {errors.phoneNumber && (
                         <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
                           <AlertCircle size={11} />
-                          {errors.soDienThoai}
+                          {errors.phoneNumber}
                         </p>
                       )}
                     </div>
@@ -275,38 +294,36 @@ export default function Contact() {
                         Công ty
                       </label>
                       <input
-                        value={form.congTy}
-                        onChange={(e) => setField('congTy', e.target.value)}
+                        value={form.company || ''}
+                        onChange={(e) => setField('company', e.target.value)}
                         placeholder="Tên công ty (nếu có)"
-                        className={inputClass('congTy')}
+                        className={inputClass('company')}
                       />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                      Dịch vụ quan tâm
+                      Danh mục yêu cầu <span className="text-red-500">*</span>
                     </label>
                     <select
-                      value={form.dichVu}
-                      onChange={(e) => setField('dichVu', e.target.value)}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-700 transition-all"
+                      value={form.formCategoryId}
+                      onChange={(e) => setField('formCategoryId', Number(e.target.value))}
+                      className={inputClass('formCategoryId')}
                     >
-                      <option value="">-- Chọn dịch vụ --</option>
-                      {[
-                        'Phát triển phần mềm',
-                        'Thiết kế UI/UX',
-                        'Tư vấn chuyển đổi số',
-                        'Cloud & DevOps',
-                        'Bảo mật hệ thống',
-                        'Phân tích dữ liệu',
-                        'Khác',
-                      ].map((s) => (
-                        <option key={s} value={s}>
-                          {s}
+                      <option value={0}>-- Chọn dịch vụ --</option>
+                      {categories.map((cat) => (
+                        <option key={cat.formCategoryId} value={cat.formCategoryId}>
+                          {cat.categoryName}
                         </option>
                       ))}
                     </select>
+                    {errors.formCategoryId && (
+                      <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                        <AlertCircle size={11} />
+                        {errors.formCategoryId}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -315,15 +332,15 @@ export default function Contact() {
                     </label>
                     <textarea
                       rows={4}
-                      value={form.noiDung}
-                      onChange={(e) => setField('noiDung', e.target.value)}
+                      value={form.message}
+                      onChange={(e) => setField('message', e.target.value)}
                       placeholder="Mô tả nhu cầu, quy mô dự án và thông tin khác bạn muốn chia sẻ..."
-                      className={`${inputClass('noiDung')} resize-none`}
+                      className={`${inputClass('message')} resize-none`}
                     />
-                    {errors.noiDung && (
+                    {errors.message && (
                       <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
                         <AlertCircle size={11} />
-                        {errors.noiDung}
+                        {errors.message}
                       </p>
                     )}
                   </div>

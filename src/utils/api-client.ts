@@ -88,7 +88,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
       }
 
       const errorMessage = errorInfo?.message || `HTTP error! status: ${res.status}`;
-      console.error(`[API ERROR] ${res.status} ${url}:`, errorInfo);
+      // console.error(`[API ERROR] ${res.status} ${url}:`, errorInfo);
       throw new ApiError(errorMessage, res.status, errorInfo);
     }
 
@@ -101,7 +101,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     if (error instanceof ApiError) {
       throw error;
     }
-    console.error(`[CONNECTION ERROR] Failed to fetch ${url}:`, error);
+    // console.error(`[CONNECTION ERROR] Failed to fetch ${url}:`, error);
     throw new ApiError('Không thể kết nối đến máy chủ backend', 503);
   }
 }
