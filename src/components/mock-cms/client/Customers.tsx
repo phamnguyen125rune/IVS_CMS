@@ -2,41 +2,41 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { ArrowRight } from "lucide-react";
-import { LocalizedLink as Link } from "@/components/navigation/LocalizedLink";
+import { ArrowRight } from 'lucide-react';
+import { LocalizedLink as Link } from '@/components/navigation/LocalizedLink';
 
 const partners = [
   {
-    name: "TechCorp",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+    name: 'TechCorp',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
   },
   {
-    name: "GlobalSoft",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+    name: 'GlobalSoft',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
   },
   {
-    name: "InnovateVN",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
+    name: 'InnovateVN',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
   },
   {
-    name: "DataFlow",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg",
+    name: 'DataFlow',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg',
   },
   {
-    name: "FintechX",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Cisco_logo_blue_2016.svg",
+    name: 'FintechX',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Cisco_logo_blue_2016.svg',
   },
   {
-    name: "EcoSmart",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png",
+    name: 'EcoSmart',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png',
   },
   {
-    name: "HealthTech",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Samsung_wordmark.svg",
+    name: 'HealthTech',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/Samsung_wordmark.svg',
   },
   {
-    name: "EduSpace",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
+    name: 'EduSpace',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg',
   },
 ];
 
@@ -47,7 +47,7 @@ export default function Customers() {
       <section
         className="py-16 lg:py-24"
         style={{
-          background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
         }}
       >
         <div className="max-w-7xl mx-auto px-6 text-center">
@@ -58,8 +58,8 @@ export default function Customers() {
             Đồng hành cùng sự phát triển
           </h1>
           <p className="text-blue-200 text-lg max-w-2xl mx-auto">
-            Hơn 500+ doanh nghiệp hàng đầu đã tin tưởng và lựa chọn CMS làm đối
-            tác chiến lược trong hành trình chuyển đổi số.
+            Hơn 500+ doanh nghiệp hàng đầu đã tin tưởng và lựa chọn CMS làm đối tác chiến lược trong
+            hành trình chuyển đổi số.
           </p>
         </div>
       </section>
@@ -72,7 +72,7 @@ export default function Customers() {
               <div
                 key={index}
                 className="bg-white border rounded-2xl h-32 flex items-center justify-center p-6 hover:shadow-lg transition-all grayscale hover:grayscale-0 cursor-pointer"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 <img
                   src={partner.logo}
@@ -86,22 +86,19 @@ export default function Customers() {
       </section>
 
       {/* CTA Section */}
-      <section
-        className="py-16 bg-white border-t"
-        style={{ borderColor: "var(--border)" }}
-      >
+      <section className="py-16 bg-white border-t" style={{ borderColor: 'var(--border)' }}>
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="font-display text-3xl font-bold text-slate-900 mb-4">
             Trở thành đối tác của chúng tôi
           </h2>
           <p className="text-slate-500 mb-8">
-            Cùng nhau xây dựng những giải pháp công nghệ mang tính đột phá và
-            tạo ra giá trị bền vững cho doanh nghiệp.
+            Cùng nhau xây dựng những giải pháp công nghệ mang tính đột phá và tạo ra giá trị bền
+            vững cho doanh nghiệp.
           </p>
           <Link
             to="/lien-he"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-white hover:opacity-90 transition-opacity"
-            style={{ background: "var(--primary)" }}
+            style={{ background: 'var(--primary)' }}
           >
             Liên hệ hợp tác <ArrowRight size={16} />
           </Link>
@@ -110,5 +107,3 @@ export default function Customers() {
     </div>
   );
 }
-
-

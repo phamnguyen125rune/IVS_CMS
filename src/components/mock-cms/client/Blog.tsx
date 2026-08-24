@@ -2,159 +2,158 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useState } from "react";
-import { LocalizedLink as Link } from "@/components/navigation/LocalizedLink";
-import { Search, ArrowRight, Clock } from "lucide-react";
+import { useState } from 'react';
+import { LocalizedLink as Link } from '@/components/navigation/LocalizedLink';
+import { Search, ArrowRight, Clock } from 'lucide-react';
 
 const categories = [
-  "Tất cả",
-  "Công nghệ",
-  "Tin tức",
-  "Kiến thức",
-  "Case Study",
-  "Marketing",
-  "Bảo mật",
+  'Tất cả',
+  'Công nghệ',
+  'Tin tức',
+  'Kiến thức',
+  'Case Study',
+  'Marketing',
+  'Bảo mật',
 ];
 
 const posts = [
   {
     id: 1,
-    slug: "xu-huong-ai-2024",
-    title: "Xu hướng công nghệ AI trong năm 2024 và tác động đến doanh nghiệp",
-    category: "Công nghệ",
-    date: "10/07/2024",
-    readTime: "8 phút",
+    slug: 'xu-huong-ai-2024',
+    title: 'Xu hướng công nghệ AI trong năm 2024 và tác động đến doanh nghiệp',
+    category: 'Công nghệ',
+    date: '10/07/2024',
+    readTime: '8 phút',
     image:
-      "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "Trí tuệ nhân tạo không còn là khái niệm xa lạ. Năm 2024 chứng kiến làn sóng ứng dụng AI bùng nổ trong mọi lĩnh vực từ sản xuất đến dịch vụ...",
-    author: "Nguyễn Thị Hoa",
+      'Trí tuệ nhân tạo không còn là khái niệm xa lạ. Năm 2024 chứng kiến làn sóng ứng dụng AI bùng nổ trong mọi lĩnh vực từ sản xuất đến dịch vụ...',
+    author: 'Nguyễn Thị Hoa',
     featured: true,
   },
   {
     id: 2,
-    slug: "CMS-giai-thuong-2024",
+    slug: 'CMS-giai-thuong-2024',
     title: 'CMS đạt giải thưởng "Công ty công nghệ tiêu biểu 2024"',
-    category: "Tin tức",
-    date: "08/07/2024",
-    readTime: "4 phút",
+    category: 'Tin tức',
+    date: '08/07/2024',
+    readTime: '4 phút',
     image:
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "Tại lễ trao giải thường niên do Hiệp hội Phần mềm & Dịch vụ CNTT Việt Nam (VINASA) tổ chức, CMS vinh dự nhận giải thưởng danh giá nhất...",
-    author: "Ban Biên tập",
+      'Tại lễ trao giải thường niên do Hiệp hội Phần mềm & Dịch vụ CNTT Việt Nam (VINASA) tổ chức, CMS vinh dự nhận giải thưởng danh giá nhất...',
+    author: 'Ban Biên tập',
     featured: false,
   },
   {
     id: 3,
-    slug: "chuyen-doi-so-doanh-nghiep",
-    title: "Hướng dẫn chuyển đổi số toàn diện cho doanh nghiệp vừa và nhỏ",
-    category: "Kiến thức",
-    date: "05/07/2024",
-    readTime: "12 phút",
+    slug: 'chuyen-doi-so-doanh-nghiep',
+    title: 'Hướng dẫn chuyển đổi số toàn diện cho doanh nghiệp vừa và nhỏ',
+    category: 'Kiến thức',
+    date: '05/07/2024',
+    readTime: '12 phút',
     image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "Chuyển đổi số không chỉ là mua thêm phần mềm. Đây là bài hướng dẫn từng bước giúp SME xây dựng lộ trình số hóa bài bản...",
-    author: "Trần Văn Minh",
+      'Chuyển đổi số không chỉ là mua thêm phần mềm. Đây là bài hướng dẫn từng bước giúp SME xây dựng lộ trình số hóa bài bản...',
+    author: 'Trần Văn Minh',
     featured: false,
   },
   {
     id: 4,
-    slug: "case-study-techmart",
-    title: "Case Study: Xây dựng nền tảng TMĐT cho TechMart Vietnam",
-    category: "Case Study",
-    date: "01/07/2024",
-    readTime: "10 phút",
+    slug: 'case-study-techmart',
+    title: 'Case Study: Xây dựng nền tảng TMĐT cho TechMart Vietnam',
+    category: 'Case Study',
+    date: '01/07/2024',
+    readTime: '10 phút',
     image:
-      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "TechMart Vietnam đã từ 0 lên 10 triệu sản phẩm và 500K người dùng đồng thời chỉ trong 12 tháng. Đây là câu chuyện đằng sau...",
-    author: "Lê Thị Lan",
+      'TechMart Vietnam đã từ 0 lên 10 triệu sản phẩm và 500K người dùng đồng thời chỉ trong 12 tháng. Đây là câu chuyện đằng sau...',
+    author: 'Lê Thị Lan',
     featured: false,
   },
   {
     id: 5,
-    slug: "bao-mat-doanh-nghiep",
-    title: "Bảo mật thông tin doanh nghiệp: 10 nguyên tắc không thể bỏ qua",
-    category: "Bảo mật",
-    date: "28/06/2024",
-    readTime: "9 phút",
+    slug: 'bao-mat-doanh-nghiep',
+    title: 'Bảo mật thông tin doanh nghiệp: 10 nguyên tắc không thể bỏ qua',
+    category: 'Bảo mật',
+    date: '28/06/2024',
+    readTime: '9 phút',
     image:
-      "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "Trong bối cảnh tấn công mạng ngày càng tinh vi, mọi doanh nghiệp đều cần có chiến lược bảo mật toàn diện...",
-    author: "Đặng Quốc Huy",
+      'Trong bối cảnh tấn công mạng ngày càng tinh vi, mọi doanh nghiệp đều cần có chiến lược bảo mật toàn diện...',
+    author: 'Đặng Quốc Huy',
     featured: false,
   },
   {
     id: 6,
-    slug: "seo-content-marketing",
-    title: "Chiến lược SEO Content Marketing hiệu quả cho doanh nghiệp B2B",
-    category: "Marketing",
-    date: "25/06/2024",
-    readTime: "7 phút",
+    slug: 'seo-content-marketing',
+    title: 'Chiến lược SEO Content Marketing hiệu quả cho doanh nghiệp B2B',
+    category: 'Marketing',
+    date: '25/06/2024',
+    readTime: '7 phút',
     image:
-      "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "B2B content marketing khác biệt hoàn toàn với B2C. Đây là cách CMS đã giúp 50+ khách hàng tăng organic traffic...",
-    author: "Vũ Thị Thu",
+      'B2B content marketing khác biệt hoàn toàn với B2C. Đây là cách CMS đã giúp 50+ khách hàng tăng organic traffic...',
+    author: 'Vũ Thị Thu',
     featured: false,
   },
   {
     id: 7,
-    slug: "microservices-kien-truc",
-    title: "Kiến trúc Microservices: Khi nào nên áp dụng và khi nào không?",
-    category: "Kiến thức",
-    date: "20/06/2024",
-    readTime: "11 phút",
+    slug: 'microservices-kien-truc',
+    title: 'Kiến trúc Microservices: Khi nào nên áp dụng và khi nào không?',
+    category: 'Kiến thức',
+    date: '20/06/2024',
+    readTime: '11 phút',
     image:
-      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "Microservices không phải giải pháp vạn năng. Bài viết này phân tích kỹ khi nào nên và không nên áp dụng kiến trúc này...",
-    author: "Hoàng Minh Tuấn",
+      'Microservices không phải giải pháp vạn năng. Bài viết này phân tích kỹ khi nào nên và không nên áp dụng kiến trúc này...',
+    author: 'Hoàng Minh Tuấn',
     featured: false,
   },
   {
     id: 8,
-    slug: "cloud-computing-guide",
-    title: "Cloud Computing toàn tập: AWS vs Google Cloud vs Azure",
-    category: "Công nghệ",
-    date: "15/06/2024",
-    readTime: "14 phút",
+    slug: 'cloud-computing-guide',
+    title: 'Cloud Computing toàn tập: AWS vs Google Cloud vs Azure',
+    category: 'Công nghệ',
+    date: '15/06/2024',
+    readTime: '14 phút',
     image:
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "So sánh toàn diện 3 nền tảng cloud hàng đầu thế giới dựa trên tiêu chí giá cả, tính năng và hệ sinh thái...",
-    author: "Nguyễn Văn Admin",
+      'So sánh toàn diện 3 nền tảng cloud hàng đầu thế giới dựa trên tiêu chí giá cả, tính năng và hệ sinh thái...',
+    author: 'Nguyễn Văn Admin',
     featured: false,
   },
   {
     id: 9,
-    slug: "react-best-practices",
-    title: "React.js Best Practices 2024: Những điều developer phải biết",
-    category: "Công nghệ",
-    date: "10/06/2024",
-    readTime: "9 phút",
+    slug: 'react-best-practices',
+    title: 'React.js Best Practices 2024: Những điều developer phải biết',
+    category: 'Công nghệ',
+    date: '10/06/2024',
+    readTime: '9 phút',
     image:
-      "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=600&h=400&fit=crop&auto=format",
+      'https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=600&h=400&fit=crop&auto=format',
     excerpt:
-      "Hệ sinh thái React liên tục phát triển. Đây là những best practices mới nhất giúp code của bạn clean hơn và hiệu năng tốt hơn...",
-    author: "Ngô Thị Thu",
+      'Hệ sinh thái React liên tục phát triển. Đây là những best practices mới nhất giúp code của bạn clean hơn và hiệu năng tốt hơn...',
+    author: 'Ngô Thị Thu',
     featured: false,
   },
 ];
 
 export default function Blog() {
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("Tất cả");
+  const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState('Tất cả');
 
   const filtered = posts.filter((p) => {
     const matchSearch =
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.excerpt.toLowerCase().includes(search.toLowerCase());
-    const matchCat =
-      activeCategory === "Tất cả" || p.category === activeCategory;
+    const matchCat = activeCategory === 'Tất cả' || p.category === activeCategory;
     return matchSearch && matchCat;
   });
 
@@ -167,7 +166,7 @@ export default function Blog() {
       <section
         className="py-16 lg:py-20"
         style={{
-          background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
         }}
       >
         <div className="max-w-7xl mx-auto px-6">
@@ -178,8 +177,8 @@ export default function Blog() {
             Kiến thức & Insights
           </h1>
           <p className="text-blue-200 text-lg max-w-2xl mb-8">
-            Cập nhật xu hướng công nghệ, chia sẻ kiến thức chuyên sâu và câu
-            chuyện thành công từ đội ngũ CMS.
+            Cập nhật xu hướng công nghệ, chia sẻ kiến thức chuyên sâu và câu chuyện thành công từ
+            đội ngũ CMS.
           </p>
           {/* Search */}
           <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-3 max-w-lg">
@@ -203,13 +202,13 @@ export default function Blog() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                 activeCategory === cat
-                  ? "text-white"
-                  : "bg-white border text-slate-600 hover:bg-slate-50"
+                  ? 'text-white'
+                  : 'bg-white border text-slate-600 hover:bg-slate-50'
               }`}
               style={
                 activeCategory === cat
-                  ? { background: "var(--primary)" }
-                  : { borderColor: "var(--border)" }
+                  ? { background: 'var(--primary)' }
+                  : { borderColor: 'var(--border)' }
               }
             >
               {cat}
@@ -222,7 +221,7 @@ export default function Blog() {
           <Link to={`/bai-viet/${featured.slug}`} className="group block mb-10">
             <div
               className="grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-2xl overflow-hidden border hover:shadow-xl transition-all bg-white"
-              style={{ borderColor: "var(--border)" }}
+              style={{ borderColor: 'var(--border)' }}
             >
               <div className="aspect-video overflow-hidden bg-slate-100">
                 <img
@@ -235,7 +234,7 @@ export default function Blog() {
                 <div className="flex items-center gap-2 mb-4">
                   <span
                     className="text-xs font-semibold text-white px-3 py-1 rounded-full"
-                    style={{ background: "var(--primary)" }}
+                    style={{ background: 'var(--primary)' }}
                   >
                     Nổi bật
                   </span>
@@ -246,9 +245,7 @@ export default function Blog() {
                 <h2 className="font-display font-bold text-2xl text-slate-900 leading-tight mb-3 group-hover:text-blue-600 transition-colors">
                   {featured.title}
                 </h2>
-                <p className="text-slate-500 leading-relaxed mb-5">
-                  {featured.excerpt}
-                </p>
+                <p className="text-slate-500 leading-relaxed mb-5">{featured.excerpt}</p>
                 <div className="flex items-center gap-3 text-xs text-slate-400">
                   <span>{featured.author}</span>
                   <span>·</span>
@@ -270,14 +267,10 @@ export default function Blog() {
         {/* Post grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {rest.map((post) => (
-            <Link
-              key={post.id}
-              to={`/bai-viet/${post.slug}`}
-              className="group block"
-            >
+            <Link key={post.id} to={`/bai-viet/${post.slug}`} className="group block">
               <article
                 className="rounded-2xl overflow-hidden border hover:shadow-lg transition-all bg-white h-full"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 <div className="aspect-video overflow-hidden bg-slate-100">
                   <img
@@ -318,17 +311,11 @@ export default function Blog() {
 
         {filtered.length === 0 && (
           <div className="text-center py-20 text-slate-400">
-            <p className="text-lg font-medium text-slate-600">
-              Không tìm thấy bài viết phù hợp
-            </p>
-            <p className="text-sm mt-1">
-              Thử thay đổi từ khóa tìm kiếm hoặc danh mục khác.
-            </p>
+            <p className="text-lg font-medium text-slate-600">Không tìm thấy bài viết phù hợp</p>
+            <p className="text-sm mt-1">Thử thay đổi từ khóa tìm kiếm hoặc danh mục khác.</p>
           </div>
         )}
       </div>
     </div>
   );
 }
-
-

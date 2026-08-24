@@ -263,8 +263,7 @@ export default function AuthPage() {
             </div>
             <PrimaryButton loading={isLoading}>Đăng nhập</PrimaryButton>
             <p className="text-center text-xs text-slate-400">
-              Tài khoản demo:{' '}
-              <span className="font-semibold text-slate-600">admin@cms.local</span>
+              Tài khoản demo: <span className="font-semibold text-slate-600">admin@cms.local</span>
             </p>
           </form>
         </section>

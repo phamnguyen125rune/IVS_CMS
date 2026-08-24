@@ -1,8 +1,6 @@
 'use client';
 
- 
-
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Globe,
   Bell,
@@ -22,85 +20,85 @@ import {
   History, // Thêm icon lịch sử
   Search, // Thêm icon tìm kiếm
   Calendar, // Thêm icon lịch
-} from "lucide-react";
+} from 'lucide-react';
 
 const tabs = [
-  { key: "general", label: "Thông tin chung", icon: Globe },
-  { key: "notification", label: "Thông báo", icon: Bell },
-  { key: "security", label: "Bảo mật", icon: Shield },
-  { key: "appearance", label: "Giao diện", icon: Palette },
-  { key: "logs", label: "Nhật ký hệ thống", icon: History }, // Tab mới
+  { key: 'general', label: 'Thông tin chung', icon: Globe },
+  { key: 'notification', label: 'Thông báo', icon: Bell },
+  { key: 'security', label: 'Bảo mật', icon: Shield },
+  { key: 'appearance', label: 'Giao diện', icon: Palette },
+  { key: 'logs', label: 'Nhật ký hệ thống', icon: History }, // Tab mới
 ];
 
 // Dữ liệu mẫu cho Nhật ký hệ thống
 const mockLogs = [
   {
     id: 1,
-    time: "31/07/2026 10:30:00",
-    account: "admin@cms.vn",
-    action: "Cập nhật cài đặt hệ thống",
-    target: "Giao diện tối",
-    ip: "192.168.1.10",
+    time: '31/07/2026 10:30:00',
+    account: 'admin@cms.vn',
+    action: 'Cập nhật cài đặt hệ thống',
+    target: 'Giao diện tối',
+    ip: '192.168.1.10',
   },
   {
     id: 2,
-    time: "31/07/2026 09:15:22",
-    account: "hoang.tran@cms.vn",
-    action: "Xóa bài viết",
-    target: "Bài viết #1024",
-    ip: "113.160.14.22",
+    time: '31/07/2026 09:15:22',
+    account: 'hoang.tran@cms.vn',
+    action: 'Xóa bài viết',
+    target: 'Bài viết #1024',
+    ip: '113.160.14.22',
   },
   {
     id: 3,
-    time: "30/07/2026 15:45:10",
-    account: "lan.le@cms.vn",
-    action: "Duyệt bài viết",
-    target: "Bài viết #1028",
-    ip: "14.232.112.5",
+    time: '30/07/2026 15:45:10',
+    account: 'lan.le@cms.vn',
+    action: 'Duyệt bài viết',
+    target: 'Bài viết #1028',
+    ip: '14.232.112.5',
   },
   {
     id: 4,
-    time: "30/07/2026 08:00:05",
-    account: "admin@cms.vn",
-    action: "Đăng nhập thành công",
-    target: "Hệ thống",
-    ip: "192.168.1.10",
+    time: '30/07/2026 08:00:05',
+    account: 'admin@cms.vn',
+    action: 'Đăng nhập thành công',
+    target: 'Hệ thống',
+    ip: '192.168.1.10',
   },
   {
     id: 5,
-    time: "29/07/2026 16:20:00",
-    account: "hoang.tran@cms.vn",
-    action: "Tạo tài khoản mới",
-    target: "User: test@cms.vn",
-    ip: "113.160.14.22",
+    time: '29/07/2026 16:20:00',
+    account: 'hoang.tran@cms.vn',
+    action: 'Tạo tài khoản mới',
+    target: 'User: test@cms.vn',
+    ip: '113.160.14.22',
   },
   {
     id: 6,
-    time: "29/07/2026 11:10:00",
-    account: "admin@cms.vn",
-    action: "Khóa tài khoản",
-    target: "User: spammer@mail.com",
-    ip: "192.168.1.10",
+    time: '29/07/2026 11:10:00',
+    account: 'admin@cms.vn',
+    action: 'Khóa tài khoản',
+    target: 'User: spammer@mail.com',
+    ip: '192.168.1.10',
   },
   {
     id: 7,
-    time: "28/07/2026 14:05:00",
-    account: "lan.le@cms.vn",
-    action: "Từ chối bài viết",
-    target: "Bài viết #1020",
-    ip: "14.232.112.5",
+    time: '28/07/2026 14:05:00',
+    account: 'lan.le@cms.vn',
+    action: 'Từ chối bài viết',
+    target: 'Bài viết #1020',
+    ip: '14.232.112.5',
   },
 ];
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState('general');
   const [saved, setSaved] = useState(false);
   const [isFooterModalOpen, setIsFooterModalOpen] = useState(false);
 
   // States cho bộ lọc Nhật ký
-  const [logSearch, setLogSearch] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [logSearch, setLogSearch] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const handleSave = () => {
     setSaved(true);
@@ -111,7 +109,7 @@ export default function Settings() {
   const filteredLogs = mockLogs.filter(
     (log) =>
       log.account.toLowerCase().includes(logSearch.toLowerCase()) ||
-      log.action.toLowerCase().includes(logSearch.toLowerCase()),
+      log.action.toLowerCase().includes(logSearch.toLowerCase())
   );
 
   return (
@@ -119,19 +117,15 @@ export default function Settings() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-xl font-bold text-slate-900">
-            Quản lý Cài đặt
-          </h1>
-          <p className="text-slate-500 text-sm mt-0.5">
-            Cấu hình hệ thống và tùy chỉnh nền tảng
-          </p>
+          <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Cài đặt</h1>
+          <p className="text-slate-500 text-sm mt-0.5">Cấu hình hệ thống và tùy chỉnh nền tảng</p>
         </div>
         {/* Chỉ hiển thị nút Lưu khi KHÔNG phải tab Nhật ký (Read-only) */}
-        {activeTab !== "logs" && (
+        {activeTab !== 'logs' && (
           <button
             onClick={handleSave}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-            style={{ background: "var(--primary)" }}
+            style={{ background: 'var(--primary)' }}
           >
             <Save size={16} />
             Lưu cài đặt
@@ -156,8 +150,8 @@ export default function Settings() {
                 onClick={() => setActiveTab(key)}
                 className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
                   activeTab === key
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-slate-600 hover:bg-slate-100"
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 <Icon size={15} />
@@ -170,16 +164,14 @@ export default function Settings() {
         {/* Settings content */}
         <div className="flex-1 max-w-5xl">
           {/* TAB: THÔNG TIN CHUNG */}
-          {activeTab === "general" && (
+          {activeTab === 'general' && (
             <div className="space-y-6">
               {/* 1. Cài đặt hệ thống cơ bản */}
               <div
                 className="bg-white rounded-xl border p-6"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
-                <h2 className="font-semibold text-slate-900 font-display mb-5">
-                  Hệ thống cơ bản
-                </h2>
+                <h2 className="font-semibold text-slate-900 font-display mb-5">Hệ thống cơ bản</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-medium text-slate-600 mb-1.5">
@@ -188,7 +180,7 @@ export default function Settings() {
                     <input
                       defaultValue="CMS Technology"
                       className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500"
-                      style={{ borderColor: "var(--border)" }}
+                      style={{ borderColor: 'var(--border)' }}
                     />
                   </div>
                   <div>
@@ -198,7 +190,7 @@ export default function Settings() {
                     <select
                       defaultValue="Tiếng Việt"
                       className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none bg-white focus:border-blue-500"
-                      style={{ borderColor: "var(--border)" }}
+                      style={{ borderColor: 'var(--border)' }}
                     >
                       <option>Tiếng Việt</option>
                       <option>English</option>
@@ -210,15 +202,14 @@ export default function Settings() {
               {/* 2. Block gọi Modal Footer */}
               <div
                 className="bg-white rounded-xl border p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 <div>
                   <h2 className="font-semibold text-slate-900 font-display mb-1">
                     Cấu hình Giao diện Footer
                   </h2>
                   <p className="text-sm text-slate-500">
-                    Chỉnh sửa thông tin công ty, mạng xã hội, menu điều hướng và
-                    bản quyền.
+                    Chỉnh sửa thông tin công ty, mạng xã hội, menu điều hướng và bản quyền.
                   </p>
                 </div>
                 <button
@@ -233,54 +224,46 @@ export default function Settings() {
           )}
 
           {/* TAB: THÔNG BÁO */}
-          {activeTab === "notification" && (
+          {activeTab === 'notification' && (
             <div
               className="bg-white rounded-xl border p-6"
-              style={{ borderColor: "var(--border)" }}
+              style={{ borderColor: 'var(--border)' }}
             >
-              <h2 className="font-semibold text-slate-900 font-display mb-5">
-                Cài đặt thông báo
-              </h2>
+              <h2 className="font-semibold text-slate-900 font-display mb-5">Cài đặt thông báo</h2>
               <div className="space-y-4">
                 {[
                   {
-                    label: "Thông báo bài viết mới chờ duyệt",
-                    desc: "Nhận email khi có bài viết mới cần kiểm duyệt",
+                    label: 'Thông báo bài viết mới chờ duyệt',
+                    desc: 'Nhận email khi có bài viết mới cần kiểm duyệt',
                     checked: true,
                   },
                   {
-                    label: "Thông báo liên hệ mới",
-                    desc: "Nhận email khi có yêu cầu liên hệ từ khách hàng",
+                    label: 'Thông báo liên hệ mới',
+                    desc: 'Nhận email khi có yêu cầu liên hệ từ khách hàng',
                     checked: true,
                   },
                   {
-                    label: "Thông báo người dùng mới",
-                    desc: "Nhận email khi có người dùng đăng ký mới",
+                    label: 'Thông báo người dùng mới',
+                    desc: 'Nhận email khi có người dùng đăng ký mới',
                     checked: false,
                   },
                   {
-                    label: "Thông báo hệ thống",
-                    desc: "Nhận email về các cập nhật và bảo trì hệ thống",
+                    label: 'Thông báo hệ thống',
+                    desc: 'Nhận email về các cập nhật và bảo trì hệ thống',
                     checked: true,
                   },
                 ].map((n, i) => (
                   <div
                     key={i}
                     className="flex items-start justify-between py-3 border-b last:border-0"
-                    style={{ borderColor: "var(--border)" }}
+                    style={{ borderColor: 'var(--border)' }}
                   >
                     <div>
-                      <p className="text-sm font-medium text-slate-800">
-                        {n.label}
-                      </p>
+                      <p className="text-sm font-medium text-slate-800">{n.label}</p>
                       <p className="text-xs text-slate-400 mt-0.5">{n.desc}</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer ml-4 mt-0.5">
-                      <input
-                        type="checkbox"
-                        defaultChecked={n.checked}
-                        className="sr-only peer"
-                      />
+                      <input type="checkbox" defaultChecked={n.checked} className="sr-only peer" />
                       <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:bg-blue-600 peer-checked:after:translate-x-4 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
                     </label>
                   </div>
@@ -290,19 +273,17 @@ export default function Settings() {
           )}
 
           {/* TAB: BẢO MẬT */}
-          {activeTab === "security" && (
+          {activeTab === 'security' && (
             <div className="space-y-5">
               <div
                 className="bg-white rounded-xl border p-6"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
-                <h2 className="font-semibold text-slate-900 font-display mb-5">
-                  Cài đặt bảo mật
-                </h2>
+                <h2 className="font-semibold text-slate-900 font-display mb-5">Cài đặt bảo mật</h2>
                 <div className="space-y-4">
                   {[
-                    { label: "Số lần đăng nhập tối đa", value: "5" },
-                    { label: "Thời gian phiên (phút)", value: "120" },
+                    { label: 'Số lần đăng nhập tối đa', value: '5' },
+                    { label: 'Thời gian phiên (phút)', value: '120' },
                   ].map((f) => (
                     <div key={f.label}>
                       <label className="block text-xs font-medium text-slate-600 mb-1.5">
@@ -312,7 +293,7 @@ export default function Settings() {
                         type="number"
                         defaultValue={f.value}
                         className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500"
-                        style={{ borderColor: "var(--border)" }}
+                        style={{ borderColor: 'var(--border)' }}
                       />
                     </div>
                   ))}
@@ -322,10 +303,10 @@ export default function Settings() {
           )}
 
           {/* TAB: GIAO DIỆN */}
-          {activeTab === "appearance" && (
+          {activeTab === 'appearance' && (
             <div
               className="bg-white rounded-xl border p-6"
-              style={{ borderColor: "var(--border)" }}
+              style={{ borderColor: 'var(--border)' }}
             >
               <h2 className="font-semibold text-slate-900 font-display mb-5">
                 Tùy chỉnh giao diện
@@ -336,19 +317,15 @@ export default function Settings() {
                     Chế độ hiển thị
                   </label>
                   <div className="flex gap-2">
-                    {["Sáng", "Tối", "Tự động"].map((mode) => (
+                    {['Sáng', 'Tối', 'Tự động'].map((mode) => (
                       <button
                         key={mode}
                         className={`px-4 py-2 rounded-xl border text-sm font-medium ${
-                          mode === "Sáng"
-                            ? "border-blue-500 bg-blue-50 text-blue-700"
-                            : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                          mode === 'Sáng'
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                         }`}
-                        style={
-                          mode !== "Sáng"
-                            ? { borderColor: "var(--border)" }
-                            : {}
-                        }
+                        style={mode !== 'Sáng' ? { borderColor: 'var(--border)' } : {}}
                       >
                         {mode}
                       </button>
@@ -360,23 +337,17 @@ export default function Settings() {
           )}
 
           {/* TAB: NHẬT KÝ HỆ THỐNG */}
-          {activeTab === "logs" && (
+          {activeTab === 'logs' && (
             <div
               className="bg-white rounded-xl border overflow-hidden flex flex-col"
-              style={{ borderColor: "var(--border)" }}
+              style={{ borderColor: 'var(--border)' }}
             >
               {/* Header & Filters */}
-              <div
-                className="p-5 border-b space-y-4"
-                style={{ borderColor: "var(--border)" }}
-              >
+              <div className="p-5 border-b space-y-4" style={{ borderColor: 'var(--border)' }}>
                 <div>
-                  <h2 className="font-semibold text-slate-900 font-display">
-                    Nhật ký hệ thống
-                  </h2>
+                  <h2 className="font-semibold text-slate-900 font-display">Nhật ký hệ thống</h2>
                   <p className="text-sm text-slate-500 mt-1">
-                    Theo dõi toàn bộ lịch sử thao tác của các tài khoản (Dữ liệu
-                    chỉ đọc).
+                    Theo dõi toàn bộ lịch sử thao tác của các tài khoản (Dữ liệu chỉ đọc).
                   </p>
                 </div>
 
@@ -393,7 +364,7 @@ export default function Settings() {
                       onChange={(e) => setLogSearch(e.target.value)}
                       placeholder="Tìm theo tài khoản hoặc thao tác..."
                       className="w-full pl-9 pr-3 py-2 border rounded-xl text-sm outline-none focus:border-blue-500"
-                      style={{ borderColor: "var(--border)" }}
+                      style={{ borderColor: 'var(--border)' }}
                     />
                   </div>
 
@@ -409,7 +380,7 @@ export default function Settings() {
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
                         className="pl-8 pr-3 py-2 border rounded-xl text-sm outline-none text-slate-600 focus:border-blue-500 bg-transparent"
-                        style={{ borderColor: "var(--border)" }}
+                        style={{ borderColor: 'var(--border)' }}
                       />
                     </div>
                     <span className="text-slate-400 text-sm">-</span>
@@ -423,7 +394,7 @@ export default function Settings() {
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
                         className="pl-8 pr-3 py-2 border rounded-xl text-sm outline-none text-slate-600 focus:border-blue-500 bg-transparent"
-                        style={{ borderColor: "var(--border)" }}
+                        style={{ borderColor: 'var(--border)' }}
                       />
                     </div>
                   </div>
@@ -434,10 +405,7 @@ export default function Settings() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead>
-                    <tr
-                      className="bg-slate-50 border-b"
-                      style={{ borderColor: "var(--border)" }}
-                    >
+                    <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
                       <th className="px-5 py-3 font-semibold text-slate-500 whitespace-nowrap">
                         Thời gian
                       </th>
@@ -455,39 +423,22 @@ export default function Settings() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody
-                    className="divide-y"
-                    style={{ borderColor: "var(--border)" }}
-                  >
+                  <tbody className="divide-y" style={{ borderColor: 'var(--border)' }}>
                     {filteredLogs.length > 0 ? (
                       filteredLogs.map((log) => (
-                        <tr
-                          key={log.id}
-                          className="hover:bg-slate-50/50 transition-colors"
-                        >
+                        <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
                           <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">
                             {log.time}
                           </td>
-                          <td className="px-5 py-3.5 font-medium text-slate-800">
-                            {log.account}
-                          </td>
-                          <td className="px-5 py-3.5 text-slate-700">
-                            {log.action}
-                          </td>
-                          <td className="px-5 py-3.5 text-slate-600">
-                            {log.target}
-                          </td>
-                          <td className="px-5 py-3.5 text-slate-500 font-mono text-xs">
-                            {log.ip}
-                          </td>
+                          <td className="px-5 py-3.5 font-medium text-slate-800">{log.account}</td>
+                          <td className="px-5 py-3.5 text-slate-700">{log.action}</td>
+                          <td className="px-5 py-3.5 text-slate-600">{log.target}</td>
+                          <td className="px-5 py-3.5 text-slate-500 font-mono text-xs">{log.ip}</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td
-                          colSpan={5}
-                          className="px-5 py-10 text-center text-slate-500"
-                        >
+                        <td colSpan={5} className="px-5 py-10 text-center text-slate-500">
                           Không tìm thấy nhật ký nào phù hợp.
                         </td>
                       </tr>
@@ -499,7 +450,7 @@ export default function Settings() {
               {/* Pagination Info */}
               <div
                 className="p-4 border-t flex justify-between items-center text-sm text-slate-500 bg-slate-50/50"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 <span>Hiển thị {filteredLogs.length} kết quả</span>
                 <div className="flex gap-1">
@@ -535,7 +486,7 @@ export default function Settings() {
             {/* Modal Header */}
             <div
               className="flex items-center justify-between p-5 sm:p-6 border-b shrink-0 bg-white"
-              style={{ borderColor: "var(--border)" }}
+              style={{ borderColor: 'var(--border)' }}
             >
               <div>
                 <h2 className="font-semibold text-slate-900 font-display text-lg">
@@ -629,9 +580,8 @@ export default function Settings() {
                     placeholder="Tiêu đề cột 1"
                   />
                   <div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700/50 text-slate-400 text-xs leading-relaxed italic">
-                    Các liên kết trong cột này (Trang chủ, Giới thiệu...) được
-                    hệ thống tự động lấy từ cấu hình{" "}
-                    <strong className="text-slate-300">Menu Footer 1</strong>.
+                    Các liên kết trong cột này (Trang chủ, Giới thiệu...) được hệ thống tự động lấy
+                    từ cấu hình <strong className="text-slate-300">Menu Footer 1</strong>.
                   </div>
                 </div>
 
@@ -643,8 +593,8 @@ export default function Settings() {
                     placeholder="Tiêu đề cột 2"
                   />
                   <div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700/50 text-slate-400 text-xs leading-relaxed italic">
-                    Các liên kết trong cột này (Phát triển phần mềm, Thiết kế
-                    UI/UX...) được hệ thống tự động lấy từ cấu hình{" "}
+                    Các liên kết trong cột này (Phát triển phần mềm, Thiết kế UI/UX...) được hệ
+                    thống tự động lấy từ cấu hình{' '}
                     <strong className="text-slate-300">Menu Footer 2</strong>.
                   </div>
                 </div>
@@ -658,10 +608,7 @@ export default function Settings() {
                   />
                   <div className="space-y-4">
                     <div className="flex items-start gap-3">
-                      <MapPin
-                        size={18}
-                        className="text-blue-400 mt-2 shrink-0"
-                      />
+                      <MapPin size={18} className="text-blue-400 mt-2 shrink-0" />
                       <textarea
                         rows={2}
                         defaultValue="Tầng 12, 141 Lê Duẩn, Q.1, TP.HCM"
@@ -709,12 +656,12 @@ export default function Settings() {
             {/* Modal Footer (Buttons) */}
             <div
               className="p-4 sm:p-6 border-t bg-slate-50 flex justify-end gap-3 shrink-0"
-              style={{ borderColor: "var(--border)" }}
+              style={{ borderColor: 'var(--border)' }}
             >
               <button
                 onClick={() => setIsFooterModalOpen(false)}
                 className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-white bg-transparent transition-colors"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 Hủy bỏ
               </button>
@@ -724,7 +671,7 @@ export default function Settings() {
                   handleSave();
                 }}
                 className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
-                style={{ background: "var(--primary)" }}
+                style={{ background: 'var(--primary)' }}
               >
                 Lưu cấu hình
               </button>
@@ -735,5 +682,3 @@ export default function Settings() {
     </div>
   );
 }
-
-

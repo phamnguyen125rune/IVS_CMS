@@ -1,0 +1,166 @@
+Folder PATH listing for volume New Volume
+Volume serial number is 000001EC 14E4:3E14
+D:\SOURCE\REPOS\IVS_CMS\SRC\APP
+|   favicon.ico
+|   globals.css
+|   layout.tsx
+|   
++---api
+|   +---auth
+|   |   +---forgot-password
+|   |   |   +---request-otp
+|   |   |   |       route.ts
+|   |   |   |       
+|   |   |   +---reset
+|   |   |   |       route.ts
+|   |   |   |       
+|   |   |   \---verify-otp
+|   |   |           route.ts
+|   |   |           
+|   |   +---login
+|   |   |       route.ts
+|   |   |       
+|   |   +---logout
+|   |   |       route.ts
+|   |   |       
+|   |   \---profile
+|   |           route.ts
+|   |           
+|   \---contacts
+|       |   route.ts
+|       |   
+|       \---[id]
+|           |   route.ts
+|           |   
+|           \---reply
+|                   route.ts
+|                   
+\---[language]
+    |   layout.tsx
+    |   page.tsx
+    |   
+    +---(admin)
+    |   |   layout.tsx
+    |   |   
+    |   +---admin
+    |   |   |   page.tsx
+    |   |   |   
+    |   |   +---bai-viet
+    |   |   |   |   page.tsx
+    |   |   |   |   
+    |   |   |   +---sua
+    |   |   |   |   \---[id]
+    |   |   |   |           page.tsx
+    |   |   |   |           
+    |   |   |   \---tao-moi
+    |   |   |           page.tsx
+    |   |   |           
+    |   |   +---bieu-mau
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---cai-dat
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---danh-muc
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---ho-so
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---kiem-duyet
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---media
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---nhan-su
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---nhat-ky
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---phan-quyen
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   \---tong-quan
+    |   |           page.tsx
+    |   |           
+    |   +---admin-contact
+    |   |       page.tsx
+    |   |       
+    |   \---users
+    |           LogoutButton.tsx
+    |           page.tsx
+    |           
+    +---(auth)
+    |   +---login
+    |   |       page.tsx
+    |   |       
+    |   \---register
+    |           page.tsx
+    |           
+    +---(client)
+    |   |   layout.tsx
+    |   |   
+    |   +---about
+    |   |       page.tsx
+    |   |       
+    |   +---bai-viet
+    |   |   |   page.tsx
+    |   |   |   
+    |   |   \---[slug]
+    |   |           page.tsx
+    |   |           
+    |   +---contact
+    |   |       page.tsx
+    |   |       
+    |   +---dich-vu
+    |   |   |   page.tsx
+    |   |   |   
+    |   |   \---[id]
+    |   |           page.tsx
+    |   |           
+    |   +---du-an
+    |   |   |   page.tsx
+    |   |   |   
+    |   |   \---[id]
+    |   |           page.tsx
+    |   |           
+    |   +---gioi-thieu
+    |   |       page.tsx
+    |   |       
+    |   +---khach-hang
+    |   |       page.tsx
+    |   |       
+    |   +---lien-he
+    |   |       page.tsx
+    |   |       
+    |   +---news
+    |   |       page.tsx
+    |   |       
+    |   +---products
+    |   |       page.tsx
+    |   |       
+    |   +---tin-tuc
+    |   |   |   page.tsx
+    |   |   |   
+    |   |   \---[slug]
+    |   |           page.tsx
+    |   |           
+    |   \---tuyen-dung
+    |       |   page.tsx
+    |       |   
+    |       \---[id]
+    |               page.tsx
+    |               
+    +---example
+    |   +---csr
+    |   |       page.tsx
+    |   |       
+    |   \---ssr
+    |           page.tsx
+    |           ShowTextButton.tsx
+    |           
+    \---profile
+            page.tsx
+            

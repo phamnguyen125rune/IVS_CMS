@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { UserLogin } from '@/types';
 import { getDictionary } from '@/utils/i18n';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 interface NavbarProps {
   user: UserLogin | null;

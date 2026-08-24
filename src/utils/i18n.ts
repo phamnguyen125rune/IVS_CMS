@@ -1,16 +1,16 @@
-import vi from '@/dictionaries/vi.json';
+import vn from '@/dictionaries/vn.json';
 import en from '@/dictionaries/en.json';
-import ja from '@/dictionaries/ja.json';
+import jp from '@/dictionaries/jp.json';
 
 const dictionaries = {
-  vi,
+  vn,
   en,
-  ja,
+  jp,
 };
 
-export type Locale = 'vi' | 'en' | 'ja';
-export type Dictionary = typeof vi;
+export type Locale = 'vn' | 'en' | 'jp';
+export type Dictionary = typeof vn;
 
 export function getDictionary(locale: string): Dictionary {
-  return dictionaries[locale as Locale] || dictionaries.vi;
+  return dictionaries[locale as Locale] || dictionaries.vn;
 }

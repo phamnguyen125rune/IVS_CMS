@@ -2,19 +2,19 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any, @next/next/no-img-element */
 
-import { useState } from "react";
-import { Camera, Save, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { useState } from 'react';
+import { Camera, Save, Eye, EyeOff, CheckCircle } from 'lucide-react';
 
 export default function Profile() {
   const [saved, setSaved] = useState(false);
   const [showOldPw, setShowOldPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [form, setForm] = useState({
-    hoTen: "Nguyễn Văn Admin",
-    email: "admin@vietcms.vn",
-    soDienThoai: "0901 234 567",
-    chucVu: "Quản trị viên hệ thống",
-    moTa: "Quản trị toàn bộ nội dung và người dùng trong hệ thống CMS.",
+    hoTen: 'Nguyễn Văn Admin',
+    email: 'admin@vietcms.vn',
+    soDienThoai: '0901 234 567',
+    chucVu: 'Quản trị viên hệ thống',
+    moTa: 'Quản trị toàn bộ nội dung và người dùng trong hệ thống CMS.',
   });
 
   const handleSave = (e: React.FormEvent) => {
@@ -26,12 +26,8 @@ export default function Profile() {
   return (
     <div className="p-6 max-w-3xl">
       <div className="mb-6">
-        <h1 className="font-display text-xl font-bold text-slate-900">
-          Hồ sơ cá nhân
-        </h1>
-        <p className="text-slate-500 text-sm mt-0.5">
-          Cập nhật thông tin và mật khẩu tài khoản
-        </p>
+        <h1 className="font-display text-xl font-bold text-slate-900">Hồ sơ cá nhân</h1>
+        <p className="text-slate-500 text-sm mt-0.5">Cập nhật thông tin và mật khẩu tài khoản</p>
       </div>
 
       {saved && (
@@ -43,13 +39,8 @@ export default function Profile() {
 
       <form onSubmit={handleSave} className="space-y-5">
         {/* Avatar */}
-        <div
-          className="bg-white rounded-xl border p-6"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <h2 className="font-semibold text-slate-800 mb-4 text-sm">
-            Ảnh đại diện
-          </h2>
+        <div className="bg-white rounded-xl border p-6" style={{ borderColor: 'var(--border)' }}>
+          <h2 className="font-semibold text-slate-800 mb-4 text-sm">Ảnh đại diện</h2>
           <div className="flex items-center gap-5">
             <div className="relative">
               <img
@@ -60,22 +51,20 @@ export default function Profile() {
               <button
                 type="button"
                 className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-white border shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 <Camera size={13} />
               </button>
             </div>
             <div>
-              <p className="text-sm text-slate-700 font-medium">
-                Tải lên ảnh mới
-              </p>
+              <p className="text-sm text-slate-700 font-medium">Tải lên ảnh mới</p>
               <p className="text-xs text-slate-400 mt-1">
                 PNG, JPG tối đa 2MB. Kích thước khuyến nghị: 400×400px
               </p>
               <button
                 type="button"
                 className="mt-2 text-xs font-medium px-3 py-1.5 rounded-lg border hover:bg-slate-50 text-slate-600"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               >
                 Chọn tệp
               </button>
@@ -84,46 +73,39 @@ export default function Profile() {
         </div>
 
         {/* Personal info */}
-        <div
-          className="bg-white rounded-xl border p-6"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <h2 className="font-semibold text-slate-800 mb-4 text-sm">
-            Thông tin cá nhân
-          </h2>
+        <div className="bg-white rounded-xl border p-6" style={{ borderColor: 'var(--border)' }}>
+          <h2 className="font-semibold text-slate-800 mb-4 text-sm">Thông tin cá nhân</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
-                key: "hoTen",
-                label: "Họ và tên",
-                placeholder: "Nhập họ và tên",
+                key: 'hoTen',
+                label: 'Họ và tên',
+                placeholder: 'Nhập họ và tên',
               },
               {
-                key: "email",
-                label: "Địa chỉ email",
-                placeholder: "email@example.com",
-                type: "email",
+                key: 'email',
+                label: 'Địa chỉ email',
+                placeholder: 'email@example.com',
+                type: 'email',
               },
               {
-                key: "soDienThoai",
-                label: "Số điện thoại",
-                placeholder: "0900 000 000",
+                key: 'soDienThoai',
+                label: 'Số điện thoại',
+                placeholder: '0900 000 000',
               },
-              { key: "chucVu", label: "Chức vụ", placeholder: "Nhập chức vụ" },
+              { key: 'chucVu', label: 'Chức vụ', placeholder: 'Nhập chức vụ' },
             ].map((field) => (
               <div key={field.key}>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
                   {field.label}
                 </label>
                 <input
-                  type={field.type || "text"}
+                  type={field.type || 'text'}
                   value={(form as any)[field.key]}
-                  onChange={(e) =>
-                    setForm({ ...form, [field.key]: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
                   placeholder={field.placeholder}
                   className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  style={{ borderColor: "var(--border)" }}
+                  style={{ borderColor: 'var(--border)' }}
                 />
               </div>
             ))}
@@ -137,34 +119,29 @@ export default function Profile() {
                 onChange={(e) => setForm({ ...form, moTa: e.target.value })}
                 placeholder="Giới thiệu ngắn về bản thân..."
                 className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                style={{ borderColor: "var(--border)" }}
+                style={{ borderColor: 'var(--border)' }}
               />
             </div>
           </div>
         </div>
 
         {/* Password */}
-        <div
-          className="bg-white rounded-xl border p-6"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <h2 className="font-semibold text-slate-800 mb-4 text-sm">
-            Đổi mật khẩu
-          </h2>
+        <div className="bg-white rounded-xl border p-6" style={{ borderColor: 'var(--border)' }}>
+          <h2 className="font-semibold text-slate-800 mb-4 text-sm">Đổi mật khẩu</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
-                label: "Mật khẩu hiện tại",
+                label: 'Mật khẩu hiện tại',
                 show: showOldPw,
                 toggle: () => setShowOldPw(!showOldPw),
               },
               {
-                label: "Mật khẩu mới",
+                label: 'Mật khẩu mới',
                 show: showNewPw,
                 toggle: () => setShowNewPw(!showNewPw),
               },
               {
-                label: "Xác nhận mật khẩu mới",
+                label: 'Xác nhận mật khẩu mới',
                 show: showNewPw,
                 toggle: () => setShowNewPw(!showNewPw),
               },
@@ -175,10 +152,10 @@ export default function Profile() {
                 </label>
                 <div className="relative">
                   <input
-                    type={pw.show ? "text" : "password"}
+                    type={pw.show ? 'text' : 'password'}
                     placeholder="••••••••"
                     className="w-full px-3 pr-10 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                    style={{ borderColor: "var(--border)" }}
+                    style={{ borderColor: 'var(--border)' }}
                   />
                   <button
                     type="button"
@@ -197,7 +174,7 @@ export default function Profile() {
           <button
             type="submit"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold"
-            style={{ background: "var(--primary)" }}
+            style={{ background: 'var(--primary)' }}
           >
             <Save size={15} />
             Lưu thay đổi
@@ -207,5 +184,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
