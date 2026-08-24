@@ -114,10 +114,10 @@ export default function Navbar({ user }: NavbarProps) {
             </>
           ) : (
             <Link
-              href={`/${language}/login`}
+              href={`/${language}/register`}
               className="px-4 py-2 text-sm font-semibold text-blue-400 border border-blue-900/30 rounded hover:bg-blue-950/30 hover:border-blue-400 transition-all"
             >
-              {dict.login}
+              Đăng nhập Google
             </Link>
           )}
         </div>

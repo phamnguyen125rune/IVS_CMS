@@ -3,9 +3,15 @@ import { authService } from '@/services/auth.service';
 import { cookies } from 'next/headers';
 import { ApiError } from '@/utils/api-client';
 
+const DEFAULT_STAFF_PASSWORD = '123456';
+
 export async function POST(request: Request) {
+  let loginId = '';
+  let password = '';
   try {
-    const { loginId, password } = await request.json();
+    const body = await request.json();
+    loginId = body.loginId;
+    password = body.password;
     if (!loginId || !password) {
       return NextResponse.json(
         { message: 'Tên đăng nhập và mật khẩu không được để trống' },
@@ -24,7 +30,20 @@ export async function POST(request: Request) {
       maxAge: 8640000,
     });
 
-    return NextResponse.json({ user: authData.user });
+    const mustChangePassword = password === DEFAULT_STAFF_PASSWORD;
+    if (mustChangePassword) {
+      cookieStore.set('must_change_password', 'true', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 8640000,
+      });
+    } else {
+      cookieStore.delete('must_change_password');
+    }
+
+    return NextResponse.json({ user: authData.user, mustChangePassword });
   } catch (err: unknown) {
     if (err instanceof ApiError) {
       return NextResponse.json({ message: err.message }, { status: err.status });

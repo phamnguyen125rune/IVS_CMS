@@ -1,211 +1,375 @@
 'use client';
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @next/next/no-img-element */
+import { FormEvent, useEffect, useState } from 'react';
+import { CheckCircle2, KeyRound, Loader2, Save, ShieldCheck, UserRound } from 'lucide-react';
+import { ResUserDTO, UserCreatePayload } from '@/types';
 
-import { useState } from "react";
-import { Camera, Save, Eye, EyeOff, CheckCircle } from "lucide-react";
+const DEFAULT_PASSWORD = '123456';
+
+type PasswordForm = {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
+const emptyProfileForm: UserCreatePayload = {
+  fullname: '',
+  email: '',
+  phone: '',
+  age: 0,
+  address: '',
+  gender: 'OTHER',
+  dateOfBirth: '',
+};
+
+const emptyPasswordForm: PasswordForm = {
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+};
 
 export default function Profile() {
-  const [saved, setSaved] = useState(false);
-  const [showOldPw, setShowOldPw] = useState(false);
-  const [showNewPw, setShowNewPw] = useState(false);
-  const [form, setForm] = useState({
-    hoTen: "Nguyễn Văn Admin",
-    email: "admin@vietcms.vn",
-    soDienThoai: "0901 234 567",
-    chucVu: "Quản trị viên hệ thống",
-    moTa: "Quản trị toàn bộ nội dung và người dùng trong hệ thống CMS.",
-  });
+  const [profile, setProfile] = useState<ResUserDTO | null>(null);
+  const [form, setForm] = useState<UserCreatePayload>(emptyProfileForm);
+  const [passwordForm, setPasswordForm] = useState<PasswordForm>(emptyPasswordForm);
+  const [loading, setLoading] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-  };
+  useEffect(() => {
+    let active = true;
+
+    fetch('/api/auth/profile')
+      .then(readJson)
+      .then((data: ResUserDTO) => {
+        if (!active) return;
+        setProfile(data);
+        setForm({
+          fullname: data.fullname || '',
+          email: data.email,
+          phone: data.phone || '',
+          age: data.age || 0,
+          address: data.address || '',
+          gender: data.gender || 'OTHER',
+          dateOfBirth: data.dateOfBirth || '',
+          avatarUrl: data.avatarUrl || '',
+        });
+      })
+      .catch((err) => {
+        if (active) {
+          setError(err instanceof Error ? err.message : 'Không tải được hồ sơ');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function saveProfile(event: FormEvent) {
+    event.preventDefault();
+    setSavingProfile(true);
+    clearFeedback();
+
+    try {
+      const data = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullname: form.fullname?.trim(),
+          phone: form.phone?.trim(),
+          age: form.age || 0,
+          address: form.address?.trim(),
+          gender: form.gender || 'OTHER',
+          dateOfBirth: form.dateOfBirth || undefined,
+        }),
+      }).then(readJson);
+
+      setProfile(data);
+      setMessage('Đã lưu thông tin hồ sơ cá nhân');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không lưu được hồ sơ');
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  async function changePassword(event: FormEvent) {
+    event.preventDefault();
+    clearFeedback();
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setError('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      setError('Mật khẩu mới phải có ít nhất 6 ký tự');
+      return;
+    }
+
+    setSavingPassword(true);
+    try {
+      await fetch('/api/auth/change-password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          oldPassword: passwordForm.oldPassword,
+          newPassword: passwordForm.newPassword,
+        }),
+      }).then(readJson);
+
+      setPasswordForm(emptyPasswordForm);
+      setMessage('Đã đổi mật khẩu. Bây giờ bạn có thể sử dụng đầy đủ các chức năng CMS.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không đổi được mật khẩu');
+    } finally {
+      setSavingPassword(false);
+    }
+  }
+
+  function clearFeedback() {
+    setError(null);
+    setMessage(null);
+  }
 
   return (
-    <div className="p-6 max-w-3xl">
-      <div className="mb-6">
-        <h1 className="font-display text-xl font-bold text-slate-900">
-          Hồ sơ cá nhân
-        </h1>
-        <p className="text-slate-500 text-sm mt-0.5">
-          Cập nhật thông tin và mật khẩu tài khoản
-        </p>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h1 className="font-display text-xl font-bold text-slate-900">Hồ sơ cá nhân</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Nhân sự tự cập nhật thông tin cá nhân và đổi mật khẩu tại đây.
+          </p>
+        </div>
+        {profile && (
+          <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 font-bold text-blue-700">
+              {getInitial(profile.fullname)}
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-slate-900">{profile.email}</div>
+              <div className="text-xs text-slate-500">
+                {profile.employeeCode || 'Chưa có mã'} · {profile.role?.name || 'Chưa có vai trò'}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {saved && (
-        <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 mb-5 text-sm text-emerald-700">
-          <CheckCircle size={16} />
-          Đã lưu thông tin thành công!
+      {(message || error) && (
+        <div
+          className={`rounded-lg border px-4 py-3 text-sm ${
+            error
+              ? 'border-red-200 bg-red-50 text-red-600'
+              : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+          }`}
+        >
+          {message && !error && <CheckCircle2 className="mr-2 inline-block" size={16} />}
+          {error || message}
         </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-5">
-        {/* Avatar */}
-        <div
-          className="bg-white rounded-xl border p-6"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <h2 className="font-semibold text-slate-800 mb-4 text-sm">
-            Ảnh đại diện
-          </h2>
-          <div className="flex items-center gap-5">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&h=96&fit=crop&auto=format"
-                className="w-20 h-20 rounded-2xl object-cover"
-                alt="Avatar"
-              />
-              <button
-                type="button"
-                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-white border shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50"
-                style={{ borderColor: "var(--border)" }}
-              >
-                <Camera size={13} />
-              </button>
-            </div>
-            <div>
-              <p className="text-sm text-slate-700 font-medium">
-                Tải lên ảnh mới
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                PNG, JPG tối đa 2MB. Kích thước khuyến nghị: 400×400px
-              </p>
-              <button
-                type="button"
-                className="mt-2 text-xs font-medium px-3 py-1.5 rounded-lg border hover:bg-slate-50 text-slate-600"
-                style={{ borderColor: "var(--border)" }}
-              >
-                Chọn tệp
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        Nếu tài khoản mới được admin tạo, mật khẩu mặc định là{' '}
+        <span className="font-bold">{DEFAULT_PASSWORD}</span>. Vui lòng đổi mật khẩu trước khi dùng
+        các chức năng khác.
+      </div>
 
-        {/* Personal info */}
-        <div
-          className="bg-white rounded-xl border p-6"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <h2 className="font-semibold text-slate-800 mb-4 text-sm">
-            Thông tin cá nhân
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                key: "hoTen",
-                label: "Họ và tên",
-                placeholder: "Nhập họ và tên",
-              },
-              {
-                key: "email",
-                label: "Địa chỉ email",
-                placeholder: "email@example.com",
-                type: "email",
-              },
-              {
-                key: "soDienThoai",
-                label: "Số điện thoại",
-                placeholder: "0900 000 000",
-              },
-              { key: "chucVu", label: "Chức vụ", placeholder: "Nhập chức vụ" },
-            ].map((field) => (
-              <div key={field.key}>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  {field.label}
-                </label>
-                <input
-                  type={field.type || "text"}
-                  value={(form as any)[field.key]}
-                  onChange={(e) =>
-                    setForm({ ...form, [field.key]: e.target.value })
-                  }
-                  placeholder={field.placeholder}
-                  className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  style={{ borderColor: "var(--border)" }}
-                />
-              </div>
-            ))}
-            <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                Mô tả bản thân
-              </label>
-              <textarea
-                rows={3}
-                value={form.moTa}
-                onChange={(e) => setForm({ ...form, moTa: e.target.value })}
-                placeholder="Giới thiệu ngắn về bản thân..."
-                className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                style={{ borderColor: "var(--border)" }}
-              />
-            </div>
-          </div>
+      {loading ? (
+        <div className="rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
+          <Loader2 className="mx-auto mb-2 animate-spin" size={22} />
+          Đang tải hồ sơ...
         </div>
-
-        {/* Password */}
-        <div
-          className="bg-white rounded-xl border p-6"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <h2 className="font-semibold text-slate-800 mb-4 text-sm">
-            Đổi mật khẩu
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              {
-                label: "Mật khẩu hiện tại",
-                show: showOldPw,
-                toggle: () => setShowOldPw(!showOldPw),
-              },
-              {
-                label: "Mật khẩu mới",
-                show: showNewPw,
-                toggle: () => setShowNewPw(!showNewPw),
-              },
-              {
-                label: "Xác nhận mật khẩu mới",
-                show: showNewPw,
-                toggle: () => setShowNewPw(!showNewPw),
-              },
-            ].map((pw, i) => (
-              <div key={i}>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  {pw.label}
-                </label>
-                <div className="relative">
-                  <input
-                    type={pw.show ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="w-full px-3 pr-10 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                    style={{ borderColor: "var(--border)" }}
-                  />
-                  <button
-                    type="button"
-                    onClick={pw.toggle}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    {pw.show ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold"
-            style={{ background: "var(--primary)" }}
+      ) : (
+        <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+          <form
+            onSubmit={saveProfile}
+            className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
           >
-            <Save size={15} />
-            Lưu thay đổi
-          </button>
+            <SectionTitle icon={<UserRound size={18} />} title="Thông tin cá nhân" />
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              <Field label="Họ và tên">
+                <input
+                  value={form.fullname || ''}
+                  onChange={(event) =>
+                    setForm((value) => ({ ...value, fullname: event.target.value }))
+                  }
+                  className={inputClass}
+                  required
+                />
+              </Field>
+              <Field label="Email đăng nhập">
+                <input value={form.email} className={inputClass} disabled />
+              </Field>
+              <Field label="Số điện thoại">
+                <input
+                  value={form.phone || ''}
+                  onChange={(event) =>
+                    setForm((value) => ({ ...value, phone: event.target.value }))
+                  }
+                  className={inputClass}
+                  placeholder="0900000000"
+                />
+              </Field>
+              <Field label="Giới tính">
+                <select
+                  value={form.gender || 'OTHER'}
+                  onChange={(event) =>
+                    setForm((value) => ({ ...value, gender: event.target.value }))
+                  }
+                  className={inputClass}
+                >
+                  <option value="MALE">Nam</option>
+                  <option value="FEMALE">Nữ</option>
+                  <option value="OTHER">Khác</option>
+                </select>
+              </Field>
+              <Field label="Ngày sinh">
+                <input
+                  type="date"
+                  value={form.dateOfBirth || ''}
+                  onChange={(event) =>
+                    setForm((value) => ({ ...value, dateOfBirth: event.target.value }))
+                  }
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Tuổi">
+                <input
+                  type="number"
+                  min={0}
+                  value={form.age || ''}
+                  onChange={(event) =>
+                    setForm((value) => ({ ...value, age: Number(event.target.value || 0) }))
+                  }
+                  className={inputClass}
+                />
+              </Field>
+              <div className="md:col-span-2">
+                <Field label="Địa chỉ">
+                  <input
+                    value={form.address || ''}
+                    onChange={(event) =>
+                      setForm((value) => ({ ...value, address: event.target.value }))
+                    }
+                    className={inputClass}
+                    placeholder="Nhập địa chỉ"
+                  />
+                </Field>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {savingProfile ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              Lưu hồ sơ
+            </button>
+          </form>
+
+          <form
+            onSubmit={changePassword}
+            className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+          >
+            <SectionTitle icon={<KeyRound size={18} />} title="Đổi mật khẩu" />
+            <div className="mt-5 space-y-4">
+              <Field label="Mật khẩu hiện tại">
+                <input
+                  type="password"
+                  value={passwordForm.oldPassword}
+                  onChange={(event) =>
+                    setPasswordForm((value) => ({ ...value, oldPassword: event.target.value }))
+                  }
+                  className={inputClass}
+                  placeholder={DEFAULT_PASSWORD}
+                  required
+                />
+              </Field>
+              <Field label="Mật khẩu mới">
+                <input
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(event) =>
+                    setPasswordForm((value) => ({ ...value, newPassword: event.target.value }))
+                  }
+                  className={inputClass}
+                  required
+                />
+              </Field>
+              <Field label="Nhập lại mật khẩu mới">
+                <input
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(event) =>
+                    setPasswordForm((value) => ({
+                      ...value,
+                      confirmPassword: event.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                  required
+                />
+              </Field>
+            </div>
+
+            <button
+              type="submit"
+              disabled={savingPassword}
+              className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {savingPassword ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <ShieldCheck size={16} />
+              )}
+              Đổi mật khẩu
+            </button>
+          </form>
         </div>
-      </form>
+      )}
     </div>
   );
 }
 
+function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-700">
+      {icon}
+      {title}
+    </div>
+  );
+}
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-sm font-medium text-slate-600">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+async function readJson(res: Response) {
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
+  }
+  return data;
+}
+
+function getInitial(name: string) {
+  return name.trim().charAt(0).toUpperCase() || 'U';
+}
+
+const inputClass =
+  'h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-500';

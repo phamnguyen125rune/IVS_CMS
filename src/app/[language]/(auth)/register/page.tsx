@@ -1,10 +1,5 @@
-import { redirect } from 'next/navigation';
+import CustomerRegisterPage from '@/components/auth/CustomerRegisterPage';
 
-export default async function RegisterPage({
-  params,
-}: {
-  params: Promise<{ language: string }>;
-}) {
-  const { language } = await params;
-  redirect(`/${language}/login`);
+export default function RegisterPage() {
+  return <CustomerRegisterPage />;
 }

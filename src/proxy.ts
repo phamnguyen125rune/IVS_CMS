@@ -4,7 +4,7 @@ const SUPPORTED_LOCALES = ['vi', 'en', 'ja'] as const;
 const DEFAULT_LOCALE = 'vi';
 type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-const PROTECTED_PATHS = ['/users', '/profile', 'contact'];
+const PROTECTED_PATHS = ['/admin', '/admin-contact', '/users', '/profile', '/contact'];
 const PUBLIC_FILE_REGEX = /\.(.*)$/;
 
 /**
@@ -40,8 +40,10 @@ export function proxy(request: NextRequest) {
 
   // Kiểm tra trạng thái đăng nhập bằng cách trích xuất token lưu trong Cookie 'session_token'
   const token = request.cookies.get('session_token')?.value;
+  const mustChangePassword = request.cookies.get('must_change_password')?.value === 'true';
   const pathWithoutLocale = `/${pathname.split('/').slice(2).join('/')}`;
   const isProtected = PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p));
+  const isStaffProfilePath = pathWithoutLocale.startsWith('/admin/ho-so');
 
   // Yêu cầu đăng nhập đối với các truy cập chưa xác thực vào vùng giới hạn (PROTECTED_PATHS)
   if (isProtected && !token) {
@@ -50,9 +52,15 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Chuyển thẳng về trang cá nhân nếu người dùng đã có phiên đăng nhập hợp lệ nhưng cố tình quay lại trang /login
+  if (token && mustChangePassword && isProtected && !isStaffProfilePath) {
+    return NextResponse.redirect(new URL(`/${locale}/admin/ho-so`, request.url));
+  }
+
+  // Chuyển thẳng về khu vực nhân sự nếu người dùng đã có phiên CMS hợp lệ nhưng cố tình quay lại trang /login
   if (pathWithoutLocale.startsWith('/login') && token) {
-    return NextResponse.redirect(new URL(`/${locale}/profile`, request.url));
+    return NextResponse.redirect(
+      new URL(`/${locale}/${mustChangePassword ? 'admin/ho-so' : 'admin/nhan-su'}`, request.url)
+    );
   }
 
   return NextResponse.next();

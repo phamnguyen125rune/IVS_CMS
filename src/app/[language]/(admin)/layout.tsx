@@ -18,11 +18,13 @@ import {
   Bell,
   PanelLeftClose,
   PanelLeftOpen,
+  UserRound,
 } from 'lucide-react';
 import { localizePath } from '@/components/navigation/LocalizedLink';
 
 const navItems = [
   { label: 'Tổng quan', icon: LayoutDashboard, path: '/admin/tong-quan' },
+  { label: 'Hồ sơ cá nhân', icon: UserRound, path: '/admin/ho-so' },
   { label: 'Quản lý Nhân sự', icon: Users, path: '/admin/nhan-su' },
   { label: 'Quản lý Phân quyền', icon: ShieldCheck, path: '/admin/phan-quyen' },
   { label: 'Quản lý Bài viết', icon: FileText, path: '/admin/bai-viet' },
