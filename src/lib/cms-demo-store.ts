@@ -14,14 +14,7 @@ export type CmsRecord = {
 };
 
 export type CmsModuleKey =
-  | 'posts'
-  | 'categories'
-  | 'media'
-  | 'forms'
-  | 'roles'
-  | 'logs'
-  | 'settings'
-  | 'profile';
+  'posts' | 'categories' | 'media' | 'forms' | 'roles' | 'logs' | 'settings' | 'profile';
 
 const STORAGE_PREFIX = 'ivs_cms_demo_';
 

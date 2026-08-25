@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import { cmsRecordService } from '@/services/cms-record.service';
 import { ApiError } from '@/utils/api-client';
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     return NextResponse.json(await cmsRecordService.update(Number(id), await request.json()));
@@ -14,10 +11,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     await cmsRecordService.delete(Number(id));

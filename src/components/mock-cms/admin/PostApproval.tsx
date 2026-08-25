@@ -109,18 +109,27 @@ export default function PostApproval() {
             </div>
           ) : (
             pendingPosts.map((post) => (
-              <article key={post.id} className="grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center">
+              <article
+                key={post.id}
+                className="grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center"
+              >
                 <div className="flex gap-4">
                   {post.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={post.imageUrl} alt={post.title} className="h-20 w-28 rounded-lg object-cover" />
+                    <img
+                      src={post.imageUrl}
+                      alt={post.title}
+                      className="h-20 w-28 rounded-lg object-cover"
+                    />
                   )}
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-wide text-amber-600">
                       {post.status}
                     </div>
                     <h2 className="mt-1 font-semibold text-slate-900">{post.title}</h2>
-                    <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500">{post.description}</p>
+                    <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500">
+                      {post.description}
+                    </p>
                     <div className="mt-2 text-xs text-slate-400">
                       {post.owner} · {post.type} · {formatDate(post.updatedAt)}
                     </div>
@@ -188,7 +197,11 @@ export default function PostApproval() {
             </div>
             {selected.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={selected.imageUrl} alt={selected.title} className="mt-5 h-72 w-full rounded-lg object-cover" />
+              <img
+                src={selected.imageUrl}
+                alt={selected.title}
+                className="mt-5 h-72 w-full rounded-lg object-cover"
+              />
             )}
             <p className="mt-5 rounded-lg bg-slate-50 p-4 text-sm leading-7 text-slate-600">
               {selected.description}

@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   X,
 } from 'lucide-react';
+import { clearStaffSessionToken, setStaffSessionToken } from '@/utils/session-auth';
 
 type ModalStep = 'forgot-email' | 'forgot-otp' | 'reset-password' | 'reset-success' | null;
 
@@ -24,6 +25,12 @@ interface ResetVerifyResponse {
 
 interface StaffLoginResponse {
   mustChangePassword?: boolean;
+  accessToken?: string;
+  user?: {
+    role?: {
+      name?: string | null;
+    } | null;
+  };
 }
 
 const emptyOtp = ['', '', '', '', '', ''];
@@ -34,6 +41,7 @@ export default function AuthPage() {
   const searchParams = useSearchParams();
   const language = (params?.language as string) || 'vi';
   const callbackUrl = searchParams.get('callbackUrl');
+  const lockedReason = searchParams.get('reason') === 'locked';
 
   const [loginId, setLoginId] = useState('admin@cms.local');
   const [loginPassword, setLoginPassword] = useState('Admin@123456');
@@ -46,7 +54,9 @@ export default function AuthPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [modalStep, setModalStep] = useState<ModalStep>(null);
   const [countdown, setCountdown] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    lockedReason ? 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.' : null
+  );
   const [notice, setNotice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -66,6 +76,12 @@ export default function AuthPage() {
       window.setTimeout(() => otpRefs.current[0]?.focus(), 80);
     }
   }, [modalStep]);
+
+  useEffect(() => {
+    if (lockedReason) {
+      clearStaffSessionToken();
+    }
+  }, [lockedReason]);
 
   const request = async <T,>(url: string, options: RequestInit): Promise<T> => {
     const res = await fetch(url, {
@@ -113,12 +129,13 @@ export default function AuthPage() {
         method: 'POST',
         body: JSON.stringify({ loginId, password: loginPassword }),
       });
+      setStaffSessionToken(data.accessToken);
+      const isAdmin = isAdminRoleName(data.user?.role?.name);
+      const profilePath = `/${language}/admin/ho-so`;
+      const defaultPath = isAdmin ? callbackUrl || `/${language}/admin/nhan-su` : profilePath;
+
       router.refresh();
-      router.push(
-        data.mustChangePassword
-          ? `/${language}/admin/ho-so`
-          : callbackUrl || `/${language}/admin/nhan-su`
-      );
+      router.push(data.mustChangePassword ? profilePath : defaultPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập không thành công');
     } finally {
@@ -424,6 +441,11 @@ export default function AuthPage() {
       )}
     </main>
   );
+}
+
+function isAdminRoleName(roleName?: string | null) {
+  const normalizedRoleName = roleName?.trim().toUpperCase();
+  return normalizedRoleName === 'ADMIN' || normalizedRoleName === 'SUPER_ADMIN';
 }
 
 function BrandHeader({ title, subtitle }: { title: string; subtitle: string }) {

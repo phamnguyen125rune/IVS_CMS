@@ -30,7 +30,9 @@ export default async function ProductsPage({ params }: { params: Promise<{ langu
     <div className="bg-white">
       <section className="bg-slate-950 px-6 py-20 text-white">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-300">Products & Services</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-blue-300">
+            Products & Services
+          </p>
           <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight md:text-5xl">
             Giải pháp web và CMS cho doanh nghiệp cần vận hành nội dung nghiêm túc
           </h1>
@@ -55,7 +57,10 @@ export default async function ProductsPage({ params }: { params: Promise<{ langu
               <p className="mt-3 text-sm leading-6 text-slate-500">{service.desc}</p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {service.tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                  <span
+                    key={tag}
+                    className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"
+                  >
                     {tag}
                   </span>
                 ))}

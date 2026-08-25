@@ -67,7 +67,12 @@ export default function Dashboard() {
       icon: FolderTree,
       color: 'text-cyan-600 bg-cyan-50',
     },
-    { label: 'Media', value: data.media.length, icon: Image, color: 'text-violet-600 bg-violet-50' },
+    {
+      label: 'Media',
+      value: data.media.length,
+      icon: Image,
+      color: 'text-violet-600 bg-violet-50',
+    },
     {
       label: 'Biểu mẫu',
       value: data.forms.length,
@@ -125,7 +130,9 @@ export default function Dashboard() {
                     <p className="text-sm font-medium text-slate-500">{metric.label}</p>
                     <p className="mt-2 text-3xl font-bold text-slate-950">{metric.value}</p>
                   </div>
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${metric.color}`}>
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-lg ${metric.color}`}
+                  >
                     <metric.icon size={22} />
                   </div>
                 </div>
@@ -139,7 +146,9 @@ export default function Dashboard() {
               <div className="mt-5 space-y-4">
                 {['PUBLISHED', 'PENDING', 'DRAFT', 'REJECTED'].map((status) => {
                   const count = data.posts.filter((post) => post.status === status).length;
-                  const percent = data.posts.length ? Math.round((count / data.posts.length) * 100) : 0;
+                  const percent = data.posts.length
+                    ? Math.round((count / data.posts.length) * 100)
+                    : 0;
                   return (
                     <div key={status}>
                       <div className="mb-1 flex justify-between text-sm">
@@ -147,7 +156,10 @@ export default function Dashboard() {
                         <span className="text-slate-400">{count} bài</span>
                       </div>
                       <div className="h-2 rounded-full bg-slate-100">
-                        <div className="h-2 rounded-full bg-blue-600" style={{ width: `${percent}%` }} />
+                        <div
+                          className="h-2 rounded-full bg-blue-600"
+                          style={{ width: `${percent}%` }}
+                        />
                       </div>
                     </div>
                   );

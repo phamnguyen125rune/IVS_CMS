@@ -1,8 +1,20 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
-import { CheckCircle2, KeyRound, Loader2, Save, ShieldCheck, UserRound } from 'lucide-react';
+/* eslint-disable @next/next/no-img-element */
+
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import {
+  CheckCircle2,
+  ImagePlus,
+  KeyRound,
+  Loader2,
+  Save,
+  ShieldCheck,
+  UserRound,
+} from 'lucide-react';
 import { ResUserDTO, UserCreatePayload } from '@/types';
+import { calculateAge } from '@/utils/age';
+import { resolveAssetUrl } from '@/utils/asset-url';
 
 const DEFAULT_PASSWORD = '123456';
 
@@ -35,6 +47,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +63,7 @@ export default function Profile() {
           fullname: data.fullname || '',
           email: data.email,
           phone: data.phone || '',
-          age: data.age || 0,
+          age: calculateAge(data.dateOfBirth),
           address: data.address || '',
           gender: data.gender || 'OTHER',
           dateOfBirth: data.dateOfBirth || '',
@@ -85,7 +98,7 @@ export default function Profile() {
         body: JSON.stringify({
           fullname: form.fullname?.trim(),
           phone: form.phone?.trim(),
-          age: form.age || 0,
+          age: calculateAge(form.dateOfBirth),
           address: form.address?.trim(),
           gender: form.gender || 'OTHER',
           dateOfBirth: form.dateOfBirth || undefined,
@@ -98,6 +111,35 @@ export default function Profile() {
       setError(err instanceof Error ? err.message : 'Không lưu được hồ sơ');
     } finally {
       setSavingProfile(false);
+    }
+  }
+
+  async function uploadAvatar(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setUploadingAvatar(true);
+    clearFeedback();
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const data = await fetch('/api/users/avatar', {
+        method: 'POST',
+        body: formData,
+      }).then(readJson);
+
+      setForm((value) => ({ ...value, avatarUrl: data.avatarUrl }));
+      setProfile((value) => (value ? { ...value, avatarUrl: data.avatarUrl } : value));
+      setMessage('Đã cập nhật ảnh đại diện');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không upload được ảnh đại diện');
+    } finally {
+      setUploadingAvatar(false);
+      event.target.value = '';
     }
   }
 
@@ -151,9 +193,17 @@ export default function Profile() {
         </div>
         {profile && (
           <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 font-bold text-blue-700">
-              {getInitial(profile.fullname)}
-            </div>
+            {profile.avatarUrl ? (
+              <img
+                src={resolveAssetUrl(profile.avatarUrl)}
+                className="h-10 w-10 rounded-lg object-cover"
+                alt={profile.fullname}
+              />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 font-bold text-blue-700">
+                {getInitial(profile.fullname)}
+              </div>
+            )}
             <div>
               <div className="text-sm font-semibold text-slate-900">{profile.email}</div>
               <div className="text-xs text-slate-500">
@@ -195,6 +245,40 @@ export default function Profile() {
             className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
           >
             <SectionTitle icon={<UserRound size={18} />} title="Thông tin cá nhân" />
+            <div className="mt-5 flex flex-wrap items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+              {form.avatarUrl ? (
+                <img
+                  src={resolveAssetUrl(form.avatarUrl)}
+                  className="h-20 w-20 rounded-lg object-cover"
+                  alt={form.fullname || 'Ảnh đại diện'}
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-blue-100 text-xl font-bold text-blue-700">
+                  {getInitial(form.fullname || profile?.fullname || '')}
+                </div>
+              )}
+              <div className="min-w-56 flex-1">
+                <div className="text-sm font-semibold text-slate-800">Ảnh đại diện</div>
+                <p className="mt-1 text-xs text-slate-500">
+                  Chọn ảnh từ thư mục máy tính để đưa vào dự án.
+                </p>
+              </div>
+              <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700">
+                {uploadingAvatar ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <ImagePlus size={16} />
+                )}
+                Chọn ảnh
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  onChange={uploadAvatar}
+                  className="hidden"
+                  disabled={uploadingAvatar}
+                />
+              </label>
+            </div>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <Field label="Họ và tên">
                 <input
@@ -242,15 +326,12 @@ export default function Profile() {
                   className={inputClass}
                 />
               </Field>
-              <Field label="Tuổi">
+              <Field label="Tuổi tự tính">
                 <input
-                  type="number"
-                  min={0}
-                  value={form.age || ''}
-                  onChange={(event) =>
-                    setForm((value) => ({ ...value, age: Number(event.target.value || 0) }))
-                  }
+                  value={calculateAge(form.dateOfBirth) || ''}
                   className={inputClass}
+                  placeholder="Tự tính theo ngày sinh"
+                  disabled
                 />
               </Field>
               <div className="md:col-span-2">

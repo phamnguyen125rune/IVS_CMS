@@ -29,10 +29,17 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   }
 
   // Tự động chèn token session khi gọi API từ phía Server (Server Components / API Routes)
-  if (isServer) {
+  if (isServer && !headers.has('Authorization')) {
     try {
       // Import động next/headers để tránh lỗi đóng gói trên trình duyệt client
-      const { cookies } = await import('next/headers');
+      const { cookies, headers: nextHeaders } = await import('next/headers');
+      const incomingHeaders = await nextHeaders();
+      const incomingAuthorization = incomingHeaders.get('authorization');
+      if (incomingAuthorization) {
+        headers.set('Authorization', incomingAuthorization);
+        return finishFetch<T>(url, options, headers);
+      }
+
       const cookieStore = await cookies();
       const token = cookieStore.get('session_token')?.value;
       if (token) {
@@ -45,6 +52,10 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     }
   }
 
+  return finishFetch<T>(url, options, headers);
+}
+
+async function finishFetch<T>(url: string, options: RequestInit, headers: Headers): Promise<T> {
   const fetchOptions: RequestInit = {
     ...options,
     headers,

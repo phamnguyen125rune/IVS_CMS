@@ -13,10 +13,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import {
-  CmsModuleKey,
-  CmsRecord,
-} from '@/lib/cms-demo-store';
+import { CmsModuleKey, CmsRecord } from '@/lib/cms-demo-store';
 
 type WorkspaceTone = 'blue' | 'emerald' | 'violet' | 'cyan' | 'slate';
 
@@ -148,11 +145,14 @@ export default function AdminWorkspace({
 
     try {
       const payload = toPayload(moduleKey, form);
-      const response = await fetch(editing ? `/api/cms-records/${editing.id}` : '/api/cms-records', {
-        method: editing ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        editing ? `/api/cms-records/${editing.id}` : '/api/cms-records',
+        {
+          method: editing ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }
+      );
       await readJson(response);
       setEditing(null);
       setFormOpen(false);
@@ -323,51 +323,53 @@ export default function AdminWorkspace({
                 </tr>
               ) : (
                 filtered.map((record) => (
-                <tr key={record.id} className="border-t border-slate-100 hover:bg-slate-50/70">
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      {record.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={record.imageUrl}
-                          alt={record.title}
-                          className="h-10 w-10 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 font-bold text-slate-500">
-                          {record.title.charAt(0).toUpperCase()}
+                  <tr key={record.id} className="border-t border-slate-100 hover:bg-slate-50/70">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        {record.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={record.imageUrl}
+                            alt={record.title}
+                            className="h-10 w-10 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 font-bold text-slate-500">
+                            {record.title.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <div className="font-semibold text-slate-800">{record.title}</div>
+                          <div className="text-xs text-slate-400">{record.subtitle || '-'}</div>
                         </div>
-                      )}
-                      <div>
-                        <div className="font-semibold text-slate-800">{record.title}</div>
-                        <div className="text-xs text-slate-400">{record.subtitle || '-'}</div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-slate-600">{record.type}</td>
-                  <td className="px-5 py-4">
-                    <StatusBadge status={record.status} />
-                  </td>
-                  <td className="px-5 py-4 text-slate-600">{record.owner}</td>
-                  <td className="px-5 py-4 font-mono text-xs text-slate-500">{record.updatedAt}</td>
-                  <td className="px-5 py-4">
-                    <div className="flex justify-end gap-1">
-                      <IconButton label="Xem" onClick={() => setSelected(record)}>
-                        <Eye size={15} />
-                      </IconButton>
-                      {!readonly && (
-                        <>
-                          <IconButton label="Sửa" onClick={() => openEdit(record)}>
-                            <Edit size={15} />
-                          </IconButton>
-                          <IconButton label="Xóa" onClick={() => setDeleting(record)}>
-                            <Trash2 size={15} />
-                          </IconButton>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td className="px-5 py-4 text-slate-600">{record.type}</td>
+                    <td className="px-5 py-4">
+                      <StatusBadge status={record.status} />
+                    </td>
+                    <td className="px-5 py-4 text-slate-600">{record.owner}</td>
+                    <td className="px-5 py-4 font-mono text-xs text-slate-500">
+                      {record.updatedAt}
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex justify-end gap-1">
+                        <IconButton label="Xem" onClick={() => setSelected(record)}>
+                          <Eye size={15} />
+                        </IconButton>
+                        {!readonly && (
+                          <>
+                            <IconButton label="Sửa" onClick={() => openEdit(record)}>
+                              <Edit size={15} />
+                            </IconButton>
+                            <IconButton label="Xóa" onClick={() => setDeleting(record)}>
+                              <Trash2 size={15} />
+                            </IconButton>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
                 ))
               )}
 
@@ -451,7 +453,9 @@ function StatusBadge({ status }: { status: string }) {
         ? 'bg-red-100 text-red-700'
         : 'bg-slate-100 text-slate-600';
 
-  return <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${color}`}>{status}</span>;
+  return (
+    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${color}`}>{status}</span>
+  );
 }
 
 function IconButton({
@@ -494,7 +498,10 @@ function RecordModal({
   onSubmit: (event: FormEvent) => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4"
+      onClick={onClose}
+    >
       <form
         className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-2xl"
         onClick={(event) => event.stopPropagation()}
@@ -502,7 +509,11 @@ function RecordModal({
       >
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-950">{title}</h2>
-          <button type="button" onClick={onClose} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100"
+          >
             <X size={20} />
           </button>
         </div>
@@ -536,11 +547,13 @@ function RecordModal({
               onChange={(event) => onChange({ status: event.target.value })}
               className={inputClass}
             >
-              {Array.from(new Set([...statuses, 'ACTIVE', 'DRAFT', 'PENDING', 'PUBLISHED'])).map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
+              {Array.from(new Set([...statuses, 'ACTIVE', 'DRAFT', 'PENDING', 'PUBLISHED'])).map(
+                (status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                )
+              )}
             </select>
           </Field>
           <Field label="Phụ trách">
@@ -603,20 +616,34 @@ function DetailModal({
   onStatus: (status: string) => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4" onClick={onClose}>
-      <div className="w-full max-w-xl rounded-lg bg-white p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl rounded-lg bg-white p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-950">{record.title}</h2>
             <p className="mt-1 text-sm text-slate-500">{record.subtitle}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100"
+          >
             <X size={20} />
           </button>
         </div>
         {record.imageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={record.imageUrl} alt={record.title} className="mt-5 h-56 w-full rounded-lg object-cover" />
+          <img
+            src={record.imageUrl}
+            alt={record.title}
+            className="mt-5 h-56 w-full rounded-lg object-cover"
+          />
         )}
         <div className="mt-5 grid gap-3 text-sm md:grid-cols-2">
           <Info label="Loại" value={record.type} />
@@ -624,19 +651,23 @@ function DetailModal({
           <Info label="Phụ trách" value={record.owner} />
           <Info label="Cập nhật" value={record.updatedAt} />
         </div>
-        <p className="mt-5 rounded-lg bg-slate-50 p-4 text-sm leading-6 text-slate-600">{record.description}</p>
+        <p className="mt-5 rounded-lg bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+          {record.description}
+        </p>
         {!readonly && (
           <div className="mt-5 flex flex-wrap gap-2">
-            {Array.from(new Set([...statuses, 'ACTIVE', 'PENDING', 'PUBLISHED', 'REJECTED'])).map((status) => (
-              <button
-                key={status}
-                type="button"
-                onClick={() => onStatus(status)}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-              >
-                Chuyển {status}
-              </button>
-            ))}
+            {Array.from(new Set([...statuses, 'ACTIVE', 'PENDING', 'PUBLISHED', 'REJECTED'])).map(
+              (status) => (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => onStatus(status)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  Chuyển {status}
+                </button>
+              )
+            )}
           </div>
         )}
       </div>
@@ -654,8 +685,14 @@ function ConfirmDelete({
   onConfirm: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-sm rounded-lg bg-white p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <h2 className="text-lg font-bold text-slate-950">Xóa dữ liệu</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
           Bạn có chắc chắn muốn xóa <span className="font-semibold">{record.title}</span>?

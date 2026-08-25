@@ -2,13 +2,14 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   ChevronLeft,
   ChevronRight,
   Edit,
   FileUser,
+  ImagePlus,
   KeyRound,
   Loader2,
   Lock,
@@ -17,10 +18,11 @@ import {
   Save,
   Search,
   Trash2,
-  Unlock,
   X,
 } from 'lucide-react';
 import { ResUserDTO, Role, RoleUser, UserCreatePayload } from '@/types';
+import { calculateAge } from '@/utils/age';
+import { resolveAssetUrl } from '@/utils/asset-url';
 
 const DEFAULT_PASSWORD = '123456';
 const LEGACY_USER_ROLE = 'NORMAL_USER';
@@ -75,20 +77,24 @@ function getStaffRoles(source: Role[]) {
 
 export default function Users() {
   const [users, setUsers] = useState<ResUserDTO[]>([]);
+  const [deletedUsers, setDeletedUsers] = useState<ResUserDTO[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
-  const [statusFilter, setStatusFilter] = useState('ALL');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDeleted, setShowDeleted] = useState(false);
   const [form, setForm] = useState<UserCreatePayload>(DEFAULT_FORM);
   const [editingUser, setEditingUser] = useState<ResUserDTO | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [statusModal, setStatusModal] = useState<ResUserDTO | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<ResUserDTO | null>(null);
-  const [deleteUserTarget, setDeleteUserTarget] = useState<ResUserDTO | null>(null);
+  const [softDeleteTarget, setSoftDeleteTarget] = useState<ResUserDTO | null>(null);
+  const [restoreUserTarget, setRestoreUserTarget] = useState<ResUserDTO | null>(null);
+  const [hardDeleteTarget, setHardDeleteTarget] = useState<ResUserDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -97,11 +103,14 @@ export default function Users() {
   useEffect(() => {
     loadUsers();
     loadRoles();
+    loadDeletedUsers();
   }, []);
 
+  const visibleUsers = showDeleted ? deletedUsers : users;
+
   const filtered = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-    return users.filter((user) => {
+    const keyword = searchKeyword.trim().toLowerCase();
+    return visibleUsers.filter((user) => {
       const roleName = normalizeRoleName(user.role?.name);
       const matchSearch =
         !keyword ||
@@ -109,10 +118,9 @@ export default function Users() {
         user.email.toLowerCase().includes(keyword) ||
         (user.employeeCode || '').toLowerCase().includes(keyword);
       const matchRole = roleFilter === 'ALL' || roleName === roleFilter;
-      const matchStatus = statusFilter === 'ALL' || user.status === statusFilter;
-      return matchSearch && matchRole && matchStatus;
+      return matchSearch && matchRole;
     });
-  }, [users, search, roleFilter, statusFilter]);
+  }, [visibleUsers, searchKeyword, roleFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const paginatedUsers = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -126,9 +134,22 @@ export default function Users() {
       setUsers(data.result || []);
     } catch (err) {
       setUsers([]);
-      setError(getErrorMessage(err, 'Không tải được danh sách nhân sự từ backend. Vui lòng đăng nhập lại.'));
+      setError(
+        getErrorMessage(err, 'Không tải được danh sách nhân sự từ backend. Vui lòng đăng nhập lại.')
+      );
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadDeletedUsers() {
+    try {
+      const res = await fetch('/api/users/deleted');
+      const data = await readJson(res);
+      setDeletedUsers(data || []);
+    } catch (err) {
+      setDeletedUsers([]);
+      setError(getErrorMessage(err, 'Không tải được danh sách tài khoản đã xóa'));
     }
   }
 
@@ -162,7 +183,7 @@ export default function Users() {
       fullname: user.fullname,
       email: user.email,
       phone: user.phone || '',
-      age: user.age || 0,
+      age: calculateAge(user.dateOfBirth),
       address: user.address || '',
       gender: user.gender || 'OTHER',
       dateOfBirth: user.dateOfBirth || '',
@@ -204,25 +225,56 @@ export default function Users() {
     }
   }
 
-  async function updateStatus(user: ResUserDTO) {
-    const nextStatus = user.status === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
+  async function uploadEditingAvatar(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file || !editingUser) {
+      return;
+    }
+
+    setUploadingAvatar(true);
+    clearFeedback();
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const data = await fetch(`/api/users/${editingUser.id}/avatar`, {
+        method: 'POST',
+        body: formData,
+      }).then(readJson);
+
+      setForm((value) => ({ ...value, avatarUrl: data.avatarUrl }));
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.id === editingUser.id ? { ...user, avatarUrl: data.avatarUrl } : user
+        )
+      );
+      setEditingUser((value) => (value ? { ...value, avatarUrl: data.avatarUrl } : value));
+      setMessage(`Đã cập nhật ảnh đại diện của ${editingUser.fullname}`);
+    } catch (err) {
+      setError(getErrorMessage(err, 'Không upload được ảnh đại diện'));
+    } finally {
+      setUploadingAvatar(false);
+      event.target.value = '';
+    }
+  }
+
+  async function softDeleteUser(user: ResUserDTO) {
     setSaving(true);
     clearFeedback();
 
     try {
-      const res = await fetch(`/api/users/${user.id}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus }),
-      });
+      const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
       await readJson(res);
-      setUsers((prev) =>
-        prev.map((item) => (item.id === user.id ? { ...item, status: nextStatus } : item))
-      );
-      setStatusModal(null);
-      setMessage(nextStatus === 'LOCKED' ? 'Đã khóa tài khoản' : 'Đã mở khóa tài khoản');
+      setUsers((prev) => prev.filter((item) => item.id !== user.id));
+      setSoftDeleteTarget(null);
+      setShowDeleted(true);
+      resetFilters();
+      setCurrentPage(1);
+      await loadDeletedUsers();
+      setMessage(`Đã khóa tài khoản ${user.fullname} và chuyển vào danh sách đã xóa`);
     } catch (err) {
-      setError(getErrorMessage(err, 'Không cập nhật được trạng thái nhân sự'));
+      setError(getErrorMessage(err, 'Không khóa được tài khoản'));
     } finally {
       setSaving(false);
     }
@@ -244,18 +296,36 @@ export default function Users() {
     }
   }
 
-  async function deleteUser(user: ResUserDTO) {
+  async function restoreUser(user: ResUserDTO) {
     setSaving(true);
     clearFeedback();
 
     try {
-      const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/users/${user.id}/restore`, { method: 'PUT' });
       await readJson(res);
-      setUsers((prev) => prev.filter((item) => item.id !== user.id));
-      setDeleteUserTarget(null);
-      setMessage(`Đã xóa nhân sự ${user.fullname}`);
+      setDeletedUsers((prev) => prev.filter((item) => item.id !== user.id));
+      setRestoreUserTarget(null);
+      await loadUsers();
+      setMessage(`Đã khôi phục tài khoản ${user.fullname}`);
     } catch (err) {
-      setError(getErrorMessage(err, 'Không xóa được nhân sự'));
+      setError(getErrorMessage(err, 'Không khôi phục được tài khoản'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function hardDeleteUser(user: ResUserDTO) {
+    setSaving(true);
+    clearFeedback();
+
+    try {
+      const res = await fetch(`/api/users/${user.id}/hard`, { method: 'DELETE' });
+      await readJson(res);
+      setDeletedUsers((prev) => prev.filter((item) => item.id !== user.id));
+      setHardDeleteTarget(null);
+      setMessage(`Đã xóa vĩnh viễn nhân sự ${user.fullname}`);
+    } catch (err) {
+      setError(getErrorMessage(err, 'Không xóa vĩnh viễn được nhân sự'));
     } finally {
       setSaving(false);
     }
@@ -266,24 +336,35 @@ export default function Users() {
     setMessage(null);
   }
 
+  function resetFilters() {
+    setSearchInput('');
+    setSearchKeyword('');
+    setRoleFilter('ALL');
+  }
+
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSearchKeyword(searchInput.trim());
+    setCurrentPage(1);
+  }
+
+  function clearSearch() {
+    setSearchInput('');
+    setSearchKeyword('');
+    setCurrentPage(1);
+  }
+
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Nhân sự</h1>
+          <h1 className="font-display text-xl font-bold text-slate-900">
+            {showDeleted ? 'Các tài khoản đã xóa' : 'Quản lý Nhân sự'}
+          </h1>
           <p className="mt-0.5 text-sm text-slate-500">
             {filtered.length} người dùng được tìm thấy
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openCreateModal}
-          className="flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: 'var(--primary)' }}
-        >
-          <Plus size={15} />
-          Thêm nhân sự
-        </button>
       </div>
 
       {(message || error) && (
@@ -307,60 +388,88 @@ export default function Users() {
       )}
 
       <div
-        className="mb-5 flex flex-wrap gap-3 rounded-lg border bg-white p-4"
+        className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-white p-4"
         style={{ borderColor: 'var(--border)' }}
       >
-        <button
-          type="button"
-          onClick={openCreateModal}
-          className="flex min-h-10 items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: 'var(--primary)' }}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              const nextShowDeleted = !showDeleted;
+              setShowDeleted(nextShowDeleted);
+              resetFilters();
+              setCurrentPage(1);
+              clearFeedback();
+              if (nextShowDeleted) {
+                loadDeletedUsers();
+              }
+            }}
+            className="flex min-h-10 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            {showDeleted ? <FileUser size={15} /> : <Trash2 size={15} />}
+            {showDeleted ? 'Danh sách nhân sự' : `Các tài khoản đã xóa (${deletedUsers.length})`}
+          </button>
+          {!showDeleted && (
+            <button
+              type="button"
+              onClick={openCreateModal}
+              className="flex min-h-10 items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition-colors hover:bg-blue-700"
+            >
+              <Plus size={15} />
+              Thêm nhân sự mới
+            </button>
+          )}
+        </div>
+        <form
+          onSubmit={handleSearchSubmit}
+          className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2"
         >
-          <Plus size={15} />
-          Thêm nhân sự mới
-        </button>
-        <div className="relative min-w-52 flex-1">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            value={search}
+          <div className="relative min-w-64 flex-1 lg:max-w-3xl">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              placeholder="Nhập tên, email, mã nhân viên..."
+              className="h-10 w-full rounded-lg border py-2 pl-9 pr-10 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              style={{ borderColor: 'var(--border)' }}
+            />
+            {(searchInput || searchKeyword) && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                title="Xóa tìm kiếm"
+                aria-label="Xóa tìm kiếm"
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+          >
+            <Search size={15} />
+            Tìm
+          </button>
+          <select
+            value={roleFilter}
             onChange={(event) => {
-              setSearch(event.target.value);
+              setRoleFilter(event.target.value);
               setCurrentPage(1);
             }}
-            placeholder="Tìm theo tên, email, mã nhân viên..."
-            className="w-full rounded-lg border py-2 pl-9 pr-3 text-sm outline-none focus:border-blue-500"
+            className="h-10 shrink-0 rounded-lg border bg-white px-3 text-sm text-slate-600 outline-none"
             style={{ borderColor: 'var(--border)' }}
-          />
-        </div>
-        <select
-          value={roleFilter}
-          onChange={(event) => {
-            setRoleFilter(event.target.value);
-            setCurrentPage(1);
-          }}
-          className="rounded-lg border bg-white px-3 py-2 text-sm text-slate-600 outline-none"
-          style={{ borderColor: 'var(--border)' }}
-        >
-          <option value="ALL">Tất cả vai trò</option>
-          {creatableRoles.map((role) => (
-            <option key={role.id} value={normalizeRoleName(role.name)}>
-              {roleLabel(role)}
-            </option>
-          ))}
-        </select>
-        <select
-          value={statusFilter}
-          onChange={(event) => {
-            setStatusFilter(event.target.value);
-            setCurrentPage(1);
-          }}
-          className="rounded-lg border bg-white px-3 py-2 text-sm text-slate-600 outline-none"
-          style={{ borderColor: 'var(--border)' }}
-        >
-          <option value="ALL">Tất cả trạng thái</option>
-          <option value="ACTIVE">Hoạt động</option>
-          <option value="LOCKED">Bị khóa</option>
-        </select>
+          >
+            <option value="ALL">Tất cả vai trò</option>
+            {creatableRoles.map((role) => (
+              <option key={role.id} value={normalizeRoleName(role.name)}>
+                {roleLabel(role)}
+              </option>
+            ))}
+          </select>
+        </form>
       </div>
 
       <div className="mb-3 flex items-center justify-end gap-6 text-sm text-slate-600">
@@ -408,10 +517,10 @@ export default function Users() {
       </div>
 
       <div
-        className="overflow-hidden rounded-lg border bg-white"
+        className="w-full overflow-x-auto rounded-lg border bg-white"
         style={{ borderColor: 'var(--border)' }}
       >
-        <table className="w-full text-sm">
+        <table className="w-full min-w-[1180px] text-sm">
           <thead>
             <tr className="border-b bg-slate-50" style={{ borderColor: 'var(--border)' }}>
               <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -429,6 +538,20 @@ export default function Users() {
               <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Trạng thái
               </th>
+              {showDeleted ? (
+                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Đã xóa bởi
+                </th>
+              ) : (
+                <>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Tạo bởi
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Cập nhật
+                  </th>
+                </>
+              )}
               <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Hành động
               </th>
@@ -437,7 +560,7 @@ export default function Users() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-5 py-10 text-center text-slate-500">
+                <td colSpan={showDeleted ? 7 : 8} className="px-5 py-10 text-center text-slate-500">
                   <Loader2 className="mx-auto mb-2 animate-spin" size={20} />
                   Đang tải danh sách người dùng...
                 </td>
@@ -456,7 +579,7 @@ export default function Users() {
                       <div className="flex items-center gap-3">
                         {user.avatarUrl ? (
                           <img
-                            src={user.avatarUrl}
+                            src={resolveAssetUrl(user.avatarUrl)}
                             className="h-9 w-9 rounded-lg object-cover"
                             alt={user.fullname}
                           />
@@ -498,37 +621,79 @@ export default function Users() {
                     <td className="px-5 py-3.5">
                       <span
                         className={`flex w-fit items-center gap-1.5 text-xs font-medium ${
-                          user.status === 'ACTIVE' ? 'text-emerald-600' : 'text-red-500'
+                          showDeleted
+                            ? 'text-red-500'
+                            : user.status === 'ACTIVE'
+                              ? 'text-emerald-600'
+                              : 'text-red-500'
                         }`}
                       >
                         <span
                           className={`h-1.5 w-1.5 rounded-full ${
-                            user.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-red-400'
+                            showDeleted
+                              ? 'bg-red-400'
+                              : user.status === 'ACTIVE'
+                                ? 'bg-emerald-500'
+                                : 'bg-red-400'
                           }`}
                         />
-                        {user.status === 'ACTIVE' ? 'Hoạt động' : 'Bị khóa'}
+                        {showDeleted
+                          ? 'Đã xóa'
+                          : user.status === 'ACTIVE'
+                            ? 'Hoạt động'
+                            : 'Bị khóa'}
                       </span>
                     </td>
+                    {showDeleted ? (
+                      <td className="px-5 py-3.5">
+                        <AuditInfo by={user.deletedBy} at={user.deletedAt} />
+                      </td>
+                    ) : (
+                      <>
+                        <td className="px-5 py-3.5">
+                          <AuditInfo by={user.createdBy} at={user.createdAt} />
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <AuditInfo by={user.updatedBy} at={user.updatedAt} />
+                        </td>
+                      </>
+                    )}
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
-                        <IconButton label="Chỉnh sửa" onClick={() => openEditModal(user)}>
-                          <Edit size={14} />
-                        </IconButton>
-                        <IconButton
-                          label="Reset mật khẩu"
-                          onClick={() => setResetPasswordUser(user)}
-                        >
-                          <KeyRound size={14} />
-                        </IconButton>
-                        <IconButton
-                          label={user.status === 'ACTIVE' ? 'Khóa tài khoản' : 'Mở khóa'}
-                          onClick={() => setStatusModal(user)}
-                        >
-                          {user.status === 'ACTIVE' ? <Lock size={14} /> : <Unlock size={14} />}
-                        </IconButton>
-                        <IconButton label="Xóa nhân sự" onClick={() => setDeleteUserTarget(user)}>
-                          <Trash2 size={14} />
-                        </IconButton>
+                        {showDeleted ? (
+                          <>
+                            <IconButton
+                              label="Khôi phục tài khoản"
+                              onClick={() => setRestoreUserTarget(user)}
+                            >
+                              <RotateCcw size={14} />
+                            </IconButton>
+                            <IconButton
+                              label="Xóa vĩnh viễn"
+                              onClick={() => setHardDeleteTarget(user)}
+                            >
+                              <Trash2 size={14} />
+                            </IconButton>
+                          </>
+                        ) : (
+                          <>
+                            <IconButton label="Chỉnh sửa" onClick={() => openEditModal(user)}>
+                              <Edit size={14} />
+                            </IconButton>
+                            <IconButton
+                              label="Reset mật khẩu"
+                              onClick={() => setResetPasswordUser(user)}
+                            >
+                              <KeyRound size={14} />
+                            </IconButton>
+                            <IconButton
+                              label="Khóa tài khoản (xóa mềm)"
+                              onClick={() => setSoftDeleteTarget(user)}
+                            >
+                              <Lock size={14} />
+                            </IconButton>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -536,17 +701,23 @@ export default function Users() {
               })
             ) : (
               <tr>
-                <td colSpan={6} className="px-5 py-12 text-center text-slate-500">
-                  <p>Chưa tìm thấy nhân sự nào.</p>
-                  <button
-                    type="button"
-                    onClick={openCreateModal}
-                    className="mx-auto mt-4 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                    style={{ background: 'var(--primary)' }}
-                  >
-                    <Plus size={15} />
-                    Thêm nhân sự
-                  </button>
+                <td colSpan={showDeleted ? 7 : 8} className="px-5 py-12 text-center text-slate-500">
+                  <p>
+                    {showDeleted
+                      ? 'Chưa có tài khoản nào trong danh sách đã xóa.'
+                      : 'Chưa tìm thấy nhân sự nào.'}
+                  </p>
+                  {!showDeleted && (
+                    <button
+                      type="button"
+                      onClick={openCreateModal}
+                      className="mx-auto mt-4 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                      style={{ background: 'var(--primary)' }}
+                    >
+                      <Plus size={15} />
+                      Thêm nhân sự
+                    </button>
+                  )}
                 </td>
               </tr>
             )}
@@ -554,39 +725,30 @@ export default function Users() {
         </table>
       </div>
 
-      <button
-        type="button"
-        onClick={openCreateModal}
-        className="fixed bottom-24 right-6 z-40 flex items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 transition hover:bg-blue-700"
-      >
-        <Plus size={18} />
-        Thêm nhân sự
-      </button>
-
       {isAddModalOpen && (
         <UserModal
           title={editingUser ? 'Chỉnh sửa nhân sự' : 'Thêm nhân sự mới'}
           form={form}
           roles={creatableRoles}
           saving={saving}
+          uploadingAvatar={uploadingAvatar}
           isEditing={Boolean(editingUser)}
           onChange={(next) => setForm((value) => ({ ...value, ...next }))}
+          onAvatarChange={uploadEditingAvatar}
           onClose={() => setIsAddModalOpen(false)}
           onSubmit={handleSubmit}
         />
       )}
 
-      {statusModal && (
+      {softDeleteTarget && (
         <ConfirmModal
-          title={`Xác nhận ${statusModal.status === 'ACTIVE' ? 'khóa' : 'mở khóa'} tài khoản`}
-          description={`Bạn có chắc chắn muốn ${
-            statusModal.status === 'ACTIVE' ? 'khóa' : 'mở khóa'
-          } tài khoản của ${statusModal.fullname}?`}
-          tone={statusModal.status === 'ACTIVE' ? 'danger' : 'success'}
+          title="Khóa tài khoản"
+          description={`Tài khoản ${softDeleteTarget.fullname} sẽ được chuyển vào danh sách đã xóa và không còn hiển thị trong danh sách nhân sự.`}
+          tone="danger"
           saving={saving}
-          actionLabel="Xác nhận"
-          onClose={() => setStatusModal(null)}
-          onConfirm={() => updateStatus(statusModal)}
+          actionLabel="Khóa"
+          onClose={() => setSoftDeleteTarget(null)}
+          onConfirm={() => softDeleteUser(softDeleteTarget)}
         />
       )}
 
@@ -602,15 +764,27 @@ export default function Users() {
         />
       )}
 
-      {deleteUserTarget && (
+      {restoreUserTarget && (
         <ConfirmModal
-          title="Xóa nhân sự"
-          description={`Bạn có chắc chắn muốn xóa nhân sự ${deleteUserTarget.fullname}? Tài khoản sẽ bị xóa vĩnh viễn khỏi database và không đăng nhập được nữa.`}
+          title="Khôi phục tài khoản"
+          description={`Đưa tài khoản ${restoreUserTarget.fullname} trở lại danh sách nhân sự đang hoạt động?`}
+          tone="success"
+          saving={saving}
+          actionLabel="Khôi phục"
+          onClose={() => setRestoreUserTarget(null)}
+          onConfirm={() => restoreUser(restoreUserTarget)}
+        />
+      )}
+
+      {hardDeleteTarget && (
+        <ConfirmModal
+          title="Xóa vĩnh viễn"
+          description={`Bạn có chắc chắn muốn xóa vĩnh viễn nhân sự ${hardDeleteTarget.fullname}? Thao tác này sẽ xóa khỏi database và không thể khôi phục.`}
           tone="danger"
           saving={saving}
           actionLabel="Xóa"
-          onClose={() => setDeleteUserTarget(null)}
-          onConfirm={() => deleteUser(deleteUserTarget)}
+          onClose={() => setHardDeleteTarget(null)}
+          onConfirm={() => hardDeleteUser(hardDeleteTarget)}
         />
       )}
     </div>
@@ -622,8 +796,10 @@ function UserModal({
   form,
   roles,
   saving,
+  uploadingAvatar,
   isEditing,
   onChange,
+  onAvatarChange,
   onClose,
   onSubmit,
 }: {
@@ -631,8 +807,10 @@ function UserModal({
   form: UserCreatePayload;
   roles: Role[];
   saving: boolean;
+  uploadingAvatar: boolean;
   isEditing: boolean;
   onChange: (payload: Partial<UserCreatePayload>) => void;
+  onAvatarChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onClose: () => void;
   onSubmit: (event: FormEvent) => void;
 }) {
@@ -704,6 +882,42 @@ function UserModal({
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <div className="flex flex-wrap items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  {form.avatarUrl ? (
+                    <img
+                      src={resolveAssetUrl(form.avatarUrl)}
+                      className="h-20 w-20 rounded-lg object-cover"
+                      alt={form.fullname || 'Ảnh đại diện'}
+                    />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-blue-100 text-xl font-bold text-blue-700">
+                      {getInitial(form.fullname || '')}
+                    </div>
+                  )}
+                  <div className="min-w-56 flex-1">
+                    <div className="text-sm font-semibold text-slate-800">Ảnh đại diện</div>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Chọn ảnh từ thư mục máy tính để cập nhật cho nhân sự.
+                    </p>
+                  </div>
+                  <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700">
+                    {uploadingAvatar ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <ImagePlus size={16} />
+                    )}
+                    Chọn ảnh
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      onChange={onAvatarChange}
+                      className="hidden"
+                      disabled={uploadingAvatar}
+                    />
+                  </label>
+                </div>
+              </div>
               <Field label="Họ và tên">
                 <input
                   value={form.fullname || ''}
@@ -759,22 +973,12 @@ function UserModal({
                   className={inputClass}
                 />
               </Field>
-              <Field label="Tuổi">
+              <Field label="Tuổi tự tính">
                 <input
-                  type="number"
-                  min={0}
-                  value={form.age || ''}
-                  onChange={(event) => onChange({ age: Number(event.target.value || 0) })}
+                  value={calculateAge(form.dateOfBirth) || ''}
                   className={inputClass}
-                  placeholder="0"
-                />
-              </Field>
-              <Field label="Ảnh đại diện">
-                <input
-                  value={form.avatarUrl || ''}
-                  onChange={(event) => onChange({ avatarUrl: event.target.value })}
-                  className={inputClass}
-                  placeholder="https://..."
+                  placeholder="Tự tính theo ngày sinh"
+                  disabled
                 />
               </Field>
               <div className="md:col-span-2">
@@ -908,6 +1112,17 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function AuditInfo({ by, at }: { by?: string | null; at?: string | null }) {
+  return (
+    <div className="min-w-32">
+      <div className="truncate text-xs font-semibold text-slate-700" title={formatAuditUser(by)}>
+        {formatAuditUser(by)}
+      </div>
+      <div className="mt-1 whitespace-nowrap text-xs text-slate-400">{formatDateTime(at)}</div>
+    </div>
+  );
+}
+
 async function readJson(res: Response) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
@@ -922,7 +1137,9 @@ function getErrorMessage(err: unknown, fallback: string) {
 
 function isAuthError(message: string) {
   const normalized = message.toLowerCase();
-  return normalized.includes('token') || normalized.includes('đăng nhập') || normalized.includes('jwt');
+  return (
+    normalized.includes('token') || normalized.includes('đăng nhập') || normalized.includes('jwt')
+  );
 }
 
 function normalizePayload(form: UserCreatePayload): UserCreatePayload {
@@ -931,6 +1148,7 @@ function normalizePayload(form: UserCreatePayload): UserCreatePayload {
     fullname: form.fullname?.trim() || makeStaffNameFromEmail(form.email),
     email: form.email.trim().toLowerCase(),
     phone: form.phone?.trim() || undefined,
+    age: calculateAge(form.dateOfBirth),
     address: form.address?.trim() || undefined,
     avatarUrl: form.avatarUrl?.trim() || undefined,
     dateOfBirth: form.dateOfBirth || undefined,
@@ -952,6 +1170,29 @@ function getInitial(name: string) {
 
 function isProfileComplete(user: ResUserDTO) {
   return Boolean(user.phone && user.address && user.dateOfBirth);
+}
+
+function formatAuditUser(value?: string | null) {
+  return value?.trim() || '-';
+}
+
+function formatDateTime(value?: string | null) {
+  if (!value) {
+    return '-';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
 }
 
 const inputClass =

@@ -69,10 +69,13 @@ export interface ResUserDTO {
   dateOfBirth?: string | null;
   status: string;
   role?: RoleUser | null;
+  deleted?: boolean;
   createdAt?: string;
   createdBy?: string;
   updatedAt?: string;
   updatedBy?: string;
+  deletedAt?: string;
+  deletedBy?: string;
 }
 
 export interface UserCreatePayload {

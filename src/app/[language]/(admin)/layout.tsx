@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+/* eslint-disable @next/next/no-img-element */
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import {
@@ -21,30 +23,116 @@ import {
   UserRound,
 } from 'lucide-react';
 import { localizePath } from '@/components/navigation/LocalizedLink';
+import { ResUserDTO, RoleUser } from '@/types';
+import { resolveAssetUrl } from '@/utils/asset-url';
+import {
+  buildSessionEventUrl,
+  clearStaffSessionToken,
+  installStaffSessionFetch,
+} from '@/utils/session-auth';
 
 const navItems = [
-  { label: 'Tổng quan', icon: LayoutDashboard, path: '/admin/tong-quan' },
+  { label: 'Tổng quan', icon: LayoutDashboard, path: '/admin/tong-quan', adminOnly: true },
   { label: 'Hồ sơ cá nhân', icon: UserRound, path: '/admin/ho-so' },
-  { label: 'Quản lý Nhân sự', icon: Users, path: '/admin/nhan-su' },
-  { label: 'Quản lý Phân quyền', icon: ShieldCheck, path: '/admin/phan-quyen' },
-  { label: 'Quản lý Bài viết', icon: FileText, path: '/admin/bai-viet' },
-  { label: 'Quản lý Kiểm duyệt', icon: CheckSquare, path: '/admin/kiem-duyet' },
-  { label: 'Quản lý Danh mục', icon: FolderTree, path: '/admin/danh-muc' },
-  { label: 'Quản lý Media', icon: ImageIcon, path: '/admin/media' },
-  { label: 'Quản lý Biểu mẫu', icon: Mail, path: '/admin/bieu-mau' },
-  { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin-contact' },
-  { label: 'Cài đặt', icon: Settings, path: '/admin/cai-dat' },
+  { label: 'Quản lý Nhân sự', icon: Users, path: '/admin/nhan-su', adminOnly: true },
+  { label: 'Quản lý Phân quyền', icon: ShieldCheck, path: '/admin/phan-quyen', adminOnly: true },
+  { label: 'Quản lý Bài viết', icon: FileText, path: '/admin/bai-viet', adminOnly: true },
+  { label: 'Quản lý Kiểm duyệt', icon: CheckSquare, path: '/admin/kiem-duyet', adminOnly: true },
+  { label: 'Quản lý Danh mục', icon: FolderTree, path: '/admin/danh-muc', adminOnly: true },
+  { label: 'Quản lý Media', icon: ImageIcon, path: '/admin/media', adminOnly: true },
+  { label: 'Quản lý Biểu mẫu', icon: Mail, path: '/admin/bieu-mau', adminOnly: true },
+  { label: 'Quản lý Liên hệ', icon: Mail, path: '/admin-contact', adminOnly: true },
+  { label: 'Cài đặt', icon: Settings, path: '/admin/cai-dat', adminOnly: true },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [currentUser, setCurrentUser] = useState<ResUserDTO | null>(null);
 
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
   const language = typeof params?.language === 'string' ? params.language : 'vi';
+  const canUseAdminMenus = isAdminRole(currentUser?.role);
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || canUseAdminMenus);
+
+  useEffect(() => installStaffSessionFetch(), []);
+
+  useEffect(() => {
+    let active = true;
+    let redirecting = false;
+    let sessionUserId: number | null = null;
+
+    const invalidateSession = (reason: 'auth' | 'locked' = 'locked') => {
+      if (!active || redirecting) {
+        return;
+      }
+      redirecting = true;
+      clearStaffSessionToken();
+      fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
+      router.replace(
+        reason === 'locked' ? `/${language}/login?reason=locked` : `/${language}/login`
+      );
+    };
+
+    const loadProfile = async () => {
+      try {
+        const response = await fetch('/api/auth/profile', { cache: 'no-store' });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            invalidateSession('auth');
+          } else if ([403, 404].includes(response.status)) {
+            invalidateSession('locked');
+          }
+          throw new Error(data?.message || 'Không thể tải hồ sơ');
+        }
+
+        if (active) {
+          const profile = data as ResUserDTO;
+          if (profile.deleted || profile.status === 'LOCKED') {
+            invalidateSession('locked');
+            return;
+          }
+          sessionUserId = profile.id;
+          setCurrentUser(profile);
+          if (!isAdminRole(profile.role) && isRestrictedAdminPath(pathname)) {
+            router.replace(`/${language}/admin/ho-so`);
+          }
+        }
+      } catch {
+        if (active) {
+          setCurrentUser(null);
+        }
+      }
+    };
+
+    loadProfile();
+    const sessionEvents = new EventSource(buildSessionEventUrl());
+    sessionEvents.addEventListener('connected', (event) => {
+      const data = parseSessionEvent(event);
+      if (data.userId) {
+        sessionUserId = data.userId;
+      }
+    });
+    sessionEvents.addEventListener('account_locked', (event) => {
+      const data = parseSessionEvent(event);
+      if (!data.userId || data.userId === sessionUserId) {
+        invalidateSession('locked');
+      }
+    });
+    const timer = window.setInterval(loadProfile, 30000);
+
+    return () => {
+      active = false;
+      sessionEvents.close();
+      window.clearInterval(timer);
+    };
+  }, [language, pathname, router]);
 
   const handleLogout = async () => {
+    clearStaffSessionToken();
     await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
     router.push(`/${language}/login`);
   };
@@ -77,7 +165,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const href = localizePath(item.path, language);
             const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
@@ -135,12 +223,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Profile Avatar */}
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-slate-700">Nguyễn Văn A</p>
-                <p className="text-xs text-slate-500">Quản trị viên</p>
+                <p className="text-sm font-semibold text-slate-700">
+                  {currentUser?.fullname || 'Người dùng'}
+                </p>
+                <p className="text-xs text-slate-500">{roleLabel(currentUser?.role)}</p>
               </div>
-              <div className="w-9 h-9 shrink-0 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-                A
-              </div>
+              {currentUser?.avatarUrl ? (
+                <img
+                  src={resolveAssetUrl(currentUser.avatarUrl)}
+                  alt={currentUser.fullname || 'Ảnh đại diện'}
+                  className="w-9 h-9 shrink-0 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-9 h-9 shrink-0 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                  {getInitial(currentUser?.fullname)}
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -159,4 +257,42 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
     </div>
   );
+}
+
+function roleLabel(role?: RoleUser | null) {
+  const roleName = role?.name?.trim().toUpperCase();
+  if (roleName === 'SUPER_ADMIN') return 'Quản trị hệ thống';
+  if (roleName === 'ADMIN') return 'Quản trị viên';
+  if (roleName === 'USER') return 'Nhân sự';
+  if (roleName === 'NORMAL_USER') return 'Người dùng';
+  return role?.name || 'Chưa có vai trò';
+}
+
+function getInitial(name?: string | null) {
+  return name?.trim().charAt(0).toUpperCase() || 'U';
+}
+
+function isAdminRole(role?: RoleUser | null) {
+  const roleName = role?.name?.trim().toUpperCase();
+  return roleName === 'ADMIN' || roleName === 'SUPER_ADMIN';
+}
+
+function isRestrictedAdminPath(pathname: string) {
+  const pathWithoutLocale = pathname.replace(/^\/(vi|en|ja)(?=\/|$)/, '') || '/';
+  return (
+    (pathWithoutLocale.startsWith('/admin') && !pathWithoutLocale.startsWith('/admin/ho-so')) ||
+    pathWithoutLocale.startsWith('/admin-contact')
+  );
+}
+
+function parseSessionEvent(event: Event) {
+  if (!('data' in event) || typeof event.data !== 'string') {
+    return {};
+  }
+
+  try {
+    return JSON.parse(event.data) as { userId?: number };
+  } catch {
+    return {};
+  }
 }

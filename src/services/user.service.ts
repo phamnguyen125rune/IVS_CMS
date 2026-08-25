@@ -45,6 +45,28 @@ export class UserService {
     });
   }
 
+  async getDeletedUsers(): Promise<ResUserDTO[]> {
+    return apiFetch<ResUserDTO[]>('/api/v1/users/deleted');
+  }
+
+  async softDeleteUser(id: number): Promise<void> {
+    await apiFetch(`/api/v1/users/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async restoreUser(id: number): Promise<void> {
+    await apiFetch(`/api/v1/users/${id}/restore`, {
+      method: 'PUT',
+    });
+  }
+
+  async hardDeleteUser(id: number): Promise<void> {
+    await apiFetch(`/api/v1/users/${id}/hard`, {
+      method: 'DELETE',
+    });
+  }
+
   async resetUserPassword(id: number): Promise<void> {
     await apiFetch(`/api/v1/users/${id}/reset-password`, {
       method: 'PUT',
@@ -59,6 +81,26 @@ export class UserService {
 
   async getRoles(): Promise<Role[]> {
     return apiFetch<Role[]>('/api/v1/roles');
+  }
+
+  async uploadMyAvatar(file: File): Promise<{ avatarUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return apiFetch<{ avatarUrl: string }>('/api/v1/users/avatar', {
+      method: 'POST',
+      body: formData,
+    });
+  }
+
+  async uploadUserAvatar(id: number, file: File): Promise<{ avatarUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return apiFetch<{ avatarUrl: string }>(`/api/v1/users/${id}/avatar`, {
+      method: 'POST',
+      body: formData,
+    });
   }
 }
 

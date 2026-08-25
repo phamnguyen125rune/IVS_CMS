@@ -43,7 +43,11 @@ export async function POST(request: Request) {
       cookieStore.delete('must_change_password');
     }
 
-    return NextResponse.json({ user: authData.user, mustChangePassword });
+    return NextResponse.json({
+      user: authData.user,
+      accessToken: authData.access_token,
+      mustChangePassword,
+    });
   } catch (err: unknown) {
     if (err instanceof ApiError) {
       return NextResponse.json({ message: err.message }, { status: err.status });

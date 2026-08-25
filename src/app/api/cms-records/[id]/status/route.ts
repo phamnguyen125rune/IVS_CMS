@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import { cmsRecordService } from '@/services/cms-record.service';
 import { ApiError } from '@/utils/api-client';
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const { status } = await request.json();

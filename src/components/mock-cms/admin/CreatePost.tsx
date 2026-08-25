@@ -138,7 +138,9 @@ export default function PostEditor() {
             <Field label="Slug">
               <input
                 value={form.subtitle || ''}
-                onChange={(event) => setForm((value) => ({ ...value, subtitle: event.target.value }))}
+                onChange={(event) =>
+                  setForm((value) => ({ ...value, subtitle: event.target.value }))
+                }
                 className={inputClass}
                 placeholder="slug-bai-viet"
               />
@@ -163,7 +165,9 @@ export default function PostEditor() {
                 <Field label="Loại bài">
                   <select
                     value={form.type || 'Tin tức'}
-                    onChange={(event) => setForm((value) => ({ ...value, type: event.target.value }))}
+                    onChange={(event) =>
+                      setForm((value) => ({ ...value, type: event.target.value }))
+                    }
                     className={inputClass}
                   >
                     <option>Tin tức</option>

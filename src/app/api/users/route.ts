@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 function handleRouteError(err: unknown) {
   if (err instanceof ApiError) {
     const response = NextResponse.json({ message: err.message }, { status: err.status });
-    if (err.status === 401 || err.status === 403) {
+    if (err.status === 401) {
       response.cookies.delete('session_token');
       response.cookies.delete('must_change_password');
     }
