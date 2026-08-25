@@ -72,6 +72,56 @@ export interface ResUserDTO {
   updatedAt?: string;
   updatedBy?: string;
 }
+// ----------------------------
+// Permission (Phân quyền)
+// ----------------------------
+export interface Action {
+  actionId: number;
+  actionName: string;
+}
+
+export interface Api {
+  apiId: number;
+  apiLink: string;
+  apiDescription: string;
+}
+
+export interface UpdatePermissionByIdPayload {
+  apiId: number;
+  actionId: number;
+}
+
+export interface PermissionIdPayload {
+  apiId: number;
+  actionId: number;
+}
+
+export interface UpdatePermissionByIdPayload {
+  permissions: PermissionIdPayload[];
+}
+
+export interface PermissionLinkPayload {
+  apiLink: string;
+  actionName: string;
+}
+
+export interface UpdatePermissionByLinkPayload {
+  permissions: PermissionLinkPayload[];
+}
+
+export interface PermissionLink {
+  apiLink: string;
+  actionName: string;
+}
+
+export interface RolePermissions {
+  roleId: number;
+  roleName: string;
+  roleDescription: string;
+  isActive: boolean;
+  isSystem: boolean;
+  permissions: PermissionLink[];
+}
 
 // ----------------------------
 // Content / Post (Bài viết)

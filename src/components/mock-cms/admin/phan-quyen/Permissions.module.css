@@ -1,0 +1,712 @@
+.container {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* =========================================================
+   Header
+========================================================= */
+
+.headerSection {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  padding: 48px 24px;
+}
+
+.headerInner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.headerLabel {
+  margin-bottom: 12px;
+  color: #60a5fa;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.headerTitle {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 36px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.headerDescription {
+  max-width: 768px;
+  margin: 0;
+  color: #bfdbfe;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.roleIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  padding: 12px 16px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.roleIndicatorIcon {
+  color: #93c5fd;
+}
+
+.roleIndicatorLabel {
+  color: #bfdbfe;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.roleIndicatorValue {
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   Main
+========================================================= */
+
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* =========================================================
+   Role Section
+========================================================= */
+
+.roleSection {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.roleCard {
+  padding: 20px;
+  text-align: left;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.roleCard:hover {
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.roleCardActive {
+  border-color: #60a5fa;
+  box-shadow:
+    0 0 0 2px #dbeafe,
+    0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.roleCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.roleIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.selectedBadge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.roleName {
+  margin: 16px 0 0;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.roleType {
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.roleDescription {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Permission Header
+========================================================= */
+
+.permissionHeaderGrid {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.permissionHeaderCard {
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.permissionHeaderContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.permissionLabel {
+  margin-bottom: 4px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.permissionTitle {
+  margin: 0;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.permissionDescription {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* =========================================================
+   Select
+========================================================= */
+
+.roleSelectWrapper {
+  position: relative;
+}
+
+.roleSelect {
+  min-width: 190px;
+  padding: 10px 36px 10px 16px;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.roleSelect:hover {
+  border-color: #93c5fd;
+}
+
+.roleSelect:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+
+/* =========================================================
+   Summary
+========================================================= */
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summaryCard {
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.summaryContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summaryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.summaryIconEdit {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.summaryLabel {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.summaryValue {
+  margin-top: 2px;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   Matrix
+========================================================= */
+
+.matrix {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.matrixHeader {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.matrixHeaderContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.matrixTitle {
+  margin: 0;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.matrixDescription {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* =========================================================
+   Buttons
+========================================================= */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.resetBtn,
+.saveBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.resetBtn {
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.resetBtn:hover {
+  background: #f8fafc;
+}
+
+.saveBtn {
+  color: #fff;
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.2);
+}
+
+.saveBtn:hover {
+  background: #1d4ed8;
+}
+
+.saveBtn:disabled,
+.resetBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Table
+========================================================= */
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead tr {
+  background: #f8fafc;
+}
+
+.table th {
+  padding: 16px 24px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.table th:not(:first-child) {
+  text-align: center;
+}
+
+.table td {
+  padding: 20px 24px;
+  border-top: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: rgba(248, 250, 252, 0.7);
+}
+
+.apiName {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.apiId {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.permissionCell {
+  text-align: center !important;
+}
+
+/* =========================================================
+   Toggle
+========================================================= */
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  width: 44px;
+  height: 24px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.switch input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background 0.2s ease;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.switch input:checked + .slider {
+  background: #2563eb;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.switch input:focus-visible + .slider {
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+
+.switch input:disabled + .slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Empty cell
+========================================================= */
+
+.emptyCell {
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+/* =========================================================
+   Action Badge
+========================================================= */
+
+.actionBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.actionBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.actionView {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.actionCreate {
+  color: #6d28d9;
+  background: #f5f3ff;
+}
+
+.actionUpdate {
+  color: #b45309;
+  background: #fffbeb;
+}
+
+.actionDelete {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+/* =========================================================
+   Loading
+========================================================= */
+
+.loading {
+  padding: 48px 24px;
+  color: #64748b;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* =========================================================
+   Note
+========================================================= */
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #fde68a;
+  border-radius: 16px;
+  background: #fffbeb;
+}
+
+.noteIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: #b45309;
+  background: #fef3c7;
+}
+
+.noteTitle {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.noteText {
+  margin: 4px 0 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (min-width: 1024px) {
+  .headerContent {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 900px) {
+  .roleSection {
+    grid-template-columns: 1fr;
+  }
+
+  .permissionHeaderGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .headerSection {
+    padding: 36px 20px;
+  }
+
+  .main {
+    padding: 32px 20px;
+  }
+
+  .headerTitle {
+    font-size: 30px;
+  }
+
+  .permissionHeaderContent,
+  .matrixHeaderContent {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .roleSelect {
+    width: 100%;
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tableWrapper {
+    margin: 0 -1px;
+  }
+
+  .table th,
+  .table td {
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .headerTitle {
+    font-size: 26px;
+  }
+
+  .headerDescription {
+    font-size: 14px;
+  }
+
+  .roleIndicator {
+    width: 100%;
+  }
+
+  .permissionHeaderCard {
+    padding: 20px;
+  }
+
+  .matrixHeader {
+    padding: 18px;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .resetBtn,
+  .saveBtn {
+    flex: 1;
+  }
+
+  .table {
+    min-width: 650px;
+  }
+}
