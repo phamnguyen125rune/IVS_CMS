@@ -33,12 +33,10 @@ export default function MediaList({
   const currentIds = mediaList.map((item) => item.mediaId);
   const selectedCurrentIds = selectedIds.filter((id) => currentIds.includes(id));
 
-  const allSelected =
-    mediaList.length > 0 && selectedCurrentIds.length === mediaList.length;
+  const allSelected = mediaList.length > 0 && selectedCurrentIds.length === mediaList.length;
 
   const someSelected =
-    selectedCurrentIds.length > 0 &&
-    selectedCurrentIds.length < mediaList.length;
+    selectedCurrentIds.length > 0 && selectedCurrentIds.length < mediaList.length;
 
   useEffect(() => {
     if (selectAllRef.current) {
@@ -52,9 +50,7 @@ export default function MediaList({
 
   const handleSelectOne = (id: number) => {
     setSelectedIds((prev) =>
-      prev.includes(id)
-        ? prev.filter((selectedId) => selectedId !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id]
     );
   };
 
@@ -156,15 +152,10 @@ export default function MediaList({
 
                   <td className="media-list__name-cell">
                     <div className="media-list__name-wrapper">
-                      <p
-                        className="media-list__file-name"
-                        title={getFileName(item)}
-                      >
+                      <p className="media-list__file-name" title={getFileName(item)}>
                         {getFileName(item)}
                       </p>
-                      <span className="media-list__type">
-                        {getFileTypeLabel(item)}
-                      </span>
+                      <span className="media-list__type">{getFileTypeLabel(item)}</span>
                     </div>
                   </td>
 
