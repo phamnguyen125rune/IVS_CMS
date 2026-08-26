@@ -31,9 +31,30 @@ const tabs = [
 ];
 
 const mockLogs = [
-  { id: 1, time: '31/07/2026 10:30:00', account: 'admin@cms.vn', action: 'Cập nhật hệ thống', target: 'Giao diện', ip: '192.168.1.10' },
-  { id: 2, time: '31/07/2026 09:15:22', account: 'hoang.tran@cms.vn', action: 'Xóa bài viết', target: 'Bài viết #1024', ip: '113.160.14.22' },
-  { id: 3, time: '30/07/2026 15:45:10', account: 'lan.le@cms.vn', action: 'Duyệt bài viết', target: 'Bài viết #1028', ip: '14.232.112.5' },
+  {
+    id: 1,
+    time: '31/07/2026 10:30:00',
+    account: 'admin@cms.vn',
+    action: 'Cập nhật hệ thống',
+    target: 'Giao diện',
+    ip: '192.168.1.10',
+  },
+  {
+    id: 2,
+    time: '31/07/2026 09:15:22',
+    account: 'hoang.tran@cms.vn',
+    action: 'Xóa bài viết',
+    target: 'Bài viết #1024',
+    ip: '113.160.14.22',
+  },
+  {
+    id: 3,
+    time: '30/07/2026 15:45:10',
+    account: 'lan.le@cms.vn',
+    action: 'Duyệt bài viết',
+    target: 'Bài viết #1028',
+    ip: '14.232.112.5',
+  },
 ];
 
 export default function Settings() {
@@ -139,7 +160,9 @@ export default function Settings() {
                 key={key}
                 onClick={() => setActiveTab(key)}
                 className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
-                  activeTab === key ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-100'
+                  activeTab === key
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 <Icon size={15} />
@@ -153,11 +176,16 @@ export default function Settings() {
         <div className="flex-1 max-w-5xl">
           {activeTab === 'general' && (
             <div className="space-y-6">
-              <div className="bg-white rounded-xl border p-6" style={{ borderColor: 'var(--border)' }}>
+              <div
+                className="bg-white rounded-xl border p-6"
+                style={{ borderColor: 'var(--border)' }}
+              >
                 <h2 className="font-semibold text-slate-900 font-display mb-5">Hệ thống cơ bản</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Tên công ty (company_name)</label>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                      Tên công ty (company_name)
+                    </label>
                     <input
                       value={info.companyName || ''}
                       onChange={(e) => handleChange('companyName', e.target.value)}
@@ -166,7 +194,9 @@ export default function Settings() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Tên website (website_name)</label>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                      Tên website (website_name)
+                    </label>
                     <input
                       value={info.websiteName || ''}
                       onChange={(e) => handleChange('websiteName', e.target.value)}
@@ -175,7 +205,9 @@ export default function Settings() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Mô tả website (website_description)</label>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                      Mô tả website (website_description)
+                    </label>
                     <textarea
                       rows={3}
                       value={info.websiteDescription || ''}
@@ -187,10 +219,18 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ borderColor: 'var(--border)' }}>
+              <div
+                className="bg-white rounded-xl border p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                style={{ borderColor: 'var(--border)' }}
+              >
                 <div>
-                  <h2 className="font-semibold text-slate-900 font-display mb-1">Cấu hình Giao diện Footer</h2>
-                  <p className="text-sm text-slate-500">Chỉnh sửa logo, liên kết mạng xã hội, thông tin liên hệ, linker và bản quyền hiển thị dưới chân trang.</p>
+                  <h2 className="font-semibold text-slate-900 font-display mb-1">
+                    Cấu hình Giao diện Footer
+                  </h2>
+                  <p className="text-sm text-slate-500">
+                    Chỉnh sửa logo, liên kết mạng xã hội, thông tin liên hệ, linker và bản quyền
+                    hiển thị dưới chân trang.
+                  </p>
                 </div>
                 <button
                   onClick={() => setIsFooterModalOpen(true)}
@@ -204,11 +244,17 @@ export default function Settings() {
           )}
 
           {activeTab === 'logs' && (
-            <div className="bg-white rounded-xl border overflow-hidden flex flex-col" style={{ borderColor: 'var(--border)' }}>
+            <div
+              className="bg-white rounded-xl border overflow-hidden flex flex-col"
+              style={{ borderColor: 'var(--border)' }}
+            >
               <div className="p-5 border-b space-y-4" style={{ borderColor: 'var(--border)' }}>
                 <h2 className="font-semibold text-slate-900 font-display">Nhật ký hệ thống</h2>
                 <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Search
+                    size={16}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     type="text"
                     value={logSearch}
@@ -250,21 +296,36 @@ export default function Settings() {
 
       {/* ================= MODAL CHỈNH SỬA FOOTER, LOGO & LINKER ================= */}
       {isFooterModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8" onClick={() => setIsFooterModalOpen(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col overflow-hidden max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-5 border-b shrink-0 bg-white" style={{ borderColor: 'var(--border)' }}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8"
+          onClick={() => setIsFooterModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col overflow-hidden max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="flex items-center justify-between p-5 border-b shrink-0 bg-white"
+              style={{ borderColor: 'var(--border)' }}
+            >
               <div>
-                <h2 className="font-semibold text-slate-900 font-display text-lg">Chỉnh sửa Giao diện Footer, Logo & Linker</h2>
-                <p className="text-sm text-slate-500 mt-0.5">Tùy chỉnh logo, thông tin thương hiệu, liên kết mạng xã hội và chân trang.</p>
+                <h2 className="font-semibold text-slate-900 font-display text-lg">
+                  Chỉnh sửa Giao diện Footer, Logo & Linker
+                </h2>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  Tùy chỉnh logo, thông tin thương hiệu, liên kết mạng xã hội và chân trang.
+                </p>
               </div>
-              <button onClick={() => setIsFooterModalOpen(false)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-full">
+              <button
+                onClick={() => setIsFooterModalOpen(false)}
+                className="p-2 text-slate-400 hover:bg-slate-100 rounded-full"
+              >
                 <X size={20} />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto bg-[#0f172a] p-6 lg:p-12">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                
                 {/* Cột trái: Logo, Tên website, Mô tả & Mạng xã hội đầy đủ */}
                 <div className="lg:col-span-6 space-y-5">
                   {/* Ô nhập Logo */}
@@ -341,10 +402,14 @@ export default function Settings() {
 
                 {/* Cột phải: Thông tin liên hệ & Linker phụ */}
                 <div className="lg:col-span-6 space-y-5">
-                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Thông tin liên hệ & Linker</div>
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Thông tin liên hệ & Linker
+                  </div>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs text-slate-400 mb-1">Số điện thoại công ty</label>
+                      <label className="block text-xs text-slate-400 mb-1">
+                        Số điện thoại công ty
+                      </label>
                       <input
                         value={info.companyPhoneNumber || ''}
                         onChange={(e) => handleChange('companyPhoneNumber', e.target.value)}
@@ -364,7 +429,9 @@ export default function Settings() {
 
                     {/* Ô cấu hình Linker phụ dưới chân trang */}
                     <div>
-                      <label className="block text-xs text-slate-400 mb-1">Liên kết phụ Footer (Linker)</label>
+                      <label className="block text-xs text-slate-400 mb-1">
+                        Liên kết phụ Footer (Linker)
+                      </label>
                       <input
                         value={info.footerLinks || ''}
                         onChange={(e) => handleChange('footerLinks', e.target.value)}
@@ -377,12 +444,17 @@ export default function Settings() {
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
 
-            <div className="p-4 border-t bg-slate-50 flex justify-end gap-3 shrink-0" style={{ borderColor: 'var(--border)' }}>
-              <button onClick={() => setIsFooterModalOpen(false)} className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-white">
+            <div
+              className="p-4 border-t bg-slate-50 flex justify-end gap-3 shrink-0"
+              style={{ borderColor: 'var(--border)' }}
+            >
+              <button
+                onClick={() => setIsFooterModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-white"
+              >
                 Hủy bỏ
               </button>
               <button
