@@ -1,20 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocalizedNavigate as useNavigate } from '@/components/navigation/LocalizedLink';
 import {
   ArrowLeft,
   Save,
   Send,
-  ImagePlus,
   Globe,
   Share2,
   LayoutList,
   Tags,
   Calendar,
-  Type,
+  ChevronDown,
+  ChevronUp,
   FileText,
+  Maximize2,
+  Minimize2,
   Image as ImageIcon,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -28,7 +30,7 @@ import { PostCategory } from '@/types/category.type';
 const RichTextEditor = dynamic(() => import('@/config/RichTextEditor'), {
   ssr: false,
   loading: () => (
-    <div className="min-h-[600px] border rounded-xl bg-slate-50 animate-pulse flex flex-col items-center justify-center text-slate-400">
+    <div className="min-h-[500px] border rounded-xl bg-slate-50 animate-pulse flex flex-col items-center justify-center text-slate-400">
       <FileText size={32} className="mb-2 opacity-50" />
       <span>Đang tải trình soạn thảo...</span>
     </div>
@@ -43,6 +45,13 @@ export default function PostEditor() {
 
   const [categories, setCategories] = useState<PostCategory[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showSeo, setShowSeo] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Ref điều khiển chiều cao textarea tiêu đề, tóm tắt & mô tả OG
+  const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const ogDescriptionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Form Data chuẩn Backend DTO
   const [formData, setFormData] = useState<ReqPostCreateDTO>({
@@ -65,6 +74,22 @@ export default function PostEditor() {
     publishedAt: '',
   });
 
+  // Tự động co giãn chiều cao tiêu đề, tóm tắt và mô tả OG khi tải dữ liệu hoặc đổi chế độ màn hình
+  useEffect(() => {
+    if (titleTextareaRef.current) {
+      titleTextareaRef.current.style.height = 'auto';
+      titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
+    }
+    if (summaryTextareaRef.current) {
+      summaryTextareaRef.current.style.height = 'auto';
+      summaryTextareaRef.current.style.height = `${summaryTextareaRef.current.scrollHeight}px`;
+    }
+    if (ogDescriptionTextareaRef.current) {
+      ogDescriptionTextareaRef.current.style.height = 'auto';
+      ogDescriptionTextareaRef.current.style.height = `${ogDescriptionTextareaRef.current.scrollHeight}px`;
+    }
+  }, [formData.title, formData.summary, formData.ogDescription, isFullscreen]);
+
   useEffect(() => {
     categoryService
       .getAllCategories()
@@ -79,32 +104,46 @@ export default function PostEditor() {
     if (isEditMode && id) {
       postService
         .getPostById(id)
-        .then((data: any) => {
+        .then((data: unknown) => {
+          const postData = data as Record<string, unknown>;
+          const categoryObj = postData.category as { id?: number } | undefined;
+          const metadataObj = postData.metadata as
+            | {
+                title?: string;
+                description?: string;
+                canonicalUrl?: string;
+                robots?: string;
+                openGraph?: { title?: string; description?: string };
+              }
+            | undefined;
+          const tagsArr = postData.tags as Array<{ id: number }> | undefined;
+          const mediaArr = postData.mediaList as Array<{ id: number }> | undefined;
+
           setFormData({
-            title: data.title || '',
-            slug: data.slug || '',
-            summary: data.summary || '',
-            content: data.content || '',
-            categoryId: data.category?.id || 0,
-            metaTitle: data.metadata?.title || '',
-            metaDescription: data.metadata?.description || '',
-            canonicalUrl: data.metadata?.canonicalUrl || '',
-            isIndexable: data.metadata?.robots?.includes('noindex') ? false : true,
-            isFollowable: data.metadata?.robots?.includes('nofollow') ? false : true,
-            ogTitle: data.metadata?.openGraph?.title || '',
-            ogDescription: data.metadata?.openGraph?.description || '',
-            featuredMediaId: data.featuredMediaId || null,
-            ogImageId: data.ogImageId || null,
-            tagIds: data.tags?.map((t: any) => t.id) || [],
-            mediaIds: data.mediaList?.map((m: any) => m.id) || [],
-            publishedAt: data.publishedAt
-              ? new Date(data.publishedAt).toISOString().slice(0, 16)
+            title: String(postData.title || ''),
+            slug: String(postData.slug || ''),
+            summary: String(postData.summary || ''),
+            content: String(postData.content || ''),
+            categoryId: categoryObj?.id || 0,
+            metaTitle: metadataObj?.title || '',
+            metaDescription: metadataObj?.description || '',
+            canonicalUrl: metadataObj?.canonicalUrl || '',
+            isIndexable: !metadataObj?.robots?.includes('noindex'),
+            isFollowable: !metadataObj?.robots?.includes('nofollow'),
+            ogTitle: metadataObj?.openGraph?.title || '',
+            ogDescription: metadataObj?.openGraph?.description || '',
+            featuredMediaId: (postData.featuredMediaId as number) || null,
+            ogImageId: (postData.ogImageId as number) || null,
+            tagIds: tagsArr?.map((t) => t.id) || [],
+            mediaIds: mediaArr?.map((m) => m.id) || [],
+            publishedAt: postData.publishedAt
+              ? new Date(String(postData.publishedAt)).toISOString().slice(0, 16)
               : '',
           });
         })
         .catch((err) => console.error('Lỗi tải chi tiết bài viết:', err));
     }
-  }, [id, isEditMode]);
+  }, [id, isEditMode, formData.categoryId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -118,7 +157,7 @@ export default function PostEditor() {
     setFormData((prev) => ({ ...prev, [name]: checked }));
   };
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const val = e.target.value;
     setFormData((prev) => {
       const newData = { ...prev, title: val };
@@ -137,7 +176,6 @@ export default function PostEditor() {
     });
   };
 
-  // --- XỬ LÝ LƯU & GỬI DUYỆT ---
   const handleSubmit = async (e: React.FormEvent, targetStatus: PostStatus) => {
     e.preventDefault();
     if (!formData.title || !formData.slug || !formData.content || !formData.categoryId) {
@@ -170,8 +208,9 @@ export default function PostEditor() {
       }
 
       navigate('/admin/bai-viet');
-    } catch (error: any) {
-      alert(error?.message || 'Có lỗi xảy ra khi lưu bài viết!');
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'Có lỗi xảy ra khi lưu bài viết!';
+      alert(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -179,303 +218,338 @@ export default function PostEditor() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto pb-24">
-      {/* HEADER: Workflow & Hành động (Đã bỏ sticky/nổi) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      {/* CSS cố định Toolbar của Editor */}
+      <style jsx global>{`
+        .sticky-editor-container .ck-editor__top {
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 20 !important;
+          background: #ffffff !important;
+        }
+        .sticky-editor-container .ck-toolbar {
+          border-top-left-radius: 0.75rem !important;
+          border-top-right-radius: 0.75rem !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+        }
+        .sticky-editor-container .ck-content {
+          min-height: 450px !important;
+          max-height: 600px !important;
+          overflow-y: auto !important;
+          border-bottom-left-radius: 0.75rem !important;
+          border-bottom-right-radius: 0.75rem !important;
+        }
+        .fullscreen-editor .ck-content {
+          max-height: calc(100vh - 420px) !important;
+          min-height: 450px !important;
+        }
+      `}</style>
+
+      {/* Action Bar Header */}
+      <div className="py-2 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 border rounded-xl hover:bg-slate-50 text-slate-600 bg-white shadow-sm transition-colors"
+            className="p-2 border rounded-xl hover:bg-slate-100 text-slate-600 bg-white shadow-sm transition-colors"
             style={{ borderColor: 'var(--border)' }}
           >
             <ArrowLeft size={18} />
           </button>
           <div>
-            <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-900 leading-none">
-              {isEditMode ? 'Chỉnh sửa bài viết' : 'Soạn thảo bài viết mới'}
+            <h1 className="font-display text-xl font-bold text-slate-900 leading-none">
+              {isEditMode ? 'Chỉnh sửa bài viết' : 'Soạn thảo bài viết'}
             </h1>
-            <p className="text-xs text-slate-500 mt-1.5">
-              {isEditMode ? `ID: #${id}` : 'Bản nháp tự động lưu cục bộ'}
+            <p className="text-xs text-slate-500 mt-1">
+              {isEditMode ? `ID: #${id}` : 'Tập trung sáng tạo nội dung'}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => navigate(-1)}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-200/60 transition-colors"
           >
-            Hủy bỏ
+            Hủy
           </button>
           <button
             onClick={(e) => handleSubmit(e, 'DRAFT')}
             disabled={loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 shadow-sm transition-all"
             style={{ borderColor: 'var(--border)' }}
           >
-            <Save size={16} className={loading ? 'animate-pulse' : ''} /> Lưu nháp
+            <Save size={15} className={loading ? 'animate-pulse' : ''} /> Lưu nháp
           </button>
           <button
             onClick={(e) => handleSubmit(e, 'PENDING')}
             disabled={loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50 shadow-md transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50 shadow transition-all"
             style={{ background: 'var(--primary)' }}
           >
-            <Send size={16} className={loading ? 'animate-bounce' : ''} /> Gửi duyệt
+            <Send size={15} className={loading ? 'animate-bounce' : ''} /> Gửi duyệt
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        {/* ================= CỘT CHÍNH (8 CỘT - BÊN TRÁI) ================= */}
-        <div className="xl:col-span-8 space-y-6">
-          {/* Card 1: Thông tin cơ bản */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        {/* ================= CỘT CHÍNH (WRITING CANVAS) ================= */}
+        <div className="xl:col-span-8 space-y-5">
           <div
-            className="bg-white rounded-2xl border shadow-sm p-6 sm:p-8"
-            style={{ borderColor: 'var(--border)' }}
+            className={
+              isFullscreen
+                ? 'fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm p-4 sm:p-8 flex flex-col justify-center items-center'
+                : 'bg-white rounded-2xl border shadow-sm p-6 sm:p-8 relative'
+            }
+            style={!isFullscreen ? { borderColor: 'var(--border)' } : {}}
           >
             <div
-              className="flex items-center gap-2 mb-6 pb-4 border-b"
-              style={{ borderColor: 'var(--border)' }}
+              className={
+                isFullscreen
+                  ? 'bg-white w-full max-w-5xl h-full rounded-2xl shadow-2xl border flex flex-col overflow-hidden'
+                  : 'w-full'
+              }
+              style={isFullscreen ? { borderColor: 'var(--border)' } : {}}
             >
-              <Type size={18} className="text-slate-500" />
-              <h2 className="font-display font-bold text-slate-900 text-lg">Thông tin cơ bản</h2>
-            </div>
-            <div className="space-y-5">
-              <div>
-                <label className="text-sm font-semibold text-slate-700 block mb-1.5">
-                  Tiêu đề bài viết (H1) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleTitleChange}
-                  placeholder="Nhập tiêu đề (Khuyến nghị 50 - 60 ký tự)..."
-                  className="w-full px-4 py-3 text-lg font-bold text-slate-900 outline-none border rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              {isFullscreen && (
+                <div
+                  className="px-6 py-3.5 border-b flex items-center justify-between bg-slate-50/80"
                   style={{ borderColor: 'var(--border)' }}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 block mb-1.5">
-                  Đường dẫn tĩnh (Permalink / Slug) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  placeholder="thuong-duoc-tao-tu-dong-tu-tieu-de"
-                  className="w-full px-4 py-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono text-slate-600 bg-slate-50 transition-all"
-                  style={{ borderColor: 'var(--border)' }}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 block mb-1.5">
-                  Đoạn trích dẫn (Excerpt)
-                </label>
-                <textarea
-                  name="summary"
-                  value={formData.summary}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full px-4 py-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-y transition-all"
-                  style={{ borderColor: 'var(--border)' }}
-                  placeholder="Tóm tắt ngắn gọn nội dung để thu hút người đọc (Hiển thị ở trang chủ và danh sách bài viết)..."
-                />
+                >
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Chế độ tập trung soạn thảo
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={(e) => handleSubmit(e, 'DRAFT')}
+                      disabled={loading}
+                      className="px-3 py-1.5 rounded-lg border text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 shadow-sm"
+                      style={{ borderColor: 'var(--border)' }}
+                    >
+                      Lưu nháp
+                    </button>
+                    <button
+                      onClick={() => setIsFullscreen(false)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-xs font-semibold text-slate-700 transition-colors"
+                    >
+                      <Minimize2 size={14} /> Thu nhỏ
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div
+                className={
+                  isFullscreen ? 'flex-1 overflow-y-auto p-6 sm:p-10 space-y-4' : 'space-y-4'
+                }
+              >
+                {/* Input Tiêu đề tự co giãn chiều cao và xuống dòng */}
+                <div>
+                  <textarea
+                    ref={titleTextareaRef}
+                    name="title"
+                    value={formData.title}
+                    onChange={(e) => {
+                      handleTitleChange(e);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                    rows={1}
+                    placeholder="Tiêu đề bài viết..."
+                    className="w-full text-2xl sm:text-3xl font-extrabold text-slate-900 placeholder:text-slate-300 outline-none border-b pb-2 focus:border-blue-500 transition-colors resize-none overflow-hidden leading-snug block"
+                    style={{ borderColor: 'var(--border)' }}
+                  />
+                </div>
+
+                {/* Slug */}
+                <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+                  <span>slug:</span>
+                  <input
+                    type="text"
+                    name="slug"
+                    value={formData.slug}
+                    onChange={handleChange}
+                    placeholder="duong-dan-tinh"
+                    className="flex-1 px-2.5 py-1 bg-slate-50 border rounded-lg text-slate-600 outline-none focus:bg-white focus:border-blue-500"
+                    style={{ borderColor: 'var(--border)' }}
+                  />
+                </div>
+
+                {/* Tóm tắt tự co giãn chiều cao và xuống dòng */}
+                <div>
+                  <textarea
+                    ref={summaryTextareaRef}
+                    name="summary"
+                    value={formData.summary}
+                    onChange={(e) => {
+                      handleChange(e);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                    rows={2}
+                    placeholder="Tóm tắt ngắn gọn bài viết..."
+                    className="w-full px-4 py-2.5 border rounded-xl text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none overflow-hidden transition-all placeholder:text-slate-400 block leading-relaxed"
+                    style={{ borderColor: 'var(--border)' }}
+                  />
+                </div>
+
+                {/* Khung Editor kèm class cố định Toolbar */}
+                <div
+                  className={`sticky-editor-container ${isFullscreen ? 'fullscreen-editor' : ''}`}
+                >
+                  <RichTextEditor
+                    value={formData.content}
+                    onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
+                    placeholder="Bắt đầu nội dung bài viết tại đây..."
+                  />
+                </div>
+
+                {/* Nút mở rộng chế độ toàn màn hình */}
+                {!isFullscreen && (
+                  <button
+                    type="button"
+                    onClick={() => setIsFullscreen(true)}
+                    className="w-full mt-2 py-2.5 px-4 bg-slate-50 hover:bg-blue-50/60 border border-dashed hover:border-blue-300 text-slate-600 hover:text-blue-600 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all group"
+                    style={{ borderColor: 'var(--border)' }}
+                  >
+                    <Maximize2 size={14} className="group-hover:scale-110 transition-transform" />
+                    <span>Mở rộng trình soạn thảo (Toàn màn hình)</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Card 2: Trình soạn thảo văn bản */}
+          {/* Cấu hình SEO */}
           <div
-            className="bg-white rounded-2xl border shadow-sm p-6 sm:p-8"
+            className="bg-white rounded-2xl border shadow-sm overflow-hidden"
             style={{ borderColor: 'var(--border)' }}
           >
-            <div
-              className="flex items-center gap-2 mb-6 pb-4 border-b"
-              style={{ borderColor: 'var(--border)' }}
+            <button
+              type="button"
+              onClick={() => setShowSeo(!showSeo)}
+              className="w-full flex items-center justify-between px-6 py-4 bg-slate-50/60 hover:bg-slate-100/60 transition-colors text-left"
             >
-              <FileText size={18} className="text-blue-600" />
-              <h2 className="font-display font-bold text-slate-900 text-lg">
-                Nội dung bài viết <span className="text-red-500">*</span>
-              </h2>
-            </div>
-            <div
-              className="border rounded-xl overflow-hidden shadow-inner"
-              style={{ borderColor: 'var(--border)' }}
-            >
-              <RichTextEditor
-                value={formData.content}
-                onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
-                placeholder="Bắt đầu câu chuyện của bạn tại đây..."
-              />
-            </div>
-          </div>
+              <div className="flex items-center gap-2">
+                <Globe size={18} className="text-emerald-600" />
+                <span className="font-display font-bold text-slate-800 text-sm">
+                  Cấu hình SEO & Máy chủ tìm kiếm
+                </span>
+              </div>
+              {showSeo ? (
+                <ChevronUp size={16} className="text-slate-400" />
+              ) : (
+                <ChevronDown size={16} className="text-slate-400" />
+              )}
+            </button>
 
-          {/* Card 3: Cấu hình SEO (Đặt dưới cùng Cột Trái) */}
-          <div
-            className="bg-white rounded-2xl border shadow-sm p-6 sm:p-8"
-            style={{ borderColor: 'var(--border)' }}
-          >
-            <div
-              className="flex items-center gap-2 mb-6 pb-4 border-b"
-              style={{ borderColor: 'var(--border)' }}
-            >
-              <Globe size={18} className="text-emerald-600" />
-              <h2 className="font-display font-bold text-slate-900 text-lg">
-                Tối ưu máy chủ tìm kiếm (SEO)
-              </h2>
-            </div>
-            <div className="space-y-5">
-              <div>
-                <label className="text-sm font-semibold text-slate-700 flex justify-between mb-1.5">
-                  <span>Thẻ tiêu đề (Meta Title)</span>
-                  <span
-                    className={`text-xs ${(formData.metaTitle?.length ?? 0) > 60 ? 'text-red-500' : 'text-slate-400'}`}
-                  >
-                    {formData.metaTitle?.length ?? 0} / 60
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  name="metaTitle"
-                  value={formData.metaTitle}
-                  onChange={handleChange}
-                  placeholder="Ghi đè tiêu đề gốc nếu muốn hiển thị khác trên Google..."
-                  className="w-full px-4 py-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  style={{ borderColor: 'var(--border)' }}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 flex justify-between mb-1.5">
-                  <span>Thẻ mô tả (Meta Description)</span>
-                  <span
-                    className={`text-xs ${(formData.metaDescription?.length ?? 0) > 160 ? 'text-red-500' : 'text-slate-400'}`}
-                  >
-                    {formData.metaDescription?.length ?? 0} / 160
-                  </span>
-                </label>
-                <textarea
-                  name="metaDescription"
-                  value={formData.metaDescription}
-                  onChange={handleChange}
-                  rows={3}
-                  placeholder="Mô tả hấp dẫn người dùng click từ Google..."
-                  className="w-full px-4 py-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
-                  style={{ borderColor: 'var(--border)' }}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 block mb-1.5">
-                  URL Thẩm quyền (Canonical URL)
-                </label>
-                <input
-                  type="text"
-                  name="canonicalUrl"
-                  value={formData.canonicalUrl}
-                  onChange={handleChange}
-                  placeholder="https://cms.vn/nguon-goc-bai-viet (Chỉ dùng khi copy từ nguồn khác)"
-                  className="w-full px-4 py-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono"
-                  style={{ borderColor: 'var(--border)' }}
-                />
-              </div>
-              <div className="flex flex-col sm:flex-row gap-6 pt-2">
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <div className="relative flex items-center">
+            {showSeo && (
+              <div className="p-6 space-y-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 flex justify-between mb-1.5">
+                    <span>Thẻ tiêu đề (Meta Title)</span>
+                    <span
+                      className={`text-xs ${(formData.metaTitle?.length ?? 0) > 60 ? 'text-red-500' : 'text-slate-400'}`}
+                    >
+                      {formData.metaTitle?.length ?? 0} / 60
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    name="metaTitle"
+                    value={formData.metaTitle}
+                    onChange={handleChange}
+                    placeholder="Ghi đè tiêu đề hiển thị trên Google..."
+                    className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none focus:border-blue-500"
+                    style={{ borderColor: 'var(--border)' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 flex justify-between mb-1.5">
+                    <span>Thẻ mô tả (Meta Description)</span>
+                    <span
+                      className={`text-xs ${(formData.metaDescription?.length ?? 0) > 160 ? 'text-red-500' : 'text-slate-400'}`}
+                    >
+                      {formData.metaDescription?.length ?? 0} / 160
+                    </span>
+                  </label>
+                  <textarea
+                    name="metaDescription"
+                    value={formData.metaDescription}
+                    onChange={handleChange}
+                    rows={2}
+                    placeholder="Mô tả tóm tắt trên kết quả tìm kiếm..."
+                    className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none focus:border-blue-500 resize-none"
+                    style={{ borderColor: 'var(--border)' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+                    URL Thẩm quyền (Canonical URL)
+                  </label>
+                  <input
+                    type="text"
+                    name="canonicalUrl"
+                    value={formData.canonicalUrl}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                    className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none font-mono focus:border-blue-500"
+                    style={{ borderColor: 'var(--border)' }}
+                  />
+                </div>
+
+                <div className="flex gap-6 pt-1">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                     <input
                       type="checkbox"
                       name="isIndexable"
                       checked={formData.isIndexable}
                       onChange={handleCheckbox}
-                      className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 transition-all cursor-pointer peer"
+                      className="w-4 h-4 rounded text-blue-600 border-slate-300"
                     />
-                  </div>
-                  <div>
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-600">
-                      Index
-                    </span>
-                    <p className="text-xs text-slate-400">Cho phép Google lập chỉ mục</p>
-                  </div>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <div className="relative flex items-center">
+                    Index (Cho phép lập chỉ mục)
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                     <input
                       type="checkbox"
                       name="isFollowable"
                       checked={formData.isFollowable}
                       onChange={handleCheckbox}
-                      className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 transition-all cursor-pointer peer"
+                      className="w-4 h-4 rounded text-blue-600 border-slate-300"
                     />
-                  </div>
-                  <div>
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-600">
-                      Follow
-                    </span>
-                    <p className="text-xs text-slate-400">Bot theo dõi các link trong bài</p>
-                  </div>
-                </label>
+                    Follow (Theo dõi liên kết)
+                  </label>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* ================= CỘT PHỤ (4 CỘT - SIDEBAR BÊN PHẢI) ================= */}
-        <div className="xl:col-span-4 space-y-6">
-          {/* Card 4: Kế hoạch xuất bản */}
+        {/* ================= CỘT PHỤ (SIDEBAR CẤU HÌNH BÊN PHẢI) ================= */}
+        <div className="xl:col-span-4 space-y-5">
+          {/* Card 1: Danh mục */}
           <div
-            className="bg-white rounded-2xl border shadow-sm"
+            className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
           >
             <div
-              className="flex items-center gap-2 px-5 py-3.5 border-b bg-slate-50/50"
+              className="flex items-center gap-2 mb-4 pb-2 border-b"
               style={{ borderColor: 'var(--border)' }}
             >
-              <Calendar size={16} className="text-slate-700" />
-              <h3 className="font-bold text-slate-900 text-sm">Kế hoạch xuất bản</h3>
+              <LayoutList size={16} className="text-slate-600" />
+              <h3 className="font-bold text-slate-900 text-sm">Danh mục bài viết</h3>
             </div>
-            <div className="p-5">
-              <label className="text-sm font-semibold text-slate-700 block mb-2">
-                Ngày giờ lên sóng (Dự kiến)
-              </label>
-              <input
-                type="datetime-local"
-                name="publishedAt"
-                value={formData.publishedAt}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white transition-all"
-                style={{ borderColor: 'var(--border)' }}
-              />
-              <p className="text-xs text-slate-400 mt-2">
-                Bỏ trống nếu muốn xuất bản ngay sau khi được duyệt.
-              </p>
-            </div>
-          </div>
-
-          {/* Card 5: Phân loại */}
-          <div
-            className="bg-white rounded-2xl border shadow-sm"
-            style={{ borderColor: 'var(--border)' }}
-          >
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-b bg-slate-50/50"
-              style={{ borderColor: 'var(--border)' }}
-            >
-              <LayoutList size={16} className="text-slate-700" />
-              <h3 className="font-bold text-slate-900 text-sm">Phân loại học (Taxonomy)</h3>
-            </div>
-            <div className="p-5 space-y-5">
+            <div className="space-y-4">
               <div>
-                <label className="text-sm font-semibold text-slate-700 block mb-2">
-                  Danh mục chính <span className="text-red-500">*</span>
-                </label>
                 <select
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white transition-all cursor-pointer"
+                  className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none focus:border-blue-500 bg-white cursor-pointer"
                   style={{ borderColor: 'var(--border)' }}
                 >
                   <option value={0} disabled>
-                    -- Lựa chọn danh mục --
+                    -- Chọn danh mục --
                   </option>
                   {categories.map((cat) => (
                     <option key={cat.categoryId} value={cat.categoryId}>
@@ -484,12 +558,13 @@ export default function PostEditor() {
                   ))}
                 </select>
               </div>
+
               <div>
-                <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5 mb-2">
-                  <Tags size={14} /> Thẻ liên quan (Tags)
+                <label className="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-1.5">
+                  <Tags size={13} /> Thẻ bài viết (Tags)
                 </label>
                 <div
-                  className="px-4 py-2.5 border rounded-xl text-sm text-slate-400 bg-slate-50 border-dashed text-center cursor-not-allowed"
+                  className="px-3 py-2 border rounded-xl text-xs text-slate-400 bg-slate-50 border-dashed text-center cursor-not-allowed"
                   style={{ borderColor: 'var(--border)' }}
                 >
                   Tính năng gắn thẻ đang bảo trì
@@ -498,85 +573,100 @@ export default function PostEditor() {
             </div>
           </div>
 
-          {/* Card 6: Ảnh đại diện */}
+          {/* Card 2: Ảnh đại diện (Trạng thái bảo trì) */}
           <div
-            className="bg-white rounded-2xl border shadow-sm"
+            className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
           >
             <div
-              className="flex items-center gap-2 px-5 py-3.5 border-b bg-slate-50/50"
+              className="flex items-center gap-2 mb-4 pb-2 border-b"
               style={{ borderColor: 'var(--border)' }}
             >
-              <ImageIcon size={16} className="text-slate-700" />
-              <h3 className="font-bold text-slate-900 text-sm">Ảnh đại diện (Thumbnail)</h3>
+              <ImageIcon size={16} className="text-slate-600" />
+              <h3 className="font-bold text-slate-900 text-sm">Ảnh đại diện</h3>
             </div>
-            <div className="p-5">
-              <div
-                className="border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all group"
-                style={{ borderColor: 'var(--border)' }}
-              >
-                <div className="w-12 h-12 bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600 rounded-full flex items-center justify-center mb-3 transition-colors">
-                  <ImagePlus size={24} />
-                </div>
-                <p className="text-sm font-semibold text-slate-800 mb-1 group-hover:text-blue-700">
-                  Tải ảnh lên / Chọn từ Thư viện
-                </p>
-                <p className="text-[11px] text-slate-400">Định dạng JPG, PNG, WebP (Tối đa 5MB)</p>
-              </div>
+            <div
+              className="px-3 py-6 border rounded-xl text-xs text-slate-400 bg-slate-50 border-dashed text-center cursor-not-allowed flex flex-col items-center justify-center gap-2"
+              style={{ borderColor: 'var(--border)' }}
+            >
+              <ImageIcon size={20} className="text-slate-300" />
+              <span>Tính năng tải ảnh đại diện đang bảo trì</span>
             </div>
           </div>
 
-          {/* Card 7: Mạng xã hội */}
+          {/* Card 3: Lên lịch xuất bản */}
           <div
-            className="bg-white rounded-2xl border shadow-sm"
+            className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
           >
             <div
-              className="flex items-center gap-2 px-5 py-3.5 border-b bg-slate-50/50"
+              className="flex items-center gap-2 mb-3 pb-2 border-b"
+              style={{ borderColor: 'var(--border)' }}
+            >
+              <Calendar size={16} className="text-slate-600" />
+              <h3 className="font-bold text-slate-900 text-sm">Lên lịch xuất bản</h3>
+            </div>
+            <div>
+              <input
+                type="datetime-local"
+                name="publishedAt"
+                value={formData.publishedAt}
+                onChange={handleChange}
+                className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none focus:border-blue-500 bg-white"
+                style={{ borderColor: 'var(--border)' }}
+              />
+              <p className="text-[11px] text-slate-400 mt-1.5">
+                Bỏ trống nếu muốn xuất bản ngay khi được duyệt.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4: Mạng xã hội */}
+          <div
+            className="bg-white rounded-2xl border shadow-sm p-5"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            <div
+              className="flex items-center gap-2 mb-3 pb-2 border-b"
               style={{ borderColor: 'var(--border)' }}
             >
               <Share2 size={16} className="text-violet-600" />
-              <h3 className="font-bold text-slate-900 text-sm">Mạng xã hội (Open Graph)</h3>
+              <h3 className="font-bold text-slate-900 text-sm">Mạng xã hội (OG)</h3>
             </div>
-            <div className="p-5 space-y-4">
+            <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-                  Tiêu đề chia sẻ (OG Title)
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                  Tiêu đề OG
                 </label>
                 <input
                   type="text"
                   name="ogTitle"
                   value={formData.ogTitle}
                   onChange={handleChange}
-                  placeholder="Tiêu đề hiển thị trên Facebook, Zalo..."
-                  className="w-full px-3 py-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
+                  placeholder="Tiêu đề khi share FB/Zalo..."
+                  className="w-full px-3 py-1.5 border rounded-lg text-xs outline-none focus:border-violet-500"
                   style={{ borderColor: 'var(--border)' }}
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-                  Mô tả chia sẻ (OG Description)
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                  Mô tả OG
                 </label>
+                {/* Mô tả OG tự co giãn chiều cao và xuống dòng */}
                 <textarea
+                  ref={ogDescriptionTextareaRef}
                   name="ogDescription"
                   value={formData.ogDescription}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    e.target.style.height = 'auto';
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
                   rows={2}
-                  placeholder="Mô tả đi kèm khi share link..."
-                  className="w-full px-3 py-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 resize-none transition-all"
+                  placeholder="Mô tả ngắn gọn..."
+                  className="w-full px-3 py-1.5 border rounded-lg text-xs outline-none focus:border-violet-500 resize-none overflow-hidden transition-all placeholder:text-slate-400 block leading-relaxed"
                   style={{ borderColor: 'var(--border)' }}
                 />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-                  Ảnh chia sẻ độc lập
-                </label>
-                <button
-                  className="w-full px-3 py-2 border border-dashed rounded-xl text-xs font-medium text-slate-500 hover:bg-violet-50 hover:text-violet-600 hover:border-violet-300 transition-all"
-                  style={{ borderColor: 'var(--border)' }}
-                >
-                  Ghi đè ảnh đại diện (Tùy chọn)
-                </button>
               </div>
             </div>
           </div>
