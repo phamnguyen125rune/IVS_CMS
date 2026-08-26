@@ -75,16 +75,12 @@ const navItems = [
   },
 ];
 
-export default function AdminSidebar({
-  sidebarOpen,
-  onToggle,
-}: AdminSidebarProps) {
+export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProps) {
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  const language =
-    typeof params?.language === 'string' ? params.language : 'vi';
+  const language = typeof params?.language === 'string' ? params.language : 'vi';
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {
@@ -98,10 +94,7 @@ export default function AdminSidebar({
     <>
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div
-          onClick={onToggle}
-          className="fixed inset-0 bg-slate-900/50 z-20 lg:hidden"
-        />
+        <div onClick={onToggle} className="fixed inset-0 bg-slate-900/50 z-20 lg:hidden" />
       )}
 
       <aside
@@ -125,9 +118,7 @@ export default function AdminSidebar({
           </div>
 
           {sidebarOpen && (
-            <span className="font-bold text-white text-lg tracking-tight">
-              CMS Admin
-            </span>
+            <span className="font-bold text-white text-lg tracking-tight">CMS Admin</span>
           )}
         </div>
 
@@ -136,9 +127,7 @@ export default function AdminSidebar({
           {navItems.map((item) => {
             const href = localizePath(item.path, language);
 
-            const isActive =
-              pathname === href ||
-              pathname.startsWith(`${href}/`);
+            const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
             return (
               <Link
@@ -159,16 +148,9 @@ export default function AdminSidebar({
                   }
                 `}
               >
-                <item.icon
-                  size={20}
-                  className="shrink-0"
-                />
+                <item.icon size={20} className="shrink-0" />
 
-                {sidebarOpen && (
-                  <span className="truncate">
-                    {item.label}
-                  </span>
-                )}
+                {sidebarOpen && <span className="truncate">{item.label}</span>}
               </Link>
             );
           })}
@@ -191,16 +173,9 @@ export default function AdminSidebar({
               transition-all
             "
           >
-            <LogOut
-              size={20}
-              className="shrink-0"
-            />
+            <LogOut size={20} className="shrink-0" />
 
-            {sidebarOpen && (
-              <span className="truncate">
-                Đăng xuất
-              </span>
-            )}
+            {sidebarOpen && <span className="truncate">Đăng xuất</span>}
           </button>
         </div>
       </aside>

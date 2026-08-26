@@ -19,9 +19,8 @@ export class ApiError extends Error {
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const backendUrl =
     process.env.JAVA_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8080';
-
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  const url = `${backendUrl}${cleanPath}`;
+  const url = isServer ? `${backendUrl}${cleanPath}` : cleanPath;
 
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
