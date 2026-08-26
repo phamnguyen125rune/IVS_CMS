@@ -10,21 +10,14 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
+      aria-label="Chuyển đổi giao diện sáng tối"
       className="
-        flex items-center justify-center
-        w-10 h-10
+        p-2
         rounded-lg
-        border border-gray-200
-        bg-white
-        text-gray-700
-        hover:bg-gray-100
-        dark:border-gray-700
-        dark:bg-gray-800
-        dark:text-gray-200
-        dark:hover:bg-gray-700
+        text-slate-500
+        hover:bg-slate-100
         transition-colors
       "
-      aria-label="Toggle theme"
     >
       {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
     </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, use } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Search, ChevronDown, Globe, Share2, ExternalLink, Menu, X } from 'lucide-react';
@@ -133,9 +133,10 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
   return (
     <header
-      className="sticky top-0 z-50 bg-white border-b"
+      className="sticky top-0 z-50 border-b"
       style={{
-        borderColor: 'var(--border, #e2e8f0)',
+        backgroundColor: 'var(--background)',
+        borderColor: 'var(--border)',
       }}
     >
       {/* =====================================================
@@ -177,7 +178,9 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             C
           </div>
 
-          <span className="font-display font-bold text-slate-900 text-lg">CMS</span>
+          <span className="font-display font-bold text-lg" style={{ color: 'var(--text)' }}>
+            CMS
+          </span>
         </Link>
 
         {/* =================================================

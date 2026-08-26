@@ -1,24 +1,51 @@
 @import 'tailwindcss';
 
-@import 'tailwindcss';
+/* =========================================
+   DEFAULT / LIGHT THEME
+========================================= */
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
+
+  --background: #ffffff;
+  --surface: #f8fafc;
+  --surface-hover: #f1f5f9;
+
+  --text: #0f172a;
+  --text-secondary: #64748b;
+
   --border: #e2e8f0;
 }
 
-.dark {
+/* =========================================
+   DARK THEME
+========================================= */
+
+[data-theme='dark'] {
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+
   --background: #0f172a;
-  --foreground: #f8fafc;
-  --primary: #60a5fa;
-  --primary-hover: #3b82f6;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+
+  --text: #f8fafc;
+  --text-secondary: #94a3b8;
+
   --border: #334155;
+}
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--text);
 }

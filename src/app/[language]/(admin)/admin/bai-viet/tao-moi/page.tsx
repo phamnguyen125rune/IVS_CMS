@@ -1,4 +1,4 @@
-import CreatePost from '@/components/mock-cms/admin/CreatePost';
+import CreatePost from '@/components/mock-cms/admin/post/CreatePost';
 
 export default function CreatePostPage() {
   return <CreatePost />;
