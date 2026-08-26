@@ -296,10 +296,11 @@ export default function Categories() {
 
               resetForm();
             }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === key
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === key
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-500 hover:text-slate-700'
-              }`}
+            }`}
           >
             {label}
           </button>
