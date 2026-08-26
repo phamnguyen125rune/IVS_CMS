@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useLocalizedNavigate as useNavigate } from '@/components/navigation/LocalizedLink';
 import { Search, Plus, Edit, Trash2 } from 'lucide-react';
@@ -8,12 +9,15 @@ import { ResPostListDTO, PostStatus } from '@/types/post.type';
 const statusMap: Record<string, PostStatus | ''> = {
   'Tất cả': '',
   'Đã xuất bản': 'PUBLISHED',
+  'Đã duyệt': 'APPROVED',
   'Chờ duyệt': 'PENDING',
   'Bản nháp': 'DRAFT',
+  'Bị từ chối': 'REJECTED',
 };
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   PUBLISHED: { label: 'Đã xuất bản', className: 'bg-emerald-100 text-emerald-700' },
+  APPROVED: { label: 'Đã duyệt', className: 'bg-teal-100 text-teal-700' },
   PENDING: { label: 'Chờ duyệt', className: 'bg-amber-100 text-amber-700' },
   DRAFT: { label: 'Bản nháp', className: 'bg-slate-100 text-slate-600' },
   REJECTED: { label: 'Bị từ chối', className: 'bg-red-100 text-red-700' },
@@ -31,6 +35,7 @@ export default function Posts() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
+  // Modal State
   const [deletePost, setDeletePost] = useState<ResPostListDTO | null>(null);
 
   const fetchPosts = async () => {
@@ -53,11 +58,10 @@ export default function Posts() {
     }
   };
 
-  // Tự động fetch khi search, filter hoặc chuyển trang
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchPosts();
-    }, 500); // Debounce search
+    }, 500);
     return () => clearTimeout(delayDebounceFn);
   }, [search, statusFilter, page]);
 
@@ -65,7 +69,7 @@ export default function Posts() {
     if (deletePost) {
       try {
         await postService.deletePost(deletePost.id);
-        fetchPosts(); // Reload danh sách sau khi xoá
+        fetchPosts();
       } catch (error) {
         console.error('Lỗi khi xóa bài viết:', error);
       } finally {
@@ -76,6 +80,7 @@ export default function Posts() {
 
   return (
     <div className="p-6 relative">
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Bài viết</h1>
@@ -83,13 +88,14 @@ export default function Posts() {
         </div>
         <button
           onClick={() => navigate('/admin/bai-viet/tao-moi')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 shadow-sm"
           style={{ background: 'var(--primary)' }}
         >
           <Plus size={15} /> Tạo bài viết
         </button>
       </div>
 
+      {/* SEARCH + FILTER STATUS */}
       <div
         className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center"
         style={{ borderColor: 'var(--border)' }}
@@ -107,7 +113,7 @@ export default function Posts() {
             style={{ borderColor: 'var(--border)' }}
           />
         </div>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {Object.keys(statusMap).map((s) => (
             <button
               key={s}
@@ -115,7 +121,9 @@ export default function Posts() {
                 setStatusFilter(s);
                 setPage(1);
               }}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${statusFilter === s ? 'text-white' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                statusFilter === s ? 'text-white' : 'text-slate-500 hover:bg-slate-100'
+              }`}
               style={statusFilter === s ? { background: 'var(--primary)' } : {}}
             >
               {s}
@@ -124,6 +132,7 @@ export default function Posts() {
         </div>
       </div>
 
+      {/* TABLE */}
       <div
         className="bg-white rounded-xl border overflow-hidden"
         style={{ borderColor: 'var(--border)' }}
@@ -141,6 +150,9 @@ export default function Posts() {
                 Tác giả
               </th>
               <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                Ngày duyệt / Xuất bản
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
                 Trạng thái
               </th>
               <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
@@ -151,7 +163,7 @@ export default function Posts() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-5 py-10 text-center text-slate-500">
+                <td colSpan={6} className="px-5 py-10 text-center text-slate-500">
                   Đang tải...
                 </td>
               </tr>
@@ -171,15 +183,48 @@ export default function Posts() {
                       <div className="font-medium text-slate-800 max-w-xs truncate">
                         {post.title}
                       </div>
+                      <div className="text-xs text-slate-400 mt-1 max-w-xs truncate">
+                        {post.summary || 'Không có tóm tắt'}
+                      </div>
                     </td>
+
                     <td className="px-5 py-3.5">
                       <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
                         {post.category?.name || 'Không có'}
                       </span>
                     </td>
+
                     <td className="px-5 py-3.5 text-slate-600 text-xs">
                       {post.author?.name || 'System'}
                     </td>
+
+                    {/* HIỂN THỊ NGÀY DUYỆT / XUẤT BẢN & NGÀY TẠO */}
+                    <td className="px-5 py-3.5 text-xs">
+                      {post.publishedAt ? (
+                        <div>
+                          <span className="font-medium text-slate-700">
+                            {new Date(post.publishedAt).toLocaleDateString('vi-VN')}
+                          </span>
+                          <span className="block text-[11px] text-slate-400">
+                            Tạo:{' '}
+                            {post.createdAt
+                              ? new Date(post.createdAt).toLocaleDateString('vi-VN')
+                              : '---'}
+                          </span>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="text-slate-400 italic">Chưa xuất bản</span>
+                          <span className="block text-[11px] text-slate-400">
+                            Tạo:{' '}
+                            {post.createdAt
+                              ? new Date(post.createdAt).toLocaleDateString('vi-VN')
+                              : '---'}
+                          </span>
+                        </div>
+                      )}
+                    </td>
+
                     <td className="px-5 py-3.5">
                       <span
                         className={`text-xs font-medium px-2.5 py-1 rounded-full ${sc.className}`}
@@ -187,17 +232,20 @@ export default function Posts() {
                         {sc.label}
                       </span>
                     </td>
+
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => navigate(`/admin/bai-viet/sua/${post.id}`)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 transition-colors"
+                          title="Chỉnh sửa"
                         >
                           <Edit size={14} />
                         </button>
                         <button
                           onClick={() => setDeletePost(post)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 transition-colors"
+                          title="Xóa"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -208,7 +256,7 @@ export default function Posts() {
               })
             ) : (
               <tr>
-                <td colSpan={5} className="px-5 py-10 text-center text-slate-500">
+                <td colSpan={6} className="px-5 py-10 text-center text-slate-500">
                   Không tìm thấy bài viết
                 </td>
               </tr>
@@ -217,6 +265,7 @@ export default function Posts() {
         </table>
       </div>
 
+      {/* MODAL: DELETE */}
       {deletePost && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
@@ -234,13 +283,13 @@ export default function Posts() {
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => setDeletePost(null)}
-                className="px-5 py-2.5 rounded-xl border text-sm text-slate-600"
+                className="px-5 py-2.5 rounded-xl border text-sm text-slate-600 hover:bg-slate-50 transition-colors"
               >
                 Hủy
               </button>
               <button
                 onClick={handleDelete}
-                className="px-5 py-2.5 rounded-xl text-white text-sm bg-red-500"
+                className="px-5 py-2.5 rounded-xl text-white text-sm bg-red-500 hover:bg-red-600 shadow-sm transition-colors"
               >
                 Xác nhận xóa
               </button>

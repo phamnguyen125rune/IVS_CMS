@@ -1,27 +1,41 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, CheckCircle, XCircle, AlertTriangle, X, Search } from 'lucide-react';
+import {
+  Eye,
+  CheckCircle,
+  XCircle,
+  Clock,
+  X,
+  ArrowLeft,
+  Share2,
+  Bookmark,
+  Globe,
+  Search,
+  ChevronDown,
+  ExternalLink,
+} from 'lucide-react';
 
 import { postService } from '@/services/post.service';
-import { ResPostListDTO } from '@/types/post.type';
+import { ResPostListDTO, ResPostDTO } from '@/types/post.type';
 
 type ModalType = 'preview' | 'reject' | null;
-type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+type ApprovalStatus = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export default function PostApproval() {
   const [posts, setPosts] = useState<ResPostListDTO[]>([]);
-  const [activeStatus, setActiveStatus] = useState<ApprovalStatus>('PENDING');
+  const [activeStatus, setActiveStatus] = useState<ApprovalStatus>('ALL');
   const [search, setSearch] = useState('');
 
   const [modal, setModal] = useState<{
     type: ModalType;
-    post: ResPostListDTO | null;
+    post: ResPostDTO | ResPostListDTO | null;
   }>({
     type: null,
     post: null,
   });
 
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -38,14 +52,14 @@ export default function PostApproval() {
   };
 
   // =========================
-  // GET POSTS (Dùng useCallback để tái sử dụng an toàn)
+  // GET POSTS
   // =========================
   const fetchPosts = useCallback(async (status: ApprovalStatus) => {
     try {
       setLoading(true);
       const res = await postService.getPosts(
         {
-          status,
+          ...(status !== 'ALL' && { status }),
         },
         1,
         50
@@ -63,6 +77,29 @@ export default function PostApproval() {
   }, [activeStatus, fetchPosts]);
 
   // =========================
+  // XỬ LÝ MỞ XEM TRƯỚC (GỌI API LẤY CHI TIẾT CONTENT)
+  // =========================
+  const handleOpenPreview = async (postItem: ResPostListDTO) => {
+    setModal({ type: 'preview', post: postItem });
+    setPreviewLoading(true);
+
+    try {
+      const res =
+        (await (postService as any).getPostById?.(postItem.id)) ??
+        (await (postService as any).getPost?.(postItem.id));
+      if (res?.result) {
+        setModal({ type: 'preview', post: res.result });
+      } else if (res) {
+        setModal({ type: 'preview', post: res });
+      }
+    } catch (err) {
+      console.error('Lỗi khi tải chi tiết bài viết:', err);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  // =========================
   // APPROVE
   // =========================
   const approve = async (id: number) => {
@@ -78,7 +115,7 @@ export default function PostApproval() {
       });
 
       showToast('Bài viết đã được duyệt thành công!', 'success');
-      fetchPosts('PENDING');
+      fetchPosts(activeStatus);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Lỗi khi duyệt';
       showToast(errorMsg, 'error');
@@ -104,7 +141,7 @@ export default function PostApproval() {
 
       setRejectReason('');
       showToast('Đã trả bài lại cho tác giả.', 'error');
-      fetchPosts('PENDING');
+      fetchPosts(activeStatus);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Lỗi khi từ chối';
       showToast(errorMsg, 'error');
@@ -134,6 +171,10 @@ export default function PostApproval() {
       className: string;
     }
   > = {
+    ALL: {
+      label: 'Tất cả',
+      className: 'bg-slate-100 text-slate-700',
+    },
     PENDING: {
       label: 'Chờ duyệt',
       className: 'bg-amber-100 text-amber-700',
@@ -149,11 +190,13 @@ export default function PostApproval() {
   };
 
   const pageTitle =
-    activeStatus === 'PENDING'
-      ? 'Bài viết chờ duyệt'
-      : activeStatus === 'APPROVED'
-        ? 'Bài viết đã duyệt'
-        : 'Bài viết đã từ chối';
+    activeStatus === 'ALL'
+      ? 'Tất cả bài viết'
+      : activeStatus === 'PENDING'
+        ? 'Bài viết chờ duyệt'
+        : activeStatus === 'APPROVED'
+          ? 'Bài viết đã duyệt'
+          : 'Bài viết đã từ chối';
 
   return (
     <div className="p-6 relative">
@@ -175,13 +218,6 @@ export default function PostApproval() {
           <h1 className="font-display text-xl font-bold text-slate-900">{pageTitle}</h1>
           <p className="text-slate-500 text-sm mt-0.5">{filteredPosts.length} bài viết</p>
         </div>
-
-        {activeStatus === 'PENDING' && (
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2">
-            <AlertTriangle size={15} className="text-amber-500" />
-            <span className="text-sm text-amber-700 font-medium">Cần xử lý: {posts.length}</span>
-          </div>
-        )}
       </div>
 
       {/* SEARCH + STATUS FILTER */}
@@ -201,7 +237,7 @@ export default function PostApproval() {
         </div>
 
         <div className="flex gap-1">
-          {(['PENDING', 'APPROVED', 'REJECTED'] as ApprovalStatus[]).map((status) => (
+          {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as ApprovalStatus[]).map((status) => (
             <button
               key={status}
               onClick={() => setActiveStatus(status)}
@@ -254,7 +290,8 @@ export default function PostApproval() {
               </tr>
             ) : filteredPosts.length > 0 ? (
               filteredPosts.map((post) => {
-                const sc = statusConfig[activeStatus];
+                const currentStatus = (post.status as ApprovalStatus) || 'PENDING';
+                const currentStatusConfig = statusConfig[currentStatus] || statusConfig.PENDING;
 
                 return (
                   <tr
@@ -289,28 +326,23 @@ export default function PostApproval() {
 
                     <td className="px-5 py-3.5">
                       <span
-                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${sc.className}`}
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${currentStatusConfig.className}`}
                       >
-                        {sc.label}
+                        {currentStatusConfig.label}
                       </span>
                     </td>
 
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         <button
-                          onClick={() => {
-                            setModal({
-                              type: 'preview',
-                              post,
-                            });
-                          }}
+                          onClick={() => handleOpenPreview(post)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"
                           title="Xem trước"
                         >
                           <Eye size={14} />
                         </button>
 
-                        {activeStatus === 'PENDING' && (
+                        {currentStatus === 'PENDING' && (
                           <>
                             <button
                               onClick={() => approve(post.id)}
@@ -351,7 +383,254 @@ export default function PostApproval() {
         </table>
       </div>
 
-      {/* MODAL REJECT */}
+      {/* ================= MODALS ================= */}
+
+      {/* MODAL 1: PREVIEW (DESKTOP VIEW) */}
+      {modal.type === 'preview' && modal.post && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 sm:p-6"
+          onClick={() => setModal({ type: null, post: null })}
+        >
+          <div
+            className="bg-slate-100 rounded-2xl shadow-2xl w-full max-w-[1400px] flex flex-col h-full max-h-[92vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Toolbar */}
+            <div
+              className="flex items-center justify-between px-6 py-3 bg-white border-b shrink-0 z-10 shadow-sm"
+              style={{ borderColor: 'var(--border)' }}
+            >
+              <div className="flex items-center gap-3">
+                <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5">
+                  <Clock size={14} />
+                  <span>
+                    {statusConfig[(modal.post.status as ApprovalStatus) || 'PENDING']?.label ||
+                      'Đang kiểm duyệt'}
+                  </span>
+                </span>
+                <span className="text-xs font-medium text-slate-500 border-l pl-3">
+                  Chế độ xem trước (Giao diện Desktop)
+                </span>
+              </div>
+              <button
+                onClick={() => setModal({ type: null, post: null })}
+                className="text-slate-400 hover:text-slate-700 p-1.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors"
+                title="Đóng xem trước"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Container Preview Content */}
+            <div className="flex-1 overflow-y-auto w-full p-4 sm:p-6 bg-slate-100 flex justify-center">
+              <div className="bg-white rounded-xl shadow-xl border border-slate-200 h-full w-full max-w-[1280px] overflow-y-auto flex flex-col">
+                {/* Mockup Header Web (Đồng bộ ClientNavbar) */}
+                <div className="shrink-0 bg-white border-b border-slate-200 select-none pointer-events-none">
+                  <div
+                    className="flex items-center justify-end px-6 py-1 text-xs text-slate-400 border-b"
+                    style={{ background: '#0f172a', borderColor: '#1e293b' }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="hover:text-white transition-colors cursor-pointer">
+                        <Share2 size={12} />
+                      </span>
+                      <span className="hover:text-white transition-colors cursor-pointer">
+                        <ExternalLink size={12} />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between px-6 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className="w-9 h-9 text-base rounded-xl flex items-center justify-center text-white font-bold"
+                        style={{ background: 'var(--primary, #2563eb)' }}
+                      >
+                        C
+                      </div>
+                      <span className="font-display font-bold text-slate-900 text-lg">CMS</span>
+                    </div>
+
+                    <nav className="flex items-center gap-1">
+                      {[
+                        { label: 'Trang chủ', hasChildren: false, active: false },
+                        { label: 'Giới thiệu', hasChildren: false, active: false },
+                        { label: 'Bài viết', hasChildren: true, active: true },
+                        { label: 'Dự án', hasChildren: true, active: false },
+                        { label: 'Khách hàng', hasChildren: false, active: false },
+                        { label: 'Tuyển dụng', hasChildren: false, active: false },
+                        { label: 'Liên hệ', hasChildren: false, active: false },
+                      ].map((item) => (
+                        <div
+                          key={item.label}
+                          className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium ${
+                            item.active
+                              ? 'text-blue-600 font-semibold'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          <span>{item.label}</span>
+                          {item.hasChildren && <ChevronDown size={13} className="text-slate-400" />}
+                        </div>
+                      ))}
+                    </nav>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 border border-slate-200 bg-white">
+                        <Globe size={13} className="text-slate-500" />
+                        <span>🇻🇳</span>
+                        <ChevronDown size={11} className="text-slate-400" />
+                      </div>
+
+                      <div className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-50">
+                        <Search size={17} />
+                      </div>
+
+                      <div
+                        className="flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white shadow-sm"
+                        style={{ background: 'var(--primary, #2563eb)' }}
+                      >
+                        Liên hệ ngay
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Body Chi tiết bài viết */}
+                <div className="mx-auto w-full max-w-7xl px-8 py-8 grid grid-cols-12 gap-10">
+                  <div className="col-span-8">
+                    <div className="flex items-center gap-2 text-slate-500 text-sm mb-6 hover:text-blue-600 cursor-pointer w-fit">
+                      <ArrowLeft size={16} /> Quay lại danh sách bài viết
+                    </div>
+
+                    <div className="flex gap-2 mb-4">
+                      {modal.post.category?.name && (
+                        <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          {modal.post.category.name}
+                        </span>
+                      )}
+                    </div>
+
+                    <h1 className="font-display font-bold text-slate-900 mb-6 leading-[1.3] text-[32px]">
+                      {modal.post.title}
+                    </h1>
+
+                    <div className="flex items-center justify-between py-4 border-b border-slate-100 mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-sm">
+                          {modal.post.author?.name?.charAt(0) || 'A'}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">
+                            {modal.post.author?.name || 'Tác giả ẩn danh'}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {modal.post.createdAt
+                              ? new Date(modal.post.createdAt).toLocaleDateString('vi-VN')
+                              : 'Vừa xong'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button className="p-2 border rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+                          <Share2 size={16} />
+                        </button>
+                        <button className="p-2 border rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+                          <Bookmark size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Hiển thị ảnh đại diện */}
+                    {(() => {
+                      const imageUrl =
+                        'featuredMedia' in modal.post && modal.post.featuredMedia
+                          ? modal.post.featuredMedia
+                          : 'mediaList' in modal.post && modal.post.mediaList?.[0]?.filePath
+                            ? modal.post.mediaList[0].filePath
+                            : null;
+
+                      return imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          className="w-full rounded-2xl mb-8 object-cover aspect-[16/9] bg-slate-100"
+                          alt={modal.post.title}
+                        />
+                      ) : null;
+                    })()}
+
+                    <div className="text-slate-700 leading-relaxed space-y-5 pb-8 text-[16px]">
+                      {modal.post.summary && (
+                        <p className="text-slate-900 font-medium text-lg">{modal.post.summary}</p>
+                      )}
+
+                      {/* Hiển thị nội dung chi tiết từ API hoặc Skeleton khi tải */}
+                      {previewLoading ? (
+                        <div className="py-10 text-center text-slate-400">
+                          Đang tải toàn bộ nội dung bài viết...
+                        </div>
+                      ) : 'content' in modal.post && modal.post.content ? (
+                        <div
+                          className="prose max-w-none text-slate-800 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: modal.post.content }}
+                        />
+                      ) : (
+                        <p className="text-slate-500 italic">
+                          Nội dung chi tiết chưa được cung cấp.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Sidebar bên phải */}
+                  <div className="col-span-4 space-y-6">
+                    <div className="border border-slate-100 rounded-2xl p-6 flex flex-col items-center text-center bg-white shadow-sm">
+                      <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-xl mb-3">
+                        {modal.post.author?.name?.charAt(0) || 'A'}
+                      </div>
+                      <h4 className="font-bold text-slate-900 text-sm mb-1">
+                        {modal.post.author?.name || 'Tác giả ẩn danh'}
+                      </h4>
+                      <p className="text-xs text-slate-500 mb-2">Người đóng góp nội dung</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Toolbar của Modal Preview */}
+            <div
+              className="flex items-center justify-end gap-3 px-6 py-4 bg-white shrink-0 border-t shadow-sm z-10"
+              style={{ borderColor: 'var(--border)' }}
+            >
+              {modal.post.status === 'PENDING' && (
+                <>
+                  <button
+                    onClick={() => {
+                      setModal({ type: 'reject', post: modal.post });
+                      setRejectReason('');
+                    }}
+                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 shadow-sm"
+                  >
+                    <XCircle size={16} />
+                    <span>Từ chối bài viết</span>
+                  </button>
+
+                  <button
+                    onClick={() => approve(modal.post!.id)}
+                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+                  >
+                    <CheckCircle size={16} />
+                    <span>Duyệt & Xuất bản ngay</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: REJECT */}
       {modal.type === 'reject' && modal.post && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
@@ -391,7 +670,7 @@ export default function PostApproval() {
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="Nhập lý do chi tiết..."
-                className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-red-400"
+                className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-red-400 resize-none"
               />
 
               <div className="mt-3 flex flex-wrap gap-2">
