@@ -36,10 +36,14 @@ export default function Posts() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const res = await postService.getPosts({
-        keyword: search,
-        status: statusMap[statusFilter]
-      }, page, 10);
+      const res = await postService.getPosts(
+        {
+          keyword: search,
+          status: statusMap[statusFilter],
+        },
+        page,
+        10
+      );
       setPostList(res.result || []);
       setTotal(res.meta?.total || 0);
     } catch (error) {
@@ -86,12 +90,18 @@ export default function Posts() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center" style={{ borderColor: 'var(--border)' }}>
+      <div
+        className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center"
+        style={{ borderColor: 'var(--border)' }}
+      >
         <div className="flex-1 min-w-48 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Tìm kiếm bài viết..."
             className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
             style={{ borderColor: 'var(--border)' }}
@@ -101,7 +111,10 @@ export default function Posts() {
           {Object.keys(statusMap).map((s) => (
             <button
               key={s}
-              onClick={() => { setStatusFilter(s); setPage(1); }}
+              onClick={() => {
+                setStatusFilter(s);
+                setPage(1);
+              }}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${statusFilter === s ? 'text-white' : 'text-slate-500 hover:bg-slate-100'}`}
               style={statusFilter === s ? { background: 'var(--primary)' } : {}}
             >
@@ -111,54 +124,126 @@ export default function Posts() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)' }}>
+      <div
+        className="bg-white rounded-xl border overflow-hidden"
+        style={{ borderColor: 'var(--border)' }}
+      >
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Tiêu đề</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Danh mục</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Tác giả</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Trạng thái</th>
-              <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Hành động</th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                Tiêu đề
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                Danh mục
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                Tác giả
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                Trạng thái
+              </th>
+              <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                Hành động
+              </th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="px-5 py-10 text-center text-slate-500">Đang tải...</td></tr>
+              <tr>
+                <td colSpan={5} className="px-5 py-10 text-center text-slate-500">
+                  Đang tải...
+                </td>
+              </tr>
             ) : postList.length > 0 ? (
               postList.map((post) => {
-                const sc = statusConfig[post.status] || { label: post.status, className: 'bg-gray-100 text-gray-700' };
+                const sc = statusConfig[post.status] || {
+                  label: post.status,
+                  className: 'bg-gray-100 text-gray-700',
+                };
                 return (
-                  <tr key={post.id} className="border-t hover:bg-slate-50" style={{ borderColor: 'var(--border)' }}>
-                    <td className="px-5 py-3.5"><div className="font-medium text-slate-800 max-w-xs truncate">{post.title}</div></td>
-                    <td className="px-5 py-3.5"><span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">{post.category?.name || 'Không có'}</span></td>
-                    <td className="px-5 py-3.5 text-slate-600 text-xs">{post.author?.name || 'System'}</td>
-                    <td className="px-5 py-3.5"><span className={`text-xs font-medium px-2.5 py-1 rounded-full ${sc.className}`}>{sc.label}</span></td>
+                  <tr
+                    key={post.id}
+                    className="border-t hover:bg-slate-50"
+                    style={{ borderColor: 'var(--border)' }}
+                  >
+                    <td className="px-5 py-3.5">
+                      <div className="font-medium text-slate-800 max-w-xs truncate">
+                        {post.title}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                        {post.category?.name || 'Không có'}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-600 text-xs">
+                      {post.author?.name || 'System'}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${sc.className}`}
+                      >
+                        {sc.label}
+                      </span>
+                    </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => navigate(`/admin/bai-viet/sua/${post.id}`)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"><Edit size={14} /></button>
-                        <button onClick={() => setDeletePost(post)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
+                        <button
+                          onClick={() => navigate(`/admin/bai-viet/sua/${post.id}`)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          onClick={() => setDeletePost(post)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
                     </td>
                   </tr>
                 );
               })
             ) : (
-              <tr><td colSpan={5} className="px-5 py-10 text-center text-slate-500">Không tìm thấy bài viết</td></tr>
+              <tr>
+                <td colSpan={5} className="px-5 py-10 text-center text-slate-500">
+                  Không tìm thấy bài viết
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
       </div>
 
       {deletePost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setDeletePost(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          onClick={() => setDeletePost(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Trash2 size={24} className="mx-auto mb-4 text-red-500" />
             <h3 className="font-bold text-lg mb-2">Xóa bài viết?</h3>
-            <p className="text-sm text-slate-600 mb-6">Bạn có chắc chắn muốn xóa bài viết "{deletePost.title}"?</p>
+            <p className="text-sm text-slate-600 mb-6">
+              Bạn có chắc chắn muốn xóa bài viết "{deletePost.title}"?
+            </p>
             <div className="flex justify-center gap-3">
-              <button onClick={() => setDeletePost(null)} className="px-5 py-2.5 rounded-xl border text-sm text-slate-600">Hủy</button>
-              <button onClick={handleDelete} className="px-5 py-2.5 rounded-xl text-white text-sm bg-red-500">Xác nhận xóa</button>
+              <button
+                onClick={() => setDeletePost(null)}
+                className="px-5 py-2.5 rounded-xl border text-sm text-slate-600"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-5 py-2.5 rounded-xl text-white text-sm bg-red-500"
+              >
+                Xác nhận xóa
+              </button>
             </div>
           </div>
         </div>

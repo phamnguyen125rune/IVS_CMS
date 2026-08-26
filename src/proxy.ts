@@ -19,7 +19,8 @@ export function proxy(request: NextRequest) {
       headers.set('Authorization', `Bearer ${token}`);
     }
 
-    const backendUrl = process.env.JAVA_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8080';
+    const backendUrl =
+      process.env.JAVA_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8080';
     return NextResponse.rewrite(new URL(`${backendUrl}${pathname}${request.nextUrl.search}`), {
       request: { headers },
     });
