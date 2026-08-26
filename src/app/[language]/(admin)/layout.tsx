@@ -122,6 +122,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         invalidateSession('locked');
       }
     });
+    sessionEvents.onerror = () => {
+      sessionEvents.close();
+      void loadProfile();
+    };
     const timer = window.setInterval(loadProfile, 30000);
 
     return () => {
