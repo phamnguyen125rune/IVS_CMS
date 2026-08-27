@@ -1,0 +1,171 @@
+.media-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+
+  background: rgb(0 0 0 / 70%);
+}
+
+.media-preview-modal {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 1280px;
+  height: 92vh;
+
+  overflow: hidden;
+
+  border-radius: 16px;
+
+  background: #fff;
+
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 25%);
+}
+
+.media-preview-header {
+  display: flex;
+  flex-shrink: 0;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 16px 20px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.media-preview-info {
+  min-width: 0;
+}
+
+.media-preview-title {
+  margin: 0;
+
+  overflow: hidden;
+
+  color: #08142f;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-preview-meta {
+  margin: 4px 0 0;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+}
+
+.media-preview-close {
+  display: flex;
+  flex-shrink: 0;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-left: 16px;
+  padding: 8px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #6b7280;
+
+  cursor: pointer;
+}
+
+.media-preview-close:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.media-preview-body {
+  min-height: 0;
+  flex: 1;
+
+  overflow: auto;
+
+  background: #f3f4f6;
+}
+
+.media-preview-footer {
+  display: flex;
+  flex-shrink: 0;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  padding: 16px 20px;
+
+  border-top: 1px solid #e5e7eb;
+
+  background: #fff;
+}
+
+.media-preview-download {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 8px 16px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #374151;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.media-preview-download:hover {
+  background: #f9fafb;
+}
+
+.media-preview-close-button {
+  padding: 8px 16px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #111827;
+
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.media-preview-close-button:hover {
+  background: #1f2937;
+}
+
+@media (min-width: 768px) {
+  .media-preview-overlay {
+    padding: 24px;
+  }
+}

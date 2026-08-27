@@ -12,33 +12,35 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Hàm gọi API dùng chung, tự động xử lý cấu hình base URL, chèn Authorization token
+ * ở phía server, và chuẩn hóa lỗi phản hồi.
+ */
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  // Client: Gọi relative path để Middleware bắt và làm Proxy
-  // Server: Gọi thẳng Java backend
-  const backendUrl = isServer
-    ? process.env.JAVA_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8080'
-    : '';
-
+  const backendUrl =
+    process.env.JAVA_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8080';
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  const url = `${backendUrl}${cleanPath}`;
+  const url = isServer ? `${backendUrl}${cleanPath}` : cleanPath;
 
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
-  // Ở Client, Middleware (proxy.ts) sẽ lo việc đính kèm token. Chỉ xử lý gắn token trực tiếp trên Server Component.
+  // Tự động chèn token session khi gọi API từ phía Server (Server Components / API Routes)
   if (isServer) {
     try {
+      // Import động next/headers để tránh lỗi đóng gói trên trình duyệt client
       const { cookies } = await import('next/headers');
       const cookieStore = await cookies();
       const token = cookieStore.get('session_token')?.value;
-
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
     } catch {
-      console.warn('Unable to access cookies on server-side request');
+      console.warn(
+        'Unable to access cookies on server-side request (likely not in request context)'
+      );
     }
   }
 
@@ -50,6 +52,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   try {
     const res = await fetch(url, fetchOptions);
 
+    // Xử lý kiểm tra phản hồi lỗi HTTP
     if (!res.ok) {
       let errorInfo;
       try {
@@ -57,20 +60,28 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
       } catch {
         errorInfo = null;
       }
+
       const errorMessage = errorInfo?.message || `HTTP error! status: ${res.status}`;
       console.error(`[API ERROR] ${res.status} ${url}:`, errorInfo);
+
       throw new ApiError(errorMessage, res.status, errorInfo);
     }
 
-    if (res.status === 204) return {} as T;
+    if (res.status === 204) {
+      return {} as T;
+    }
 
     const text = await res.text();
-    if (!text) return {} as T;
+    if (!text) {
+      return {} as T;
+    }
 
     return JSON.parse(text) as T;
   } catch (error) {
-    if (error instanceof ApiError) throw error;
+    if (error instanceof ApiError) {
+      throw error;
+    }
     console.error(`[CONNECTION ERROR] Failed to fetch ${url}:`, error);
-    throw new ApiError('Không thể kết nối đến backend', 503);
+    throw new ApiError('Không thể kết nối đến máy chủ backend', 503);
   }
 }
