@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useSyncExternalStore, useRef } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import {
   ClassicEditor,
@@ -51,13 +51,19 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
-export default function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
-  const [isMounted, setIsMounted] = useState(false);
-  const editorRef = useRef<any>(null);
+const emptySubscribe = () => () => {};
+export function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true, // Client
+    () => false // Server
+  );
+}
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+export default function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
+  const isMounted = useIsMounted();
+  // Khai báo đúng kiểu instance ClassicEditor
+  const editorRef = useRef<ClassicEditor | null>(null);
 
   if (!isMounted) {
     return <div className="min-h-[600px] border rounded-xl bg-slate-50 animate-pulse"></div>;
@@ -87,7 +93,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       <CKEditor
         editor={ClassicEditor}
         data={value}
-        onChange={(event, editor) => {
+        onChange={(_event, editor) => {
           const data = editor.getData();
           onChange(data);
         }}

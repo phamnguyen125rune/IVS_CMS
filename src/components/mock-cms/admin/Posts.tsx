@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocalizedNavigate as useNavigate } from '@/components/navigation/LocalizedLink';
 import { Search, Plus, Edit, Trash2 } from 'lucide-react';
 import { postService } from '@/services/post.service';
@@ -38,7 +38,7 @@ export default function Posts() {
   // Modal State
   const [deletePost, setDeletePost] = useState<ResPostListDTO | null>(null);
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
       const res = await postService.getPosts(
@@ -56,14 +56,14 @@ export default function Posts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, statusFilter, page]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchPosts();
     }, 500);
     return () => clearTimeout(delayDebounceFn);
-  }, [search, statusFilter, page]);
+  }, [fetchPosts]);
 
   const handleDelete = async () => {
     if (deletePost) {
@@ -278,7 +278,7 @@ export default function Posts() {
             <Trash2 size={24} className="mx-auto mb-4 text-red-500" />
             <h3 className="font-bold text-lg mb-2">Xóa bài viết?</h3>
             <p className="text-sm text-slate-600 mb-6">
-              Bạn có chắc chắn muốn xóa bài viết "{deletePost.title}"?
+              Bạn có chắc chắn muốn xóa bài viết &quot;{deletePost.title}&quot;?
             </p>
             <div className="flex justify-center gap-3">
               <button

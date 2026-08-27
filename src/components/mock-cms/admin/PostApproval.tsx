@@ -52,11 +52,11 @@ export default function PostApproval() {
   };
 
   // =========================
-  // GET POSTS
+  // REFRESH POSTS (Dùng sau khi duyệt / từ chối)
   // =========================
-  const fetchPosts = useCallback(async (status: ApprovalStatus) => {
+  const refreshPosts = useCallback(async (status: ApprovalStatus) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await postService.getPosts(
         {
           ...(status !== 'ALL' && { status }),
@@ -65,16 +65,48 @@ export default function PostApproval() {
         50
       );
       setPosts(res.result || []);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Lỗi khi tải danh sách bài viết:', err);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // =========================
+  // GET POSTS ON STATUS CHANGE
+  // =========================
   useEffect(() => {
-    fetchPosts(activeStatus);
-  }, [activeStatus, fetchPosts]);
+    let ignore = false;
+
+    async function loadData() {
+      try {
+        const res = await postService.getPosts(
+          {
+            ...(activeStatus !== 'ALL' && { status: activeStatus }),
+          },
+          1,
+          50
+        );
+        if (!ignore) {
+          setPosts(res.result || []);
+        }
+      } catch (err: unknown) {
+        if (!ignore) {
+          console.error('Lỗi khi tải danh sách bài viết:', err);
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      ignore = true;
+    };
+  }, [activeStatus]);
 
   // =========================
   // XỬ LÝ MỞ XEM TRƯỚC (GỌI API LẤY CHI TIẾT CONTENT)
@@ -84,13 +116,9 @@ export default function PostApproval() {
     setPreviewLoading(true);
 
     try {
-      const res =
-        (await (postService as any).getPostById?.(postItem.id)) ??
-        (await (postService as any).getPost?.(postItem.id));
-      if (res?.result) {
-        setModal({ type: 'preview', post: res.result });
-      } else if (res) {
-        setModal({ type: 'preview', post: res });
+      const detailPost = await postService.getPostById(postItem.id);
+      if (detailPost && typeof detailPost === 'object' && 'id' in detailPost) {
+        setModal({ type: 'preview', post: detailPost });
       }
     } catch (err) {
       console.error('Lỗi khi tải chi tiết bài viết:', err);
@@ -115,7 +143,7 @@ export default function PostApproval() {
       });
 
       showToast('Bài viết đã được duyệt thành công!', 'success');
-      fetchPosts(activeStatus);
+      refreshPosts(activeStatus);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Lỗi khi duyệt';
       showToast(errorMsg, 'error');
@@ -141,7 +169,7 @@ export default function PostApproval() {
 
       setRejectReason('');
       showToast('Đã trả bài lại cho tác giả.', 'error');
-      fetchPosts(activeStatus);
+      refreshPosts(activeStatus);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Lỗi khi từ chối';
       showToast(errorMsg, 'error');
@@ -240,7 +268,10 @@ export default function PostApproval() {
           {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as ApprovalStatus[]).map((status) => (
             <button
               key={status}
-              onClick={() => setActiveStatus(status)}
+              onClick={() => {
+                setLoading(true);
+                setActiveStatus(status);
+              }}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeStatus === status ? 'text-white' : 'text-slate-500 hover:bg-slate-100'
               }`}
@@ -424,7 +455,7 @@ export default function PostApproval() {
             {/* Container Preview Content */}
             <div className="flex-1 overflow-y-auto w-full p-4 sm:p-6 bg-slate-100 flex justify-center">
               <div className="bg-white rounded-xl shadow-xl border border-slate-200 h-full w-full max-w-[1280px] overflow-y-auto flex flex-col">
-                {/* Mockup Header Web (Đồng bộ ClientNavbar) */}
+                {/* Mockup Header Web */}
                 <div className="shrink-0 bg-white border-b border-slate-200 select-none pointer-events-none">
                   <div
                     className="flex items-center justify-end px-6 py-1 text-xs text-slate-400 border-b"
@@ -551,6 +582,7 @@ export default function PostApproval() {
                             : null;
 
                       return imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={imageUrl}
                           className="w-full rounded-2xl mb-8 object-cover aspect-[16/9] bg-slate-100"

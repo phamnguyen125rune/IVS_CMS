@@ -51,7 +51,7 @@ export interface ResPostDTO {
   createdAt?: string;
   updatedAt?: string;
   metadata?: PostMetadata;
-  jsonLd?: any;
+  jsonLd?: Record<string, unknown>;
   tags?: TagInfo[];
   mediaList?: MediaInfo[];
 }
@@ -90,9 +90,7 @@ export interface ReqPostCreateDTO {
   mediaIds?: number[];
 }
 
-export interface ReqPostUpdateDTO extends ReqPostCreateDTO {
-  // status?: PostStatus;
-}
+export type ReqPostUpdateDTO = ReqPostCreateDTO;
 
 export interface PaginationMeta {
   page: number;
