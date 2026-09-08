@@ -20,7 +20,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     : '';
 
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  const url = `${backendUrl}${cleanPath}`;
+  const url = isServer ? `${backendUrl}${cleanPath}` : cleanPath;
 
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
