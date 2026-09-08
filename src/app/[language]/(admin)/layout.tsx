@@ -8,6 +8,7 @@ import { Bell, Globe, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 import AdminSidebar from '@/components/layout/admin/AdminSidebar';
 import AdminFooter from '@/components/layout/admin/AdminFooter';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -52,6 +53,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Right */}
           <div className="flex items-center gap-4">
+            {/* Theme toggle */}
+            <ThemeToggle />
+            
             {/* Notification */}
             <button
               className="

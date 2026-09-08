@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 
 import { localizePath } from '@/components/navigation/LocalizedLink';
-
 interface AdminSidebarProps {
   sidebarOpen: boolean;
   onToggle: () => void;
