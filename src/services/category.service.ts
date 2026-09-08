@@ -1,38 +1,63 @@
 import { apiFetch } from '@/utils/api-client';
-import { PostCategory, ReqCategoryCreateDTO, ReqCategoryUpdateDTO } from '@/types/category.type';
 
-export class CategoryService {
-  async getAllCategories(): Promise<PostCategory[]> {
-    const res = await apiFetch<PostCategory[]>('/api/v1/categories');
-    return res;
-  }
+export const categoryService = {
+  // =========================
+  // CATEGORY
+  // =========================
 
-  async getCategoryById(id: number): Promise<PostCategory> {
-    const res = await apiFetch<PostCategory>(`/api/v1/categories/${id}`);
-    return res;
-  }
+  getAllCategories: async () => {
+    return apiFetch('/api/categories', {
+      method: 'GET',
+    });
+  },
 
-  async createCategory(payload: ReqCategoryCreateDTO): Promise<PostCategory> {
-    const res = await apiFetch<PostCategory>('/api/v1/categories', {
+  createCategory: async (data: unknown) => {
+    return apiFetch('/api/categories', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(data),
     });
-    return res;
-  }
+  },
 
-  async updateCategory(id: number, payload: ReqCategoryUpdateDTO): Promise<PostCategory> {
-    const res = await apiFetch<PostCategory>(`/api/v1/categories/${id}`, {
+  updateCategory: async (id: number | string, data: unknown) => {
+    return apiFetch(`/api/categories/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(data),
     });
-    return res;
-  }
+  },
 
-  async deleteCategory(id: number): Promise<void> {
-    await apiFetch(`/api/v1/categories/${id}`, {
+  deleteCategory: async (id: number | string) => {
+    return apiFetch(`/api/categories/${id}`, {
       method: 'DELETE',
     });
-  }
-}
+  },
 
-export const categoryService = new CategoryService();
+  // =========================
+  // TAG
+  // =========================
+
+  getAllTags: async () => {
+    return apiFetch('/api/tags', {
+      method: 'GET',
+    });
+  },
+
+  createTag: async (data: unknown) => {
+    return apiFetch('/api/tags', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateTag: async (id: number | string, data: unknown) => {
+    return apiFetch(`/api/tags/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteTag: async (id: number | string) => {
+    return apiFetch(`/api/tags/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
