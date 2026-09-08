@@ -1,12 +1,13 @@
 import { apiFetch } from '@/utils/api-client';
+import { PostCategory } from '@/types/category.type';
 
 export const categoryService = {
   // =========================
   // CATEGORY
   // =========================
 
-  getAllCategories: async () => {
-    return apiFetch('/api/categories', {
+  getAllCategories: async (): Promise<PostCategory[]> => {
+    return apiFetch<PostCategory[]>('/api/categories', {
       method: 'GET',
     });
   },
