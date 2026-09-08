@@ -94,12 +94,7 @@ export default function Recruitment() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Hero Section */}
-      <section
-        className="bg-white border-b"
-        style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
-        }}
-      >
+      <section className="bg-white border-b" style={{ borderColor: 'var(--border)' }}>
         <div className="max-w-7xl mx-auto px-6 py-20 lg:py-24 flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-medium mb-6">
             <Award size={16} />
@@ -109,7 +104,7 @@ export default function Recruitment() {
             Cùng chúng tôi kiến tạo <br className="hidden md:block" />
             <span className="text-blue-600">tương lai số</span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mb-10 text-white">
+          <p className="text-lg text-slate-600 max-w-2xl mb-10">
             Chúng tôi luôn tìm kiếm những tài năng đam mê công nghệ, sáng tạo và không ngại thử
             thách để cùng nhau xây dựng những sản phẩm mang lại giá trị thực cho cộng đồng.
           </p>

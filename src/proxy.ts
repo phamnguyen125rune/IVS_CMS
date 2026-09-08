@@ -4,7 +4,6 @@ const SUPPORTED_LOCALES = ['vi', 'en', 'ja'] as const;
 const DEFAULT_LOCALE = 'vi';
 type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-const PROTECTED_PATHS = ['/users', '/profile', 'contact'];
 const PUBLIC_FILE_REGEX = /\.(.*)$/;
 
 export function proxy(request: NextRequest) {
@@ -46,23 +45,6 @@ export function proxy(request: NextRequest) {
     const redirectUrl = new URL(`/${preferredLocale}${pathname}`, request.url);
     redirectUrl.search = request.nextUrl.search;
     return NextResponse.redirect(redirectUrl);
-  }
-
-  const locale = pathname.split('/')[1] as Locale;
-  const token = request.cookies.get('session_token')?.value;
-  const pathWithoutLocale = `/${pathname.split('/').slice(2).join('/')}`;
-  const isProtected = PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p));
-
-  // Yêu cầu đăng nhập
-  if (isProtected && !token) {
-    const loginUrl = new URL(`/${locale}/login`, request.url);
-    loginUrl.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Chuyển thẳng về trang cấu hình nếu đã login
-  if (pathWithoutLocale.startsWith('/login') && token) {
-    return NextResponse.redirect(new URL(`/${locale}/profile`, request.url));
   }
 
   return NextResponse.next();

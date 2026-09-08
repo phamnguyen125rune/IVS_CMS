@@ -173,8 +173,10 @@ export default function Home() {
               Đã phục vụ 500+ doanh nghiệp trên toàn quốc
             </div>
             <h1 className="font-display font-bold text-4xl lg:text-6xl text-white leading-tight mb-6">
-              Kiến tạo tương lai
-              <span style={{ color: '#60a5fa' }}> cho doanh nghiệp </span>
+              Kiến tạo tương lai số
+              <br />
+              <span style={{ color: '#60a5fa' }}>cho doanh nghiệp</span>
+              <br />
               của bạn
             </h1>
             <p className="text-blue-200 text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
@@ -184,7 +186,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
                 to="/lien-he"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white border border-white/30 hover:bg-white/10"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white"
                 style={{ background: 'var(--primary)' }}
               >
                 Tư vấn miễn phí <ArrowRight size={16} />
@@ -529,7 +531,7 @@ export default function Home() {
           <h2 className="font-display text-3xl font-bold text-black mb-4">
             Sẵn sàng chuyển đổi doanh nghiệp?
           </h2>
-          <p className="text-black-200 text-base mb-8">
+          <p className="text-blue-200 text-base mb-8">
             Liên hệ ngay để nhận tư vấn miễn phí từ đội ngũ chuyên gia của chúng tôi.
           </p>
           <Link

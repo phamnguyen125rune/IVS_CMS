@@ -26,6 +26,8 @@ export interface User {
 export interface Role {
   id: number;
   name: string; // VD: 'ADMIN', 'EDITOR', 'VIEWER'
+  description?: string;
+  active?: boolean;
   permissions: string[]; // VD: ['post:create', 'post:publish']
 }
 
@@ -67,10 +69,35 @@ export interface ResUserDTO {
   dateOfBirth?: string | null;
   status: string;
   role?: RoleUser | null;
+  deleted?: boolean;
   createdAt?: string;
   createdBy?: string;
   updatedAt?: string;
   updatedBy?: string;
+  deletedAt?: string;
+  deletedBy?: string;
+}
+
+export interface UserCreatePayload {
+  fullname?: string;
+  email: string;
+  phone?: string;
+  age?: number;
+  address?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  avatarUrl?: string;
+  roleId?: number;
+}
+
+export interface ResultPaginationDTO<T> {
+  meta: {
+    page: number;
+    pageSize: number;
+    pages: number;
+    total: number;
+  };
+  result: T[];
 }
 
 // ----------------------------

@@ -42,6 +42,10 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     }
   }
 
+  return finishFetch<T>(url, options, headers);
+}
+
+async function finishFetch<T>(url: string, options: RequestInit, headers: Headers): Promise<T> {
   const fetchOptions: RequestInit = {
     ...options,
     headers,

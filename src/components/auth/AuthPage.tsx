@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Check,
@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   X,
 } from 'lucide-react';
+import { clearStaffSessionToken, setStaffSessionToken } from '@/utils/session-auth';
 
 type ModalStep = 'forgot-email' | 'forgot-otp' | 'reset-password' | 'reset-success' | null;
 
@@ -22,15 +23,28 @@ interface ResetVerifyResponse {
   resetToken: string;
 }
 
+interface StaffLoginResponse {
+  mustChangePassword?: boolean;
+  accessToken?: string;
+  user?: {
+    role?: {
+      name?: string | null;
+    } | null;
+  };
+}
+
 const emptyOtp = ['', '', '', '', '', ''];
 
 export default function AuthPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const language = (params?.language as string) || 'vi';
+  const callbackUrl = searchParams.get('callbackUrl');
+  const lockedReason = searchParams.get('reason') === 'locked';
 
   const [loginId, setLoginId] = useState('admin@cms.local');
-  const [loginPassword, setLoginPassword] = useState('');
+  const [loginPassword, setLoginPassword] = useState('Admin@123456');
   const [forgotEmail, setForgotEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -40,7 +54,9 @@ export default function AuthPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [modalStep, setModalStep] = useState<ModalStep>(null);
   const [countdown, setCountdown] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    lockedReason ? 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.' : null
+  );
   const [notice, setNotice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -60,6 +76,12 @@ export default function AuthPage() {
       window.setTimeout(() => otpRefs.current[0]?.focus(), 80);
     }
   }, [modalStep]);
+
+  useEffect(() => {
+    if (lockedReason) {
+      clearStaffSessionToken();
+    }
+  }, [lockedReason]);
 
   const request = async <T,>(url: string, options: RequestInit): Promise<T> => {
     const res = await fetch(url, {
@@ -103,12 +125,17 @@ export default function AuthPage() {
     setIsLoading(true);
 
     try {
-      await request('/api/auth/login', {
+      const data = await request<StaffLoginResponse>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ loginId, password: loginPassword }),
       });
+      setStaffSessionToken(data.accessToken);
+      const isAdmin = isAdminRoleName(data.user?.role?.name);
+      const profilePath = `/${language}/admin/ho-so`;
+      const defaultPath = isAdmin ? callbackUrl || `/${language}/admin/nhan-su` : profilePath;
+
       router.refresh();
-      router.push(`/${language}/admin-contact`);
+      router.push(data.mustChangePassword ? profilePath : defaultPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập không thành công');
     } finally {
@@ -224,19 +251,19 @@ export default function AuthPage() {
     <main className="min-h-screen bg-[#0f172a] px-4 py-10 text-slate-900">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-xl flex-col items-center justify-center gap-6">
         <section className="w-full max-w-[448px] rounded-2xl bg-white px-8 py-8 shadow-2xl shadow-blue-950/30">
-          <BrandHeader title="Đăng nhập hệ thống" subtitle="Hệ thống quản trị CMS" />
+          <BrandHeader title="Đăng nhập nhân sự" subtitle="Dành cho nhân viên và quản lý CMS" />
 
           {error && !modalStep && <Alert tone="error" message={error} />}
           {notice && !modalStep && <Alert tone="success" message={notice} />}
 
           <form className="mt-8 space-y-5" onSubmit={handleLogin}>
-            <Field label="Email">
+            <Field label="Email hoặc mã nhân viên">
               <input
-                type="email"
+                type="text"
                 value={loginId}
                 onChange={(event) => setLoginId(event.target.value)}
                 className={inputClass}
-                placeholder="admin@cms.local"
+                placeholder="admin@cms.local hoặc EMP0001"
                 required
               />
             </Field>
@@ -263,7 +290,17 @@ export default function AuthPage() {
             </div>
             <PrimaryButton loading={isLoading}>Đăng nhập</PrimaryButton>
             <p className="text-center text-xs text-slate-400">
-              Tài khoản demo: <span className="font-semibold text-slate-600">admin@cms.local</span>
+              Tài khoản demo: <span className="font-semibold text-slate-600">admin@cms.local</span>{' '}
+              / <span className="font-semibold text-slate-600">Admin@123456</span>
+            </p>
+            <p className="text-center text-sm text-slate-500">
+              Khách hàng?{' '}
+              <Link
+                href={`/${language}/register`}
+                className="font-semibold text-blue-600 hover:text-blue-700"
+              >
+                Đăng nhập bằng Google
+              </Link>
             </p>
           </form>
         </section>
@@ -273,7 +310,7 @@ export default function AuthPage() {
           className="flex items-center gap-2 text-sm font-medium text-sky-200 hover:text-white"
         >
           <Globe2 size={16} />
-          Quay lại trang web Khách hàng
+          Quay lại website khách hàng
         </Link>
       </div>
 
@@ -404,6 +441,11 @@ export default function AuthPage() {
       )}
     </main>
   );
+}
+
+function isAdminRoleName(roleName?: string | null) {
+  const normalizedRoleName = roleName?.trim().toUpperCase();
+  return normalizedRoleName === 'ADMIN' || normalizedRoleName === 'SUPER_ADMIN';
 }
 
 function BrandHeader({ title, subtitle }: { title: string; subtitle: string }) {
