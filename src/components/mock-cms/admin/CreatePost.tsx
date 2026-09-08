@@ -18,13 +18,19 @@ import {
   Maximize2,
   Minimize2,
   Image as ImageIcon,
+  UploadCloud,
+  X,
+  FolderOpen
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 import { postService } from '@/services/post.service';
 import { categoryService } from '@/services/category.service';
+import { tagService } from '@/services/tag.service';
+import { apiFetch } from '@/utils/api-client';
 import { ReqPostCreateDTO, ReqPostUpdateDTO, PostStatus } from '@/types/post.type';
 import { PostCategory } from '@/types/category.type';
+import { Tag } from '@/types/tag.type';
 
 // Tải ngầm CKEditor
 const RichTextEditor = dynamic(() => import('@/config/RichTextEditor'), {
@@ -44,16 +50,27 @@ export default function PostEditor() {
   const isEditMode = Boolean(id);
 
   const [categories, setCategories] = useState<PostCategory[]>([]);
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+
+  // State tìm kiếm Tag
+  const [tagSearch, setTagSearch] = useState('');
+  const [showTagDropdown, setShowTagDropdown] = useState(false);
+
+  // State Thư viện Media
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [mediaItems, setMediaItems] = useState<any[]>([]);
+  const [loadingMedia, setLoadingMedia] = useState(false);
+
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [showSeo, setShowSeo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [featuredImageUrl, setFeaturedImageUrl] = useState<string | null>(null);
 
-  // Ref điều khiển chiều cao textarea tiêu đề, tóm tắt & mô tả OG
   const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const ogDescriptionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Form Data chuẩn Backend DTO
   const [formData, setFormData] = useState<ReqPostCreateDTO>({
     title: '',
     slug: '',
@@ -74,7 +91,7 @@ export default function PostEditor() {
     publishedAt: '',
   });
 
-  // Tự động co giãn chiều cao tiêu đề, tóm tắt và mô tả OG khi tải dữ liệu hoặc đổi chế độ màn hình
+  // Tự động co giãn textarea
   useEffect(() => {
     if (titleTextareaRef.current) {
       titleTextareaRef.current.style.height = 'auto';
@@ -90,60 +107,55 @@ export default function PostEditor() {
     }
   }, [formData.title, formData.summary, formData.ogDescription, isFullscreen]);
 
+  // Load danh mục và tag có sẵn
   useEffect(() => {
-    categoryService
-      .getAllCategories()
-      .then((data) => {
-        setCategories(data);
-        if (!isEditMode && data.length > 0 && formData.categoryId === 0) {
-          setFormData((prev) => ({ ...prev, categoryId: data[0].categoryId }));
-        }
-      })
-      .catch((err) => console.error('Lỗi tải danh mục:', err));
+    Promise.all([
+      categoryService.getAllCategories(),
+      tagService.getAllTags()
+    ]).then(([cats, fetchedTags]) => {
+      setCategories(cats);
+      setAvailableTags(fetchedTags);
+      if (!isEditMode && cats.length > 0 && formData.categoryId === 0) {
+        setFormData((prev) => ({ ...prev, categoryId: cats[0].categoryId }));
+      }
+    }).catch((err) => console.error('Lỗi tải dữ liệu nền:', err));
 
     if (isEditMode && id) {
       postService
         .getPostById(id)
-        .then((data: unknown) => {
-          const postData = data as Record<string, unknown>;
-          const categoryObj = postData.category as { id?: number } | undefined;
-          const metadataObj = postData.metadata as
-            | {
-                title?: string;
-                description?: string;
-                canonicalUrl?: string;
-                robots?: string;
-                openGraph?: { title?: string; description?: string };
-              }
-            | undefined;
-          const tagsArr = postData.tags as Array<{ id: number }> | undefined;
-          const mediaArr = postData.mediaList as Array<{ id: number }> | undefined;
-
+        .then((postData: any) => {
           setFormData({
-            title: String(postData.title || ''),
-            slug: String(postData.slug || ''),
-            summary: String(postData.summary || ''),
-            content: String(postData.content || ''),
-            categoryId: categoryObj?.id || 0,
-            metaTitle: metadataObj?.title || '',
-            metaDescription: metadataObj?.description || '',
-            canonicalUrl: metadataObj?.canonicalUrl || '',
-            isIndexable: !metadataObj?.robots?.includes('noindex'),
-            isFollowable: !metadataObj?.robots?.includes('nofollow'),
-            ogTitle: metadataObj?.openGraph?.title || '',
-            ogDescription: metadataObj?.openGraph?.description || '',
-            featuredMediaId: (postData.featuredMediaId as number) || null,
-            ogImageId: (postData.ogImageId as number) || null,
-            tagIds: tagsArr?.map((t) => t.id) || [],
-            mediaIds: mediaArr?.map((m) => m.id) || [],
+            title: postData.title || '',
+            slug: postData.slug || '',
+            summary: postData.summary || '',
+            content: postData.content || '',
+            categoryId: postData.category?.id || 0,
+            metaTitle: postData.metadata?.title || '',
+            metaDescription: postData.metadata?.description || '',
+            canonicalUrl: postData.metadata?.canonicalUrl || '',
+            isIndexable: !postData.metadata?.robots?.includes('noindex'),
+            isFollowable: !postData.metadata?.robots?.includes('nofollow'),
+            ogTitle: postData.metadata?.openGraph?.title || '',
+            ogDescription: postData.metadata?.openGraph?.description || '',
+            featuredMediaId: postData.mediaList?.[0]?.id || null,
+            ogImageId: null,
+            tagIds: postData.tags?.map((t: any) => t.id) || [],
+            mediaIds: postData.mediaList?.map((m: any) => m.id) || [],
             publishedAt: postData.publishedAt
-              ? new Date(String(postData.publishedAt)).toISOString().slice(0, 16)
+              ? new Date(postData.publishedAt).toISOString().slice(0, 16)
               : '',
           });
+
+          if (postData.metadata?.openGraph?.imageUrl) {
+            setFeaturedImageUrl(postData.metadata.openGraph.imageUrl);
+          } else if (postData.mediaList && postData.mediaList.length > 0) {
+            setFeaturedImageUrl(postData.mediaList[0].filePath);
+          }
         })
-        .catch((err) => console.error('Lỗi tải chi tiết bài viết:', err));
+        .catch((err) => console.error('Lỗi lấy chi tiết bài viết:', err));
     }
-  }, [id, isEditMode, formData.categoryId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditMode]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -176,17 +188,90 @@ export default function PostEditor() {
     });
   };
 
+  const toggleTag = (tagId: number) => {
+    setFormData((prev) => {
+      const isSelected = prev.tagIds?.includes(tagId);
+      return {
+        ...prev,
+        tagIds: isSelected
+          ? prev.tagIds?.filter((id) => id !== tagId)
+          : [...(prev.tagIds || []), tagId],
+      };
+    });
+  };
+
+  // Upload Ảnh đại diện (Trực tiếp)
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+
+    setUploadingImage(true);
+    try {
+      const res = await apiFetch<any>('/api/v1/media/upload', {
+        method: 'POST',
+        body: uploadData,
+      });
+
+      // Bóc tách data nếu BE bọc trong { data: ... }
+      const result = (res && typeof res === 'object' && 'data' in res) ? res.data : res;
+
+      setFormData((prev) => ({
+        ...prev,
+        featuredMediaId: result.mediaId,
+        mediaIds: [...(prev.mediaIds || []), result.mediaId]
+      }));
+      setFeaturedImageUrl(result.filePath);
+
+    } catch (error) {
+      console.error(error);
+      alert('Lỗi khi upload ảnh!');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  // Load Thư viện Media
+  const fetchMediaLibrary = async () => {
+    setLoadingMedia(true);
+    try {
+      const res = await apiFetch<any>('/api/v1/media?fileType=image');
+
+      // Bóc tách data nếu BE bọc trong { data: ... }
+      const items = (res && typeof res === 'object' && 'data' in res) ? res.data : res;
+      setMediaItems(Array.isArray(items) ? items : []);
+
+    } catch (error: any) {
+      console.error('Lỗi lấy danh sách media:', error);
+      alert(error.message || 'Không thể tải thư viện ảnh.');
+    } finally {
+      setLoadingMedia(false);
+    }
+  };
+
+  // Chọn Ảnh từ Thư viện
+  const handleSelectFromLibrary = (media: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      featuredMediaId: media.mediaId,
+      mediaIds: [...(prev.mediaIds || []), media.mediaId]
+    }));
+    setFeaturedImageUrl(media.filePath);
+    setIsMediaModalOpen(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent, targetStatus: PostStatus) => {
     e.preventDefault();
     if (!formData.title || !formData.slug || !formData.content || !formData.categoryId) {
-      alert('Vui lòng nhập Tiêu đề, Slug, Nội dung và Danh mục!');
+      alert('Vui lòng nhập Tiêu đề, Slug, Nội dung và chọn Danh mục!');
       return;
     }
-    setLoading(true);
 
+    setLoading(true);
     try {
       const payloadToSubmit = { ...formData };
-
       if (payloadToSubmit.publishedAt) {
         payloadToSubmit.publishedAt = new Date(payloadToSubmit.publishedAt).toISOString();
       } else {
@@ -198,27 +283,34 @@ export default function PostEditor() {
       if (isEditMode && currentPostId) {
         const payload: ReqPostUpdateDTO = { ...payloadToSubmit };
         await postService.updatePost(currentPostId, payload);
+        if (targetStatus === 'PENDING') {
+          await postService.changeStatus(currentPostId, targetStatus);
+        }
       } else {
         const createdPost = await postService.createPost(payloadToSubmit);
         currentPostId = createdPost.id;
-      }
-
-      if (currentPostId && (targetStatus === 'DRAFT' || targetStatus === 'PENDING')) {
-        await postService.changeStatus(currentPostId, targetStatus);
+        if (targetStatus === 'PENDING') {
+          await postService.changeStatus(currentPostId, targetStatus);
+        }
       }
 
       navigate('/admin/bai-viet');
-    } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : 'Có lỗi xảy ra khi lưu bài viết!';
-      alert(errorMsg);
+    } catch (error: any) {
+      alert(error.message || 'Có lỗi xảy ra khi lưu bài viết!');
     } finally {
       setLoading(false);
     }
   };
 
+  const filteredTags = availableTags.filter(
+    (tag) =>
+      !formData.tagIds?.includes(tag.tagId) &&
+      tag.tagName.toLowerCase().includes(tagSearch.toLowerCase())
+  );
+  const selectedTags = availableTags.filter((tag) => formData.tagIds?.includes(tag.tagId));
+
   return (
-    <div className="p-6 max-w-[1400px] mx-auto pb-24">
-      {/* CSS cố định Toolbar của Editor */}
+    <div className="p-6 max-w-[1400px] mx-auto pb-24 relative">
       <style jsx global>{`
         .sticky-editor-container .ck-editor__top {
           position: sticky !important;
@@ -263,7 +355,6 @@ export default function PostEditor() {
             </p>
           </div>
         </div>
-
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => navigate(-1)}
@@ -273,7 +364,7 @@ export default function PostEditor() {
           </button>
           <button
             onClick={(e) => handleSubmit(e, 'DRAFT')}
-            disabled={loading}
+            disabled={loading || uploadingImage}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl border bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 shadow-sm transition-all"
             style={{ borderColor: 'var(--border)' }}
           >
@@ -281,7 +372,7 @@ export default function PostEditor() {
           </button>
           <button
             onClick={(e) => handleSubmit(e, 'PENDING')}
-            disabled={loading}
+            disabled={loading || uploadingImage}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50 shadow transition-all"
             style={{ background: 'var(--primary)' }}
           >
@@ -335,13 +426,11 @@ export default function PostEditor() {
                   </div>
                 </div>
               )}
-
               <div
                 className={
                   isFullscreen ? 'flex-1 overflow-y-auto p-6 sm:p-10 space-y-4' : 'space-y-4'
                 }
               >
-                {/* Input Tiêu đề tự co giãn chiều cao và xuống dòng */}
                 <div>
                   <textarea
                     ref={titleTextareaRef}
@@ -358,8 +447,6 @@ export default function PostEditor() {
                     style={{ borderColor: 'var(--border)' }}
                   />
                 </div>
-
-                {/* Slug */}
                 <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
                   <span>slug:</span>
                   <input
@@ -372,8 +459,6 @@ export default function PostEditor() {
                     style={{ borderColor: 'var(--border)' }}
                   />
                 </div>
-
-                {/* Tóm tắt tự co giãn chiều cao và xuống dòng */}
                 <div>
                   <textarea
                     ref={summaryTextareaRef}
@@ -385,24 +470,21 @@ export default function PostEditor() {
                       e.target.style.height = `${e.target.scrollHeight}px`;
                     }}
                     rows={2}
-                    placeholder="Tóm tắt ngắn gọn bài viết..."
+                    placeholder="Tóm tắt ngắn bài viết..."
                     className="w-full px-4 py-2.5 border rounded-xl text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none overflow-hidden transition-all placeholder:text-slate-400 block leading-relaxed"
                     style={{ borderColor: 'var(--border)' }}
                   />
                 </div>
-
-                {/* Khung Editor kèm class cố định Toolbar */}
                 <div
                   className={`sticky-editor-container ${isFullscreen ? 'fullscreen-editor' : ''}`}
                 >
                   <RichTextEditor
                     value={formData.content}
                     onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
-                    placeholder="Bắt đầu nội dung bài viết tại đây..."
+                    placeholder="Bắt đầu nội dung bài viết ở đây..."
                   />
                 </div>
 
-                {/* Nút mở rộng chế độ toàn màn hình */}
                 {!isFullscreen && (
                   <button
                     type="button"
@@ -418,7 +500,6 @@ export default function PostEditor() {
             </div>
           </div>
 
-          {/* Cấu hình SEO */}
           <div
             className="bg-white rounded-2xl border shadow-sm overflow-hidden"
             style={{ borderColor: 'var(--border)' }}
@@ -440,7 +521,6 @@ export default function PostEditor() {
                 <ChevronDown size={16} className="text-slate-400" />
               )}
             </button>
-
             {showSeo && (
               <div className="p-6 space-y-4 border-t" style={{ borderColor: 'var(--border)' }}>
                 <div>
@@ -457,12 +537,11 @@ export default function PostEditor() {
                     name="metaTitle"
                     value={formData.metaTitle}
                     onChange={handleChange}
-                    placeholder="Ghi đè tiêu đề hiển thị trên Google..."
+                    placeholder="Ghi đè tiêu đề trên Google..."
                     className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none focus:border-blue-500"
                     style={{ borderColor: 'var(--border)' }}
                   />
                 </div>
-
                 <div>
                   <label className="text-xs font-semibold text-slate-700 flex justify-between mb-1.5">
                     <span>Thẻ mô tả (Meta Description)</span>
@@ -482,7 +561,6 @@ export default function PostEditor() {
                     style={{ borderColor: 'var(--border)' }}
                   />
                 </div>
-
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1.5">
                     URL Thẩm quyền (Canonical URL)
@@ -497,7 +575,6 @@ export default function PostEditor() {
                     style={{ borderColor: 'var(--border)' }}
                   />
                 </div>
-
                 <div className="flex gap-6 pt-1">
                   <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                     <input
@@ -507,7 +584,7 @@ export default function PostEditor() {
                       onChange={handleCheckbox}
                       className="w-4 h-4 rounded text-blue-600 border-slate-300"
                     />
-                    Index (Cho phép lập chỉ mục)
+                    Index (Cho phép chỉ mục)
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                     <input
@@ -525,9 +602,9 @@ export default function PostEditor() {
           </div>
         </div>
 
-        {/* ================= CỘT PHỤ (SIDEBAR CẤU HÌNH BÊN PHẢI) ================= */}
+        {/* ================= CỘT PHỤ (SIDEBAR) ================= */}
         <div className="xl:col-span-4 space-y-5">
-          {/* Card 1: Danh mục */}
+          {/* Phân loại & Tags */}
           <div
             className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
@@ -537,10 +614,11 @@ export default function PostEditor() {
               style={{ borderColor: 'var(--border)' }}
             >
               <LayoutList size={16} className="text-slate-600" />
-              <h3 className="font-bold text-slate-900 text-sm">Danh mục bài viết</h3>
+              <h3 className="font-bold text-slate-900 text-sm">Phân loại</h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
+                <label className="text-xs font-semibold text-slate-600 block mb-1.5">Danh mục chính</label>
                 <select
                   name="categoryId"
                   value={formData.categoryId}
@@ -560,41 +638,149 @@ export default function PostEditor() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-1.5">
+                <label className="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-2">
                   <Tags size={13} /> Thẻ bài viết (Tags)
                 </label>
-                <div
-                  className="px-3 py-2 border rounded-xl text-xs text-slate-400 bg-slate-50 border-dashed text-center cursor-not-allowed"
-                  style={{ borderColor: 'var(--border)' }}
-                >
-                  Tính năng gắn thẻ đang bảo trì
+
+                {selectedTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {selectedTags.map((tag) => (
+                      <span
+                        key={tag.tagId}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-medium transition-colors"
+                      >
+                        {tag.tagName}
+                        <button
+                          type="button"
+                          onClick={() => toggleTag(tag.tagId)}
+                          className="text-blue-400 hover:text-red-500 transition-colors"
+                          title="Gỡ thẻ"
+                        >
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={tagSearch}
+                    onChange={(e) => setTagSearch(e.target.value)}
+                    onFocus={() => setShowTagDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowTagDropdown(false), 200)}
+                    placeholder="Tìm và chọn thẻ..."
+                    className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none focus:border-blue-500 bg-white placeholder:text-slate-400"
+                    style={{ borderColor: 'var(--border)' }}
+                  />
+
+                  {showTagDropdown && (
+                    <div
+                      className="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-56 overflow-y-auto"
+                      style={{ borderColor: 'var(--border)' }}
+                    >
+                      {filteredTags.length > 0 ? (
+                        filteredTags.map((tag) => (
+                          <button
+                            key={tag.tagId}
+                            type="button"
+                            onClick={() => {
+                              toggleTag(tag.tagId);
+                              setTagSearch('');
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-between"
+                          >
+                            <span>{tag.tagName}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">#{tag.slug}</span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-3 text-sm text-slate-400 italic text-center bg-slate-50">
+                          {availableTags.length === 0 ? 'Hệ thống chưa có thẻ nào.' : 'Không tìm thấy thẻ phù hợp.'}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Card 2: Ảnh đại diện (Trạng thái bảo trì) */}
+          {/* Ảnh đại diện (Tích hợp Media Library) */}
           <div
             className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
           >
             <div
-              className="flex items-center gap-2 mb-4 pb-2 border-b"
+              className="flex items-center justify-between mb-4 pb-2 border-b"
               style={{ borderColor: 'var(--border)' }}
             >
-              <ImageIcon size={16} className="text-slate-600" />
-              <h3 className="font-bold text-slate-900 text-sm">Ảnh đại diện</h3>
+              <div className="flex items-center gap-2">
+                <ImageIcon size={16} className="text-slate-600" />
+                <h3 className="font-bold text-slate-900 text-sm">Ảnh đại diện</h3>
+              </div>
+              {featuredImageUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFeaturedImageUrl(null);
+                    setFormData(prev => ({ ...prev, featuredMediaId: null }));
+                  }}
+                  className="text-xs text-red-500 hover:underline"
+                >
+                  Xóa
+                </button>
+              )}
             </div>
-            <div
-              className="px-3 py-6 border rounded-xl text-xs text-slate-400 bg-slate-50 border-dashed text-center cursor-not-allowed flex flex-col items-center justify-center gap-2"
-              style={{ borderColor: 'var(--border)' }}
-            >
-              <ImageIcon size={20} className="text-slate-300" />
-              <span>Tính năng tải ảnh đại diện đang bảo trì</span>
-            </div>
+
+            {featuredImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={featuredImageUrl}
+                alt="Preview"
+                className="w-full aspect-video object-cover rounded-xl border mb-2"
+              />
+            ) : (
+              <div
+                className="px-3 py-6 border rounded-xl bg-slate-50 border-dashed text-center flex flex-col items-center justify-center gap-3 mb-2"
+                style={{ borderColor: 'var(--border)' }}
+              >
+                <UploadCloud size={24} className="text-slate-400" />
+                <span className="text-xs text-slate-500 font-medium">Chọn ảnh cho bài viết</span>
+                <div className="flex gap-2 mt-1">
+                  <label className="cursor-pointer px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors">
+                    Tải lên
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMediaModalOpen(true);
+                      fetchMediaLibrary();
+                    }}
+                    className="px-3 py-1.5 bg-white border text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 transition-colors"
+                  >
+                    Thư viện
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {uploadingImage && (
+              <div className="text-center mt-2">
+                <span className="text-xs font-semibold text-blue-600 animate-pulse">Đang tải lên...</span>
+              </div>
+            )}
           </div>
 
-          {/* Card 3: Lên lịch xuất bản */}
+          {/* Lịch xuất bản */}
           <div
             className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
@@ -604,7 +790,7 @@ export default function PostEditor() {
               style={{ borderColor: 'var(--border)' }}
             >
               <Calendar size={16} className="text-slate-600" />
-              <h3 className="font-bold text-slate-900 text-sm">Lên lịch xuất bản</h3>
+              <h3 className="font-bold text-slate-900 text-sm">Lịch xuất bản</h3>
             </div>
             <div>
               <input
@@ -616,12 +802,12 @@ export default function PostEditor() {
                 style={{ borderColor: 'var(--border)' }}
               />
               <p className="text-[11px] text-slate-400 mt-1.5">
-                Bỏ trống nếu muốn xuất bản ngay khi được duyệt.
+                Bỏ trống nếu muốn xuất bản ngay khi được duyệt
               </p>
             </div>
           </div>
 
-          {/* Card 4: Mạng xã hội */}
+          {/* Mạng xã hội */}
           <div
             className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
@@ -636,7 +822,7 @@ export default function PostEditor() {
             <div className="space-y-3">
               <div>
                 <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                  Tiêu đề OG
+                  Tiêu đề
                 </label>
                 <input
                   type="text"
@@ -650,9 +836,8 @@ export default function PostEditor() {
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                  Mô tả OG
+                  Mô tả
                 </label>
-                {/* Mô tả OG tự co giãn chiều cao và xuống dòng */}
                 <textarea
                   ref={ogDescriptionTextareaRef}
                   name="ogDescription"
@@ -663,7 +848,7 @@ export default function PostEditor() {
                     e.target.style.height = `${e.target.scrollHeight}px`;
                   }}
                   rows={2}
-                  placeholder="Mô tả ngắn gọn..."
+                  placeholder="Mô tả ngắn..."
                   className="w-full px-3 py-1.5 border rounded-lg text-xs outline-none focus:border-violet-500 resize-none overflow-hidden transition-all placeholder:text-slate-400 block leading-relaxed"
                   style={{ borderColor: 'var(--border)' }}
                 />
@@ -672,6 +857,59 @@ export default function PostEditor() {
           </div>
         </div>
       </div>
+
+      {/* ================= MODAL MEDIA LIBRARY ================= */}
+      {isMediaModalOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => setIsMediaModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b">
+              <div className="flex items-center gap-2">
+                <FolderOpen size={20} className="text-blue-600" />
+                <h3 className="font-bold text-slate-900 text-lg">Thư viện Media</h3>
+              </div>
+              <button onClick={() => setIsMediaModalOpen(false)} className="p-1.5 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 bg-slate-50">
+              {loadingMedia ? (
+                <div className="text-center py-10 text-slate-500 flex flex-col items-center justify-center gap-2">
+                  <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-sm font-medium">Đang tải thư viện...</span>
+                </div>
+              ) : mediaItems.length > 0 ? (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+                  {mediaItems.map(media => (
+                    <div
+                      key={media.mediaId}
+                      onClick={() => handleSelectFromLibrary(media)}
+                      className="aspect-square rounded-xl border border-slate-200 bg-white overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all group relative shadow-sm"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={media.filePath} alt={media.fileName} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Chọn</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 text-slate-500 bg-white rounded-xl border border-dashed">
+                  Chưa có file ảnh nào trong thư viện.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
