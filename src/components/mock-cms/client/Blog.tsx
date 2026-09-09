@@ -153,7 +153,9 @@ export default function Blog() {
     const matchSearch =
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.excerpt.toLowerCase().includes(search.toLowerCase());
+
     const matchCat = activeCategory === 'Tất cả' || p.category === activeCategory;
+
     return matchSearch && matchCat;
   });
 
@@ -162,27 +164,40 @@ export default function Blog() {
 
   return (
     <div>
-      {/* Hero */}
+      {/* =========================================================
+          Hero
+          ========================================================= */}
       <section
         className="py-16 lg:py-20"
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
+          background: `linear-gradient(
+            135deg,
+            var(--hero-start) 0%,
+            var(--hero-middle) 100%
+          )`,
         }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">
+          <div
+            className="text-sm font-semibold uppercase tracking-widest mb-3"
+            style={{ color: 'var(--primary)' }}
+          >
             Tin tức
           </div>
+
           <h1 className="font-display text-4xl lg:text-5xl font-bold text-white mb-4">
             Kiến thức & Insights
           </h1>
-          <p className="text-blue-200 text-lg max-w-2xl mb-8">
+
+          <p className="text-lg max-w-2xl mb-8" style={{ color: 'var(--dark-text-secondary)' }}>
             Cập nhật xu hướng công nghệ, chia sẻ kiến thức chuyên sâu và câu chuyện thành công từ
             đội ngũ CMS.
           </p>
+
           {/* Search */}
           <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-3 max-w-lg">
             <Search size={16} className="text-white/60" />
+
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -193,22 +208,28 @@ export default function Blog() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Category filters */}
+      <main className="max-w-7xl mx-auto px-6 py-12" style={{ background: 'var(--background)' }}>
+        {/* =========================================================
+            Category filters
+            ========================================================= */}
         <div className="flex flex-wrap gap-2 mb-10">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                activeCategory === cat
-                  ? 'text-white'
-                  : 'bg-white border text-slate-600 hover:bg-slate-50'
+                activeCategory === cat ? 'text-white' : 'border hover:bg-[var(--hover)]'
               }`}
               style={
                 activeCategory === cat
-                  ? { background: 'var(--primary)' }
-                  : { borderColor: 'var(--border)' }
+                  ? {
+                      background: 'var(--primary)',
+                    }
+                  : {
+                      background: 'var(--surface)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--text-secondary)',
+                    }
               }
             >
               {cat}
@@ -216,20 +237,29 @@ export default function Blog() {
           ))}
         </div>
 
-        {/* Featured post */}
+        {/* =========================================================
+            Featured post
+            ========================================================= */}
         {featured && (
           <Link to={`/bai-viet/${featured.slug}`} className="group block mb-10">
             <div
-              className="grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-2xl overflow-hidden border hover:shadow-xl transition-all bg-white"
-              style={{ borderColor: 'var(--border)' }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-2xl overflow-hidden border hover:shadow-xl transition-all"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
             >
-              <div className="aspect-video overflow-hidden bg-slate-100">
+              <div
+                className="aspect-video overflow-hidden"
+                style={{ background: 'var(--surface-tertiary)' }}
+              >
                 <img
                   src={featured.image}
                   alt={featured.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
+
               <div className="p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-4">
                   <span
@@ -238,25 +268,48 @@ export default function Blog() {
                   >
                     Nổi bật
                   </span>
-                  <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+
+                  <span
+                    className="text-xs px-2.5 py-1 rounded-full"
+                    style={{
+                      background: 'var(--surface-tertiary)',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
                     {featured.category}
                   </span>
                 </div>
-                <h2 className="font-display font-bold text-2xl text-slate-900 leading-tight mb-3 group-hover:text-blue-600 transition-colors">
+
+                <h2
+                  className="font-display font-bold text-2xl leading-tight mb-3 group-hover:text-[var(--primary)] transition-colors"
+                  style={{ color: 'var(--text)' }}
+                >
                   {featured.title}
                 </h2>
-                <p className="text-slate-500 leading-relaxed mb-5">{featured.excerpt}</p>
-                <div className="flex items-center gap-3 text-xs text-slate-400">
+
+                <p className="leading-relaxed mb-5" style={{ color: 'var(--text-muted)' }}>
+                  {featured.excerpt}
+                </p>
+
+                <div
+                  className="flex items-center gap-3 text-xs"
+                  style={{ color: 'var(--text-placeholder)' }}
+                >
                   <span>{featured.author}</span>
                   <span>·</span>
                   <span>{featured.date}</span>
                   <span>·</span>
+
                   <span className="flex items-center gap-1">
                     <Clock size={11} />
                     {featured.readTime} đọc
                   </span>
                 </div>
-                <div className="mt-5 flex items-center gap-1.5 text-sm font-semibold text-blue-600 group-hover:gap-3 transition-all">
+
+                <div
+                  className="mt-5 flex items-center gap-1.5 text-sm font-semibold group-hover:gap-3 transition-all"
+                  style={{ color: 'var(--primary)' }}
+                >
                   Đọc bài viết <ArrowRight size={15} />
                 </div>
               </div>
@@ -264,42 +317,74 @@ export default function Blog() {
           </Link>
         )}
 
-        {/* Post grid */}
+        {/* =========================================================
+            Post grid
+            ========================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {rest.map((post) => (
             <Link key={post.id} to={`/bai-viet/${post.slug}`} className="group block">
               <article
-                className="rounded-2xl overflow-hidden border hover:shadow-lg transition-all bg-white h-full"
-                style={{ borderColor: 'var(--border)' }}
+                className="rounded-2xl overflow-hidden border hover:shadow-lg transition-all h-full"
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
               >
-                <div className="aspect-video overflow-hidden bg-slate-100">
+                <div
+                  className="aspect-video overflow-hidden"
+                  style={{ background: 'var(--surface-tertiary)' }}
+                >
                   <img
                     src={post.image}
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
+
                 <div className="p-5 flex flex-col flex-1">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                    <span
+                      className="text-xs px-2.5 py-1 rounded-full"
+                      style={{
+                        background: 'var(--surface-tertiary)',
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
                       {post.category}
                     </span>
-                    <span className="text-xs text-slate-400 flex items-center gap-1">
+
+                    <span
+                      className="text-xs flex items-center gap-1"
+                      style={{ color: 'var(--text-placeholder)' }}
+                    >
                       <Clock size={10} />
                       {post.readTime}
                     </span>
                   </div>
-                  <h3 className="font-display font-semibold text-slate-900 leading-snug mb-2 group-hover:text-blue-600 transition-colors">
+
+                  <h3
+                    className="font-display font-semibold leading-snug mb-2 group-hover:text-[var(--primary)] transition-colors"
+                    style={{ color: 'var(--text)' }}
+                  >
                     {post.title}
                   </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 flex-1">
+
+                  <p
+                    className="text-sm leading-relaxed line-clamp-2 flex-1"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
                     {post.excerpt}
                   </p>
+
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs" style={{ color: 'var(--text-placeholder)' }}>
                       {post.author} · {post.date}
                     </div>
-                    <span className="text-xs font-medium text-blue-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+
+                    <span
+                      className="text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all"
+                      style={{ color: 'var(--primary)' }}
+                    >
                       Đọc tiếp <ArrowRight size={11} />
                     </span>
                   </div>
@@ -309,13 +394,21 @@ export default function Blog() {
           ))}
         </div>
 
+        {/* =========================================================
+            Empty state
+            ========================================================= */}
         {filtered.length === 0 && (
-          <div className="text-center py-20 text-slate-400">
-            <p className="text-lg font-medium text-slate-600">Không tìm thấy bài viết phù hợp</p>
-            <p className="text-sm mt-1">Thử thay đổi từ khóa tìm kiếm hoặc danh mục khác.</p>
+          <div className="text-center py-20" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-lg font-medium" style={{ color: 'var(--text-secondary)' }}>
+              Không tìm thấy bài viết phù hợp
+            </p>
+
+            <p className="text-sm mt-1" style={{ color: 'var(--text-placeholder)' }}>
+              Thử thay đổi từ khóa tìm kiếm hoặc danh mục khác.
+            </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

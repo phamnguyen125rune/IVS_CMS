@@ -16,6 +16,52 @@
   --text-secondary: #64748b;
 
   --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-strong: #cbd5e1;
+
+  /* ========================================
+     INTERACTIVE
+     ======================================== */
+  --hover: #f8fafc;
+  --active: #eff6ff;
+
+  /* ========================================
+     DARK / HERO
+     ======================================== */
+  --dark-background: #0f172a;
+  --dark-surface: #1e293b;
+  --dark-border: #334155;
+
+  --dark-text: #f8fafc;
+  --dark-text-secondary: #cbd5e1;
+  --dark-text-muted: #94a3b8;
+
+  /* ========================================
+     HERO
+     ======================================== */
+  --hero-start: #0f172a;
+  --hero-middle: #1e3a5f;
+  --hero-end: #1d4ed8;
+
+  /* ========================================
+     STATUS
+     ======================================== */
+  --success: #10b981;
+  --success-light: #ecfdf5;
+
+  --warning: #f59e0b;
+  --warning-light: #fffbeb;
+
+  --error: #ef4444;
+  --error-light: #fef2f2;
+
+  --info: #06b6d4;
+  --info-light: #ecfeff;
+
+  /* ========================================
+     SPECIAL
+     ======================================== */
+  --rating: #f59e0b;
 }
 
 /* =========================================

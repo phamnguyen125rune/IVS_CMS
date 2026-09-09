@@ -1,0 +1,135 @@
+.word-preview-container {
+  position: relative;
+  min-height: 100%;
+  background-color: #e5e7eb;
+  padding: 1.5rem;
+}
+
+.word-preview {
+  transition: opacity 0.2s ease;
+}
+
+.word-preview--hidden {
+  opacity: 0;
+}
+
+/* =========================
+     Loading
+     ========================= */
+
+.word-preview-loading {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  min-height: 70vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-preview-loading__content {
+  text-align: center;
+}
+
+.word-preview-loading__spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  margin: 0 auto 1rem;
+
+  border: 4px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 9999px;
+
+  animation: word-preview-spin 1s linear infinite;
+}
+
+.word-preview-loading__text {
+  margin: 0;
+
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@keyframes word-preview-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+     Error
+     ========================= */
+
+.word-preview-error {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  min-height: 70vh;
+  align-items: center;
+  justify-content: center;
+
+  padding: 2rem;
+}
+
+.word-preview-error__card {
+  border-radius: 1rem;
+  background-color: #fff;
+
+  padding: 2rem;
+
+  text-align: center;
+
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+}
+
+.word-preview-error__title {
+  margin: 0;
+
+  color: #1f2937;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+}
+
+.word-preview-error__message {
+  margin: 0.75rem 0 0;
+
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+.word-preview-error__download {
+  margin-top: 1.5rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  background-color: #2563eb;
+
+  padding: 0.625rem 1.25rem;
+
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: background-color 0.15s ease;
+}
+
+.word-preview-error__download:hover {
+  background-color: #1d4ed8;
+}
+
+.word-preview-error__download:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}

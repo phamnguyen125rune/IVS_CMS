@@ -80,29 +80,45 @@ const timeline = [
 export default function About() {
   return (
     <div>
-      {/* Hero */}
+      {/* =========================================================
+          Hero
+          ========================================================= */}
       <section
         className="py-20 lg:py-28"
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
+          background: `linear-gradient(
+            135deg,
+            var(--hero-start) 0%,
+            var(--hero-middle) 100%
+          )`,
         }}
       >
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">
+          <div
+            className="text-sm font-semibold uppercase tracking-widest mb-3"
+            style={{ color: 'var(--primary)' }}
+          >
             Về chúng tôi
           </div>
+
           <h1 className="font-display text-4xl lg:text-5xl font-bold text-white mb-5">
             Chúng tôi là CMS
           </h1>
-          <p className="text-blue-200 text-lg leading-relaxed max-w-2xl mx-auto">
+
+          <p
+            className="text-lg leading-relaxed max-w-2xl mx-auto"
+            style={{ color: 'var(--dark-text-secondary)' }}
+          >
             Hơn 10 năm kiến tạo giải pháp công nghệ, chúng tôi tin rằng mỗi doanh nghiệp đều xứng
             đáng được trang bị công cụ tốt nhất để thành công trong thời đại số.
           </p>
         </div>
       </section>
 
-      {/* Vision & Mission */}
-      <section className="py-20 bg-white">
+      {/* =========================================================
+          Vision & Mission
+          ========================================================= */}
+      <section className="py-20" style={{ background: 'var(--background)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
@@ -128,22 +144,36 @@ export default function About() {
               <div
                 key={title}
                 className="p-8 rounded-2xl border"
-                style={{ borderColor: 'var(--border)' }}
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
               >
                 <div
                   className={`w-12 h-12 rounded-2xl ${color} flex items-center justify-center mb-5`}
                 >
                   <Icon size={22} />
                 </div>
-                <h3 className="font-display font-bold text-xl text-slate-900 mb-3">{title}</h3>
-                <p className="text-slate-500 leading-relaxed">{desc}</p>
+
+                <h3
+                  className="font-display font-bold text-xl mb-3"
+                  style={{ color: 'var(--text)' }}
+                >
+                  {title}
+                </h3>
+
+                <p className="leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                  {desc}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* History timeline */}
+      {/* =========================================================
+          History timeline
+          ========================================================= */}
       <section className="py-20" style={{ background: 'var(--background)' }}>
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
@@ -153,30 +183,58 @@ export default function About() {
             >
               Lịch sử hình thành
             </div>
-            <h2 className="font-display text-3xl font-bold text-slate-900">
+
+            <h2 className="font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
               Hành trình 10 năm phát triển
             </h2>
           </div>
+
           <div className="relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-200 -translate-x-1/2" />
+            <div
+              className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2"
+              style={{ background: 'var(--border)' }}
+            />
+
             {timeline.map((item, i) => (
               <div
                 key={item.year}
-                className={`flex items-center gap-8 mb-10 ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
+                className={`flex items-center gap-8 mb-10 ${
+                  i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                }`}
               >
                 <div className={`flex-1 ${i % 2 === 0 ? 'text-right' : 'text-left'}`}>
                   <div
-                    className="bg-white rounded-2xl border p-5 inline-block max-w-sm"
-                    style={{ borderColor: 'var(--border)' }}
+                    className="rounded-2xl border p-5 inline-block max-w-sm"
+                    style={{
+                      background: 'var(--surface)',
+                      borderColor: 'var(--border)',
+                    }}
                   >
                     <div className="text-sm font-bold mb-1" style={{ color: 'var(--primary)' }}>
                       {item.year}
                     </div>
-                    <h4 className="font-display font-semibold text-slate-900 mb-1">{item.title}</h4>
-                    <p className="text-sm text-slate-500">{item.desc}</p>
+
+                    <h4
+                      className="font-display font-semibold mb-1"
+                      style={{ color: 'var(--text)' }}
+                    >
+                      {item.title}
+                    </h4>
+
+                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                      {item.desc}
+                    </p>
                   </div>
                 </div>
-                <div className="w-4 h-4 rounded-full border-4 border-blue-600 bg-white flex-shrink-0 z-10" />
+
+                <div
+                  className="w-4 h-4 rounded-full border-4 flex-shrink-0 z-10"
+                  style={{
+                    borderColor: 'var(--primary)',
+                    background: 'var(--surface)',
+                  }}
+                />
+
                 <div className="flex-1" />
               </div>
             ))}
@@ -184,8 +242,10 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="py-20 bg-white">
+      {/* =========================================================
+          Team
+          ========================================================= */}
+      <section className="py-20" style={{ background: 'var(--surface)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <div
@@ -194,49 +254,73 @@ export default function About() {
             >
               Đội ngũ lãnh đạo
             </div>
-            <h2 className="font-display text-3xl font-bold text-slate-900">
+
+            <h2 className="font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
               Những con người tài năng
             </h2>
-            <p className="text-slate-500 mt-3">
+
+            <p className="mt-3" style={{ color: 'var(--text-muted)' }}>
               Đội ngũ lãnh đạo với kinh nghiệm dày dặn, đam mê công nghệ và cam kết với sự thành
               công của khách hàng
             </p>
           </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
             {team.map((member) => (
               <div key={member.name} className="group text-center">
-                <div className="relative mb-4 overflow-hidden rounded-2xl aspect-square bg-slate-100">
+                <div
+                  className="relative mb-4 overflow-hidden rounded-2xl aspect-square"
+                  style={{ background: 'var(--surface-tertiary)' }}
+                >
                   <img
                     src={member.avatar}
                     alt={member.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
+
                   <div className="absolute inset-0 bg-blue-900/40 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <h4 className="font-display font-semibold text-slate-900 text-sm">{member.name}</h4>
-                <p className="text-xs text-slate-500 mt-0.5">{member.role}</p>
+
+                <h4 className="font-display font-semibold text-sm" style={{ color: 'var(--text)' }}>
+                  {member.name}
+                </h4>
+
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  {member.role}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Image */}
+      {/* =========================================================
+          CTA Image
+          ========================================================= */}
       <section className="py-0">
-        <div className="relative h-80 overflow-hidden bg-slate-900">
+        <div
+          className="relative h-80 overflow-hidden"
+          style={{ background: 'var(--dark-background)' }}
+        >
           <img
             src="https://images.unsplash.com/photo-1497366412874-3415097a27e7?w=1400&h=400&fit=crop&auto=format"
             alt="CMS office"
             className="w-full h-full object-cover opacity-60"
           />
+
           <div className="absolute inset-0 flex items-center justify-center text-center px-6">
             <div>
               <h2 className="font-display text-3xl font-bold text-white mb-4">
                 Muốn gia nhập đội ngũ CMS?
               </h2>
+
               <Link
                 to="/tuyen-dung"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-blue-700 bg-white font-semibold hover:bg-blue-50"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-colors"
+                style={{
+                  background: 'var(--primary-button-background)',
+                  color: 'var(--primary-button-text)',
+                }}
               >
                 Xem cơ hội nghề nghiệp <ArrowRight size={15} />
               </Link>
