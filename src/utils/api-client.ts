@@ -12,10 +12,6 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Hàm gọi API dùng chung, tự động xử lý cấu hình base URL, chèn Authorization token
- * ở phía server, và chuẩn hóa lỗi phản hồi.
- */
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   // Client: Gọi relative path để Middleware bắt và làm Proxy
   // Server: Gọi thẳng Java backend
@@ -31,20 +27,18 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     headers.set('Content-Type', 'application/json');
   }
 
-  // Tự động chèn token session khi gọi API từ phía Server (Server Components / API Routes)
+  // Ở Client, Middleware (proxy.ts) sẽ lo việc đính kèm token. Chỉ xử lý gắn token trực tiếp trên Server Component.
   if (isServer) {
     try {
-      // Import động next/headers để tránh lỗi đóng gói trên trình duyệt client
       const { cookies } = await import('next/headers');
       const cookieStore = await cookies();
       const token = cookieStore.get('session_token')?.value;
+
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
     } catch {
-      console.warn(
-        'Unable to access cookies on server-side request (likely not in request context)'
-      );
+      console.warn('Unable to access cookies on server-side request');
     }
   }
 
@@ -60,7 +54,6 @@ async function finishFetch<T>(url: string, options: RequestInit, headers: Header
   try {
     const res = await fetch(url, fetchOptions);
 
-    // Xử lý kiểm tra phản hồi lỗi HTTP
     if (!res.ok) {
       let errorInfo;
       try {
@@ -68,10 +61,8 @@ async function finishFetch<T>(url: string, options: RequestInit, headers: Header
       } catch {
         errorInfo = null;
       }
-
       const errorMessage = errorInfo?.message || `HTTP error! status: ${res.status}`;
       console.error(`[API ERROR] ${res.status} ${url}:`, errorInfo);
-
       throw new ApiError(errorMessage, res.status, errorInfo);
     }
 
@@ -80,16 +71,19 @@ async function finishFetch<T>(url: string, options: RequestInit, headers: Header
     }
 
     const text = await res.text();
+
     if (!text) {
       return {} as T;
     }
 
-    return JSON.parse(text) as T;
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      return text as T;
     }
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
     console.error(`[CONNECTION ERROR] Failed to fetch ${url}:`, error);
-    throw new ApiError('Không thể kết nối đến máy chủ backend', 503);
+    throw new ApiError('Không thể kết nối đến backend', 503);
   }
 }

@@ -5,6 +5,7 @@ import { usePathname, useParams, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
+  GroupIcon,
   ShieldCheck,
   FileText,
   CheckSquare,
@@ -32,6 +33,11 @@ const navItems = [
     label: 'Quản lý Nhân sự',
     icon: Users,
     path: '/admin/nhan-su',
+  },
+  {
+    label: 'Quản lý Nhóm nhân sự',
+    icon: GroupIcon,
+    path: '/admin/nhom-nhan-su',
   },
   {
     label: 'Quản lý Phân quyền',
@@ -89,7 +95,7 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
     <>
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div onClick={onToggle} className="fixed inset-0 z-20 bg-slate-900/50 lg:hidden" />
+        <div onClick={onToggle} className="fixed inset-0 bg-slate-900/50 z-20 lg:hidden" />
       )}
 
       <aside
@@ -145,14 +151,7 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
           </div>
 
           {sidebarOpen && (
-            <span
-              className="text-lg font-bold tracking-tight"
-              style={{
-                color: 'var(--dark-text)',
-              }}
-            >
-              CMS Admin
-            </span>
+            <span className="font-bold text-white text-lg tracking-tight">CMS Admin</span>
           )}
         </div>
 
@@ -216,12 +215,7 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
               text-sm
               font-medium
               transition-all
-              hover:bg-[var(--dark-surface)]
-              hover:text-[var(--dark-text)]
             "
-            style={{
-              color: 'var(--dark-text-secondary)',
-            }}
           >
             <LogOut size={20} className="shrink-0" />
 

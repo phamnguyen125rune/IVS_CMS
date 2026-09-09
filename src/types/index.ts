@@ -74,30 +74,77 @@ export interface ResUserDTO {
   createdBy?: string;
   updatedAt?: string;
   updatedBy?: string;
-  deletedAt?: string;
-  deletedBy?: string;
-}
-
-export interface UserCreatePayload {
-  fullname?: string;
+} // ----------------------------
+// Role (Nhóm người dùng)
+// ----------------------------
+export interface RoleUser2 {
+  userId: number;
+  roleId: number;
+  employeeCode: string;
+  fullName: string;
   email: string;
-  phone?: string;
-  age?: number;
-  address?: string;
-  gender?: string;
-  dateOfBirth?: string;
-  avatarUrl?: string;
-  roleId?: number;
+  phoneNumber: string;
+  gender: string;
+  dateOfBirth: string;
+  isActive: boolean;
 }
 
-export interface ResultPaginationDTO<T> {
-  meta: {
-    page: number;
-    pageSize: number;
-    pages: number;
-    total: number;
-  };
-  result: T[];
+export interface CreateRolePayload {
+  roleName: string;
+  roleDescription: string;
+}
+
+export interface UpdateRolePayload {
+  roleName: string;
+  roleDescription: string;
+}
+
+// ----------------------------
+// Permission (Phân quyền)
+// ----------------------------
+export interface Action {
+  actionId: number;
+  actionName: string;
+}
+
+export interface Api {
+  apiId: number;
+  apiLink: string;
+  apiDescription: string;
+  actions: Action[];
+}
+
+export interface PermissionIdPayload {
+  apiId: number;
+  actionId: number;
+}
+
+export interface UpdatePermissionByIdPayload {
+  permissions: PermissionIdPayload[];
+}
+
+export interface PermissionLinkPayload {
+  apiLink: string;
+  actionName: string;
+}
+
+export interface UpdatePermissionByLinkPayload {
+  permissions: PermissionLinkPayload[];
+}
+
+export interface PermissionLink {
+  apiLink: string;
+  actionName: string;
+}
+
+export interface RolePermissions {
+  roleId: number;
+  roleName: string;
+  roleDescription: string;
+  isActive: boolean;
+  isSystem: boolean;
+  memmberCount: number;
+  permissions: PermissionLink[];
 }
 
 // ----------------------------
@@ -134,7 +181,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  parentId?: string; // hỗ trợ danh mục lồng nhau
+  parentId?: string;
   locale: string;
 }
 
