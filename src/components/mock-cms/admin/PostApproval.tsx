@@ -94,7 +94,9 @@ export default function PostApproval() {
       setPosts([]);
       setTotal(0);
       setTotalPages(0);
-      setErrorMessage(error instanceof Error ? error.message : 'Không thể tải danh sách kiểm duyệt.');
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Không thể tải danh sách kiểm duyệt.'
+      );
     } finally {
       if (currentRequest === requestId.current) setLoading(false);
     }
@@ -113,7 +115,10 @@ export default function PostApproval() {
       const detailPost = await postService.getPostById(postItem.id);
       setModal({ type: 'preview', post: detailPost });
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Không thể tải chi tiết bài viết.', 'error');
+      showToast(
+        error instanceof Error ? error.message : 'Không thể tải chi tiết bài viết.',
+        'error'
+      );
     } finally {
       setPreviewLoading(false);
     }
@@ -178,9 +183,14 @@ export default function PostApproval() {
       )}
 
       {errorMessage && (
-        <div role="alert" className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4">
+        <div
+          role="alert"
+          className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4"
+        >
           <span>{errorMessage}</span>
-          <button className="underline font-medium shrink-0" onClick={fetchPosts}>Tải lại</button>
+          <button className="underline font-medium shrink-0" onClick={fetchPosts}>
+            Tải lại
+          </button>
         </div>
       )}
 
@@ -191,7 +201,10 @@ export default function PostApproval() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center" style={{ borderColor: 'var(--border)' }}>
+      <div
+        className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center"
+        style={{ borderColor: 'var(--border)' }}
+      >
         <div className="flex-1 min-w-56 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -226,17 +239,32 @@ export default function PostApproval() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)' }}>
+      <div
+        className="bg-white rounded-xl border overflow-hidden"
+        style={{ borderColor: 'var(--border)' }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[900px]">
             <thead>
               <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Tiêu đề</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Danh mục</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Tác giả</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Ngày tạo</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Trạng thái</th>
-                <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Hành động</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Tiêu đề
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Danh mục
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Tác giả
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Ngày tạo
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Trạng thái
+                </th>
+                <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Hành động
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -253,28 +281,54 @@ export default function PostApproval() {
                   const currentStatusConfig = statusConfig[currentStatus];
 
                   return (
-                    <tr key={post.id} className="border-t hover:bg-slate-50" style={{ borderColor: 'var(--border)' }}>
+                    <tr
+                      key={post.id}
+                      className="border-t hover:bg-slate-50"
+                      style={{ borderColor: 'var(--border)' }}
+                    >
                       <td className="px-5 py-3.5">
-                        <div className="font-medium text-slate-800 max-w-sm truncate">{post.title}</div>
-                        <div className="text-xs text-slate-400 mt-1 max-w-sm truncate">{post.summary || 'Không có tóm tắt'}</div>
+                        <div className="font-medium text-slate-800 max-w-sm truncate">
+                          {post.title}
+                        </div>
+                        <div className="text-xs text-slate-400 mt-1 max-w-sm truncate">
+                          {post.summary || 'Không có tóm tắt'}
+                        </div>
                       </td>
                       <td className="px-5 py-3.5">
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">{post.category?.name || 'Không có'}</span>
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                          {post.category?.name || 'Không có'}
+                        </span>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-600 text-xs">{post.author?.name || 'System'}</td>
-                      <td className="px-5 py-3.5 text-slate-600 text-xs">{post.createdAt ? formatDate(post.createdAt) : '---'}</td>
+                      <td className="px-5 py-3.5 text-slate-600 text-xs">
+                        {post.author?.name || 'System'}
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-600 text-xs">
+                        {post.createdAt ? formatDate(post.createdAt) : '---'}
+                      </td>
                       <td className="px-5 py-3.5">
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${currentStatusConfig.className}`}>{currentStatusConfig.label}</span>
+                        <span
+                          className={`text-xs font-medium px-2.5 py-1 rounded-full ${currentStatusConfig.className}`}
+                        >
+                          {currentStatusConfig.label}
+                        </span>
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => handleOpenPreview(post)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600" title="Xem trước">
+                          <button
+                            onClick={() => handleOpenPreview(post)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"
+                            title="Xem trước"
+                          >
                             <Eye size={14} />
                           </button>
 
                           {currentStatus === 'PENDING' && (
                             <>
-                              <button onClick={() => approve(post.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600" title="Duyệt bài">
+                              <button
+                                onClick={() => approve(post.id)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600"
+                                title="Duyệt bài"
+                              >
                                 <CheckCircle size={14} />
                               </button>
                               <button
@@ -296,7 +350,9 @@ export default function PostApproval() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">Không có bài viết ở trạng thái này</td>
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">
+                    Không có bài viết ở trạng thái này
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -304,9 +360,14 @@ export default function PostApproval() {
         </div>
 
         {!loading && total > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-t bg-slate-50" style={{ borderColor: 'var(--border)' }}>
+          <div
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-t bg-slate-50"
+            style={{ borderColor: 'var(--border)' }}
+          >
             <div className="text-xs text-slate-500">
-              Hiển thị <span className="font-semibold text-slate-700">{from}</span> - <span className="font-semibold text-slate-700">{to}</span> trong <span className="font-semibold text-slate-700">{total}</span> bài viết
+              Hiển thị <span className="font-semibold text-slate-700">{from}</span> -{' '}
+              <span className="font-semibold text-slate-700">{to}</span> trong{' '}
+              <span className="font-semibold text-slate-700">{total}</span> bài viết
             </div>
             <Pagination current={page} total={totalPages} onChange={setPage} />
           </div>
@@ -454,9 +515,7 @@ export default function PostApproval() {
                             {modal.post.author?.name || 'Tác giả ẩn danh'}
                           </p>
                           <p className="text-xs text-slate-500 mt-0.5">
-                            {modal.post.createdAt
-                              ? formatDate(modal.post.createdAt)
-                              : 'Vừa xong'}
+                            {modal.post.createdAt ? formatDate(modal.post.createdAt) : 'Vừa xong'}
                           </p>
                         </div>
                       </div>
@@ -646,7 +705,15 @@ export default function PostApproval() {
   );
 }
 
-function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (page: number) => void }) {
+function Pagination({
+  current,
+  total,
+  onChange,
+}: {
+  current: number;
+  total: number;
+  onChange: (page: number) => void;
+}) {
   if (total <= 1) return null;
   const items = paginationItems(current, total);
 
@@ -665,16 +732,22 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
 
       {items.map((item, index) =>
         item === 'ellipsis' ? (
-          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">…</span>
+          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">
+            …
+          </span>
         ) : (
           <button
             type="button"
             key={item}
             onClick={() => onChange(item)}
             className={`min-w-8 h-8 px-2 rounded-lg text-xs font-semibold border transition-colors ${
-              current === item ? 'text-white border-transparent' : 'text-slate-600 bg-white hover:text-blue-600'
+              current === item
+                ? 'text-white border-transparent'
+                : 'text-slate-600 bg-white hover:text-blue-600'
             }`}
-            style={current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }}
+            style={
+              current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }
+            }
             aria-current={current === item ? 'page' : undefined}
           >
             {item}

@@ -1,30 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
 
-import Link from "next/link";
-import { ArrowLeft, Clock, Hash } from "lucide-react";
-import type { ResPostDTO, ResPostListDTO } from "@/types/post.type";
-import { postDate, postPath } from "@/utils/post-seo";
-import { getPostDisplayTags } from "@/utils/post-display-tags";
+import Link from 'next/link';
+import { ArrowLeft, Clock, Hash } from 'lucide-react';
+import type { ResPostDTO, ResPostListDTO } from '@/types/post.type';
+import { postDate, postPath } from '@/utils/post-seo';
+import { getPostDisplayTags } from '@/utils/post-display-tags';
 
 interface PostDetailProps {
   post: ResPostDTO;
   recentPosts?: ResPostListDTO[];
 }
 
-export default function PostDetail({
-  post,
-  recentPosts = [],
-}: PostDetailProps) {
+export default function PostDetail({ post, recentPosts = [] }: PostDetailProps) {
   const displayTags = getPostDisplayTags(post);
-  const heroImage =
-    post.metadata?.openGraph?.imageUrl || post.mediaList?.[0]?.filePath;
-  const authorInitial = (post.author?.name || "S")
-    .trim()
-    .charAt(0)
-    .toUpperCase();
-  const visibleRecentPosts = recentPosts
-    .filter((item) => item.id !== post.id)
-    .slice(0, 5);
+  const heroImage = post.metadata?.openGraph?.imageUrl || post.mediaList?.[0]?.filePath;
+  const authorInitial = (post.author?.name || 'S').trim().charAt(0).toUpperCase();
+  const visibleRecentPosts = recentPosts.filter((item) => item.id !== post.id).slice(0, 5);
 
   return (
     <div lang="vi" className="max-w-7xl mx-auto px-6 py-12">
@@ -64,7 +55,7 @@ export default function PostDetail({
             </div>
             <div className="flex-1">
               <p className="font-semibold text-slate-900 text-sm">
-                {post.author?.name || "System"}
+                {post.author?.name || 'System'}
               </p>
               {post.createdAt && (
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -76,11 +67,7 @@ export default function PostDetail({
 
           {heroImage && (
             <div className="rounded-2xl overflow-hidden aspect-video bg-slate-100 mb-8 border border-slate-100 shadow-sm flex items-center justify-center">
-              <img
-                src={heroImage}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
+              <img src={heroImage} alt={post.title} className="w-full h-full object-cover" />
             </div>
           )}
 
@@ -134,7 +121,7 @@ export default function PostDetail({
               {authorInitial}
             </div>
             <h2 className="font-display font-semibold text-slate-900 text-lg">
-              {post.author?.name || "System"}
+              {post.author?.name || 'System'}
             </h2>
             <p className="text-xs font-medium text-blue-600 mt-1 bg-blue-50 inline-block px-3 py-1 rounded-full">
               Tác giả bài viết
@@ -187,9 +174,7 @@ export default function PostDetail({
                         {item.category?.name ? (
                           <>
                             <span>•</span>
-                            <span className="truncate">
-                              {item.category.name}
-                            </span>
+                            <span className="truncate">{item.category.name}</span>
                           </>
                         ) : null}
                       </div>
@@ -206,5 +191,5 @@ export default function PostDetail({
 }
 
 function formatDate(value: string) {
-  return value.slice(0, 10).split("-").reverse().join("/");
+  return value.slice(0, 10).split('-').reverse().join('/');
 }

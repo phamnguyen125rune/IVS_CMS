@@ -70,7 +70,9 @@ class MediaUploadAdapter implements UploadAdapter {
     const body = new FormData();
     body.append('file', file);
     const media = await apiFetch<Media>('/api/v1/media/upload', {
-      method: 'POST', body, signal: this.controller.signal,
+      method: 'POST',
+      body,
+      signal: this.controller.signal,
     });
     if (!media?.mediaId) throw new Error('Máy chủ không trả về thông tin ảnh hợp lệ.');
     return { default: `/api/v1/media/${media.mediaId}/view` };
@@ -82,7 +84,8 @@ class MediaUploadAdapter implements UploadAdapter {
 }
 
 function mediaUploadPlugin(editor: Editor) {
-  editor.plugins.get(FileRepository).createUploadAdapter = (loader) => new MediaUploadAdapter(loader);
+  editor.plugins.get(FileRepository).createUploadAdapter = (loader) =>
+    new MediaUploadAdapter(loader);
 }
 
 interface RichTextEditorProps {
@@ -101,7 +104,12 @@ export function useIsMounted() {
   );
 }
 
-export default function RichTextEditor({ value, onChange, placeholder, onPendingChange }: RichTextEditorProps) {
+export default function RichTextEditor({
+  value,
+  onChange,
+  placeholder,
+  onPendingChange,
+}: RichTextEditorProps) {
   const isMounted = useIsMounted();
   // Khai báo đúng kiểu instance ClassicEditor
   const editorRef = useRef<ClassicEditor | null>(null);

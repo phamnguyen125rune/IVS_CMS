@@ -143,7 +143,9 @@ export default function Posts() {
       }
       await fetchPosts();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Không thể thay đổi trạng thái bài viết.');
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Không thể thay đổi trạng thái bài viết.'
+      );
     } finally {
       setBusy(false);
     }
@@ -155,9 +157,14 @@ export default function Posts() {
   return (
     <div className="p-6 relative">
       {errorMessage && (
-        <div role="alert" className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4">
+        <div
+          role="alert"
+          className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4"
+        >
           <span>{errorMessage}</span>
-          <button className="underline font-medium shrink-0" onClick={fetchPosts}>Tải lại</button>
+          <button className="underline font-medium shrink-0" onClick={fetchPosts}>
+            Tải lại
+          </button>
         </div>
       )}
 
@@ -175,7 +182,10 @@ export default function Posts() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center" style={{ borderColor: 'var(--border)' }}>
+      <div
+        className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center"
+        style={{ borderColor: 'var(--border)' }}
+      >
         <div className="flex-1 min-w-56 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -210,17 +220,32 @@ export default function Posts() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-hidden shadow-sm" style={{ borderColor: 'var(--border)' }}>
+      <div
+        className="bg-white rounded-xl border overflow-hidden shadow-sm"
+        style={{ borderColor: 'var(--border)' }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-sm table-fixed min-w-[980px]">
             <thead>
               <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[35%]">Bài viết</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Danh mục</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Tác giả</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Thời gian</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">Trạng thái</th>
-                <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">Thao tác</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[35%]">
+                  Bài viết
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">
+                  Danh mục
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">
+                  Tác giả
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">
+                  Thời gian
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">
+                  Trạng thái
+                </th>
+                <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">
+                  Thao tác
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -235,20 +260,38 @@ export default function Posts() {
                 posts.map((post) => {
                   const statusConfig = STATUS_CONFIG[post.status];
                   return (
-                    <tr key={post.id} className="border-t hover:bg-slate-50 transition-colors" style={{ borderColor: 'var(--border)' }}>
+                    <tr
+                      key={post.id}
+                      className="border-t hover:bg-slate-50 transition-colors"
+                      style={{ borderColor: 'var(--border)' }}
+                    >
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
                           {post.featuredMedia ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={post.featuredMedia} alt={post.title} className="w-16 h-12 rounded-lg object-cover bg-slate-100 shrink-0 border border-slate-200" />
+                            <img
+                              src={post.featuredMedia}
+                              alt={post.title}
+                              className="w-16 h-12 rounded-lg object-cover bg-slate-100 shrink-0 border border-slate-200"
+                            />
                           ) : (
                             <div className="w-16 h-12 rounded-lg bg-slate-100 shrink-0 border border-slate-200 border-dashed flex items-center justify-center">
                               <ImageIcon size={16} className="text-slate-300" />
                             </div>
                           )}
                           <div className="min-w-0 flex-1">
-                            <div className="font-semibold text-slate-800 truncate" title={post.title}>{post.title}</div>
-                            <div className="text-xs text-slate-400 mt-1 truncate" title={post.summary || ''}>{post.summary || 'Không có tóm tắt'}</div>
+                            <div
+                              className="font-semibold text-slate-800 truncate"
+                              title={post.title}
+                            >
+                              {post.title}
+                            </div>
+                            <div
+                              className="text-xs text-slate-400 mt-1 truncate"
+                              title={post.summary || ''}
+                            >
+                              {post.summary || 'Không có tóm tắt'}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -257,11 +300,21 @@ export default function Posts() {
                           {post.category?.name || 'Chung'}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-slate-600 font-medium text-xs truncate">{post.author?.name || 'System'}</td>
+                      <td className="px-5 py-4 text-slate-600 font-medium text-xs truncate">
+                        {post.author?.name || 'System'}
+                      </td>
                       <td className="px-5 py-4 text-xs whitespace-nowrap">
                         <div>
-                          <span className={post.publishedAt ? 'font-semibold text-slate-700' : 'text-slate-400 italic'}>
-                            {post.publishedAt ? `Xuất bản: ${formatDate(post.publishedAt)}` : 'Chưa xuất bản'}
+                          <span
+                            className={
+                              post.publishedAt
+                                ? 'font-semibold text-slate-700'
+                                : 'text-slate-400 italic'
+                            }
+                          >
+                            {post.publishedAt
+                              ? `Xuất bản: ${formatDate(post.publishedAt)}`
+                              : 'Chưa xuất bản'}
                           </span>
                           <span className="block text-[11px] text-slate-400 mt-0.5">
                             Tạo: {post.createdAt ? formatDate(post.createdAt) : '---'}
@@ -269,31 +322,56 @@ export default function Posts() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${statusConfig.className}`}>
+                        <span
+                          className={`text-[11px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${statusConfig.className}`}
+                        >
                           {statusConfig.label}
                         </span>
                       </td>
                       <td className="px-5 py-4 whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
                           {(post.status === 'DRAFT' || post.status === 'REJECTED') && (
-                            <button disabled={busy} title="Gửi duyệt" onClick={() => handleAction(post, 'PENDING')} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg disabled:opacity-50">
+                            <button
+                              disabled={busy}
+                              title="Gửi duyệt"
+                              onClick={() => handleAction(post, 'PENDING')}
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg disabled:opacity-50"
+                            >
                               <Send size={16} />
                             </button>
                           )}
                           {post.status === 'APPROVED' && (
-                            <button disabled={busy} title="Xuất bản" onClick={() => handleAction(post, 'PUBLISHED')} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg disabled:opacity-50">
+                            <button
+                              disabled={busy}
+                              title="Xuất bản"
+                              onClick={() => handleAction(post, 'PUBLISHED')}
+                              className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg disabled:opacity-50"
+                            >
                               <Globe size={16} />
                             </button>
                           )}
                           {post.status === 'PUBLISHED' && (
-                            <button disabled={busy} title="Ngừng xuất bản" onClick={() => handleAction(post, 'UNPUBLISHED')} className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg disabled:opacity-50">
+                            <button
+                              disabled={busy}
+                              title="Ngừng xuất bản"
+                              onClick={() => handleAction(post, 'UNPUBLISHED')}
+                              className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg disabled:opacity-50"
+                            >
                               <EyeOff size={16} />
                             </button>
                           )}
-                          <button onClick={() => navigate(`/admin/bai-viet/sua/${post.id}`)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Chỉnh sửa">
+                          <button
+                            onClick={() => navigate(`/admin/bai-viet/sua/${post.id}`)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                            title="Chỉnh sửa"
+                          >
                             <Edit size={16} />
                           </button>
-                          <button onClick={() => setDeletePost(post)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Xóa bài viết">
+                          <button
+                            onClick={() => setDeletePost(post)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            title="Xóa bài viết"
+                          >
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -303,7 +381,9 @@ export default function Posts() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">Không tìm thấy bài viết nào phù hợp</td>
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">
+                    Không tìm thấy bài viết nào phù hợp
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -311,9 +391,14 @@ export default function Posts() {
         </div>
 
         {!loading && total > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-t bg-slate-50" style={{ borderColor: 'var(--border)' }}>
+          <div
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-t bg-slate-50"
+            style={{ borderColor: 'var(--border)' }}
+          >
             <div className="text-xs text-slate-500">
-              Hiển thị <span className="font-semibold text-slate-700">{from}</span> - <span className="font-semibold text-slate-700">{to}</span> trong <span className="font-semibold text-slate-700">{total}</span> bài viết
+              Hiển thị <span className="font-semibold text-slate-700">{from}</span> -{' '}
+              <span className="font-semibold text-slate-700">{to}</span> trong{' '}
+              <span className="font-semibold text-slate-700">{total}</span> bài viết
             </div>
             <Pagination current={page} total={totalPages} onChange={setPage} />
           </div>
@@ -321,8 +406,14 @@ export default function Posts() {
       </div>
 
       {deletePost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setDeletePost(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center" onClick={(event) => event.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          onClick={() => setDeletePost(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
               <Trash2 size={24} />
             </div>
@@ -332,10 +423,18 @@ export default function Posts() {
               <span className="font-semibold text-slate-900">&quot;{deletePost.title}&quot;</span>?
             </p>
             <div className="flex justify-center gap-3">
-              <button onClick={() => setDeletePost(null)} className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors w-full" style={{ borderColor: 'var(--border)' }}>
+              <button
+                onClick={() => setDeletePost(null)}
+                className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors w-full"
+                style={{ borderColor: 'var(--border)' }}
+              >
                 Hủy
               </button>
-              <button disabled={busy} onClick={handleDelete} className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold bg-red-500 hover:bg-red-600 shadow-sm transition-colors w-full disabled:opacity-50">
+              <button
+                disabled={busy}
+                onClick={handleDelete}
+                className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold bg-red-500 hover:bg-red-600 shadow-sm transition-colors w-full disabled:opacity-50"
+              >
                 Xác nhận
               </button>
             </div>
@@ -346,7 +445,15 @@ export default function Posts() {
   );
 }
 
-function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (page: number) => void }) {
+function Pagination({
+  current,
+  total,
+  onChange,
+}: {
+  current: number;
+  total: number;
+  onChange: (page: number) => void;
+}) {
   if (total <= 1) return null;
   const items = paginationItems(current, total);
 
@@ -365,16 +472,22 @@ function Pagination({ current, total, onChange }: { current: number; total: numb
 
       {items.map((item, index) =>
         item === 'ellipsis' ? (
-          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">…</span>
+          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">
+            …
+          </span>
         ) : (
           <button
             type="button"
             key={item}
             onClick={() => onChange(item)}
             className={`min-w-8 h-8 px-2 rounded-lg text-xs font-semibold border transition-colors ${
-              current === item ? 'text-white border-transparent' : 'text-slate-600 bg-white hover:text-blue-600'
+              current === item
+                ? 'text-white border-transparent'
+                : 'text-slate-600 bg-white hover:text-blue-600'
             }`}
-            style={current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }}
+            style={
+              current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }
+            }
             aria-current={current === item ? 'page' : undefined}
           >
             {item}

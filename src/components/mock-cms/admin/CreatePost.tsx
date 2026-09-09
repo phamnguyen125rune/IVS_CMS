@@ -19,7 +19,7 @@ import {
   Image as ImageIcon,
   UploadCloud,
   X,
-  FolderOpen
+  FolderOpen,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
@@ -115,16 +115,17 @@ export default function PostEditor() {
 
   // Load danh mục và tag có sẵn
   useEffect(() => {
-    Promise.all([
-      categoryService.getAllCategories(),
-      tagService.getAllTags()
-    ]).then(([cats, fetchedTags]) => {
-      setCategories(cats);
-      setAvailableTags(fetchedTags);
-      if (!isEditMode && cats.length > 0 && formData.categoryId === 0) {
-        setFormData((prev) => ({ ...prev, categoryId: cats[0].categoryId }));
-      }
-    }).catch((err) => setFormError(err instanceof Error ? err.message : 'Không thể tải danh mục và thẻ.'));
+    Promise.all([categoryService.getAllCategories(), tagService.getAllTags()])
+      .then(([cats, fetchedTags]) => {
+        setCategories(cats);
+        setAvailableTags(fetchedTags);
+        if (!isEditMode && cats.length > 0 && formData.categoryId === 0) {
+          setFormData((prev) => ({ ...prev, categoryId: cats[0].categoryId }));
+        }
+      })
+      .catch((err) =>
+        setFormError(err instanceof Error ? err.message : 'Không thể tải danh mục và thẻ.')
+      );
 
     if (isEditMode && id) {
       postService
@@ -157,7 +158,11 @@ export default function PostEditor() {
           setFeaturedImageUrl(featuredUrl);
           setLoadingPost(false);
         })
-        .catch((err) => setFormError(err instanceof Error ? err.message : 'Không thể tải bài viết. Vui lòng tải lại trang.'))
+        .catch((err) =>
+          setFormError(
+            err instanceof Error ? err.message : 'Không thể tải bài viết. Vui lòng tải lại trang.'
+          )
+        )
         .finally(() => setLoadingPost(false));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -211,7 +216,10 @@ export default function PostEditor() {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
-    if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+    if (
+      !['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type) ||
+      file.size > 10 * 1024 * 1024
+    ) {
       setFormError('Chọn ảnh JPEG, PNG, GIF hoặc WebP không quá 10 MB.');
       return;
     }
@@ -227,16 +235,15 @@ export default function PostEditor() {
       });
 
       // Bóc tách data nếu BE bọc trong { data: ... }
-      const result = (res && typeof res === 'object' && 'data' in res) ? res.data : res;
+      const result = res && typeof res === 'object' && 'data' in res ? res.data : res;
       if (!result?.mediaId) throw new Error('Máy chủ không trả về ID ảnh hợp lệ.');
 
       setFormData((prev) => ({
         ...prev,
         featuredMediaId: result.mediaId,
-        mediaIds: [...new Set([...(prev.mediaIds || []), result.mediaId])]
+        mediaIds: [...new Set([...(prev.mediaIds || []), result.mediaId])],
       }));
       setFeaturedImageUrl(`/api/v1/media/${result.mediaId}/view`);
-
     } catch (error) {
       console.error(error);
       setFormError(error instanceof Error ? error.message : 'Lỗi khi upload ảnh!');
@@ -254,7 +261,6 @@ export default function PostEditor() {
       // Bóc tách data nếu BE bọc trong { data: ... }
       const items = Array.isArray(res) ? res : res.data || res.result || [];
       setMediaItems(Array.isArray(items) ? items : []);
-
     } catch (error: unknown) {
       console.error('Lỗi lấy danh sách media:', error);
       setFormError(error instanceof Error ? error.message : 'Không thể tải thư viện ảnh.');
@@ -268,7 +274,7 @@ export default function PostEditor() {
     setFormData((prev) => ({
       ...prev,
       ...(mediaTarget === 'og' ? { ogImageId: media.mediaId } : { featuredMediaId: media.mediaId }),
-      mediaIds: [...new Set([...(prev.mediaIds || []), media.mediaId])]
+      mediaIds: [...new Set([...(prev.mediaIds || []), media.mediaId])],
     }));
     if (mediaTarget === 'featured') setFeaturedImageUrl(`/api/v1/media/${media.mediaId}/view`);
     setIsMediaModalOpen(false);
@@ -314,8 +320,17 @@ export default function PostEditor() {
 
       navigate('/admin/bai-viet');
     } catch (error: unknown) {
-      const message = error instanceof ApiError ? `HTTP ${error.status}: ${error.message}` : error instanceof Error ? error.message : 'Có lỗi xảy ra khi lưu bài viết!';
-      setFormError(createdThisAttempt ? `Bài viết đã được tạo ở dạng nháp nhưng gửi duyệt thất bại: ${message}. Bấm Gửi duyệt để thử lại trên bài vừa tạo.` : message);
+      const message =
+        error instanceof ApiError
+          ? `HTTP ${error.status}: ${error.message}`
+          : error instanceof Error
+            ? error.message
+            : 'Có lỗi xảy ra khi lưu bài viết!';
+      setFormError(
+        createdThisAttempt
+          ? `Bài viết đã được tạo ở dạng nháp nhưng gửi duyệt thất bại: ${message}. Bấm Gửi duyệt để thử lại trên bài vừa tạo.`
+          : message
+      );
     } finally {
       submitting.current = false;
       setLoading(false);
@@ -331,7 +346,14 @@ export default function PostEditor() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto pb-24 relative">
-      {formError && <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{formError}</div>}
+      {formError && (
+        <div
+          role="alert"
+          className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+        >
+          {formError}
+        </div>
+      )}
       <style jsx global>{`
         .sticky-editor-container .ck-editor__top {
           position: sticky !important;
@@ -645,7 +667,9 @@ export default function PostEditor() {
             </div>
             <div className="space-y-5">
               <div>
-                <label className="text-xs font-semibold text-slate-600 block mb-1.5">Danh mục chính</label>
+                <label className="text-xs font-semibold text-slate-600 block mb-1.5">
+                  Danh mục chính
+                </label>
                 <select
                   name="categoryId"
                   value={formData.categoryId}
@@ -719,12 +743,16 @@ export default function PostEditor() {
                             className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-between"
                           >
                             <span>{tag.tagName}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">#{tag.slug}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">
+                              #{tag.slug}
+                            </span>
                           </button>
                         ))
                       ) : (
                         <div className="px-4 py-3 text-sm text-slate-400 italic text-center bg-slate-50">
-                          {availableTags.length === 0 ? 'Hệ thống chưa có thẻ nào.' : 'Không tìm thấy thẻ phù hợp.'}
+                          {availableTags.length === 0
+                            ? 'Hệ thống chưa có thẻ nào.'
+                            : 'Không tìm thấy thẻ phù hợp.'}
                         </div>
                       )}
                     </div>
@@ -752,7 +780,7 @@ export default function PostEditor() {
                   type="button"
                   onClick={() => {
                     setFeaturedImageUrl(null);
-                    setFormData(prev => ({ ...prev, featuredMediaId: null }));
+                    setFormData((prev) => ({ ...prev, featuredMediaId: null }));
                   }}
                   className="text-xs text-red-500 hover:underline"
                 >
@@ -803,7 +831,9 @@ export default function PostEditor() {
 
             {uploadingImage && (
               <div className="text-center mt-2">
-                <span className="text-xs font-semibold text-blue-600 animate-pulse">Đang tải lên...</span>
+                <span className="text-xs font-semibold text-blue-600 animate-pulse">
+                  Đang tải lên...
+                </span>
               </div>
             )}
           </div>
@@ -835,9 +865,7 @@ export default function PostEditor() {
                 />
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                  Mô tả
-                </label>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Mô tả</label>
                 <textarea
                   ref={ogDescriptionTextareaRef}
                   name="ogDescription"
@@ -854,7 +882,9 @@ export default function PostEditor() {
                 />
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-slate-600 block mb-1.5">Ảnh chia sẻ</label>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1.5">
+                  Ảnh chia sẻ
+                </label>
                 {formData.ogImageId ? (
                   <div className="space-y-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -868,7 +898,11 @@ export default function PostEditor() {
                       <button
                         type="button"
                         className="text-xs font-semibold text-blue-600"
-                        onClick={() => { setMediaTarget('og'); setIsMediaModalOpen(true); fetchMediaLibrary(); }}
+                        onClick={() => {
+                          setMediaTarget('og');
+                          setIsMediaModalOpen(true);
+                          fetchMediaLibrary();
+                        }}
                       >
                         Đổi ảnh
                       </button>
@@ -884,7 +918,11 @@ export default function PostEditor() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => { setMediaTarget('og'); setIsMediaModalOpen(true); fetchMediaLibrary(); }}
+                    onClick={() => {
+                      setMediaTarget('og');
+                      setIsMediaModalOpen(true);
+                      fetchMediaLibrary();
+                    }}
                     className="w-full px-3 py-2 border border-dashed rounded-xl text-xs font-medium text-slate-500 hover:text-violet-600 hover:bg-violet-50/40"
                     style={{ borderColor: 'var(--border)' }}
                   >
@@ -905,14 +943,17 @@ export default function PostEditor() {
         >
           <div
             className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <div className="flex items-center gap-2">
                 <FolderOpen size={20} className="text-blue-600" />
                 <h3 className="font-bold text-slate-900 text-lg">Thư viện Media</h3>
               </div>
-              <button onClick={() => setIsMediaModalOpen(false)} className="p-1.5 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
+              <button
+                onClick={() => setIsMediaModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -925,16 +966,22 @@ export default function PostEditor() {
                 </div>
               ) : mediaItems.length > 0 ? (
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
-                  {mediaItems.map(media => (
+                  {mediaItems.map((media) => (
                     <div
                       key={media.mediaId}
                       onClick={() => handleSelectFromLibrary(media)}
                       className="aspect-square rounded-xl border border-slate-200 bg-white overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all group relative shadow-sm"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={media.filePath} alt={media.fileName} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <img
+                        src={media.filePath}
+                        alt={media.fileName}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                        <span className="text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Chọn</span>
+                        <span className="text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">
+                          Chọn
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -948,7 +995,6 @@ export default function PostEditor() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

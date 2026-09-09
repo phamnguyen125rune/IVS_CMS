@@ -655,10 +655,11 @@ export default function ClientLayout({ children, params }: ClientLayoutProps) {
                 >
                   <Link
                     href={fullPath}
-                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
                         ? 'text-blue-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                      }`}
+                    }`}
                   >
                     {link.label}
                     {link.children && <ChevronDown size={13} className="text-slate-400" />}
@@ -709,10 +710,11 @@ export default function ClientLayout({ children, params }: ClientLayoutProps) {
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code)}
-                      className={`flex items-center gap-3 px-4 py-2 w-full text-sm transition-colors ${activeLang.code === lang.code
+                      className={`flex items-center gap-3 px-4 py-2 w-full text-sm transition-colors ${
+                        activeLang.code === lang.code
                           ? 'text-blue-600 bg-blue-50 font-medium'
                           : 'text-slate-600 hover:bg-slate-50'
-                        }`}
+                      }`}
                     >
                       <span>{lang.flag}</span>
                       {lang.label}
@@ -890,10 +892,11 @@ export default function ClientLayout({ children, params }: ClientLayoutProps) {
                 <div key={link.path}>
                   <Link
                     href={fullPath}
-                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${isActive
+                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                      isActive
                         ? 'text-blue-600 bg-blue-50 font-semibold'
                         : 'text-slate-600 hover:bg-slate-50'
-                      }`}
+                    }`}
                   >
                     {link.label}
                   </Link>

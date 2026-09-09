@@ -74,7 +74,9 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
 
   const submit = async () => {
     if (!name.trim()) {
-      setError(activeTab === 'categories' ? 'Vui lòng nhập tên danh mục.' : 'Vui lòng nhập tên thẻ.');
+      setError(
+        activeTab === 'categories' ? 'Vui lòng nhập tên danh mục.' : 'Vui lòng nhập tên thẻ.'
+      );
       return;
     }
 
@@ -210,8 +212,12 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                   >
                     <span className="w-5 shrink-0" />
                     <Folder size={15} className="text-amber-500 shrink-0" />
-                    <span className="flex-1 text-sm text-slate-700 font-medium">{item.categoryName}</span>
-                    <span className="text-xs text-slate-300 font-mono hidden sm:inline">{item.slug || '-'}</span>
+                    <span className="flex-1 text-sm text-slate-700 font-medium">
+                      {item.categoryName}
+                    </span>
+                    <span className="text-xs text-slate-300 font-mono hidden sm:inline">
+                      {item.slug || '-'}
+                    </span>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                       <button
                         type="button"
@@ -249,7 +255,9 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                   >
                     <TagIcon size={12} className="text-slate-400" />
                     <span className="text-sm text-slate-700">{item.tagName}</span>
-                    {item.slug && <span className="text-[11px] text-slate-400 font-mono">{item.slug}</span>}
+                    {item.slug && (
+                      <span className="text-[11px] text-slate-400 font-mono">{item.slug}</span>
+                    )}
                     <button
                       type="button"
                       disabled={busy}
@@ -293,7 +301,9 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">Đường dẫn (slug)</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                  Đường dẫn (slug)
+                </label>
                 <input
                   value={slug}
                   disabled={Boolean(editingCategory)}
@@ -303,7 +313,9 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                   style={{ borderColor: 'var(--border)' }}
                 />
                 {editingCategory && (
-                  <p className="text-[11px] text-slate-400 mt-1.5">Backend hiện chỉ hỗ trợ đổi tên, không đổi slug.</p>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    Backend hiện chỉ hỗ trợ đổi tên, không đổi slug.
+                  </p>
                 )}
               </div>
             </div>

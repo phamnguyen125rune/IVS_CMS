@@ -1,11 +1,5 @@
 export type PostStatus =
-  | 'PENDING'
-  | 'DRAFT'
-  | 'REJECTED'
-  | 'DELETED'
-  | 'APPROVED'
-  | 'PUBLISHED'
-  | 'UNPUBLISHED';
+  'PENDING' | 'DRAFT' | 'REJECTED' | 'DELETED' | 'APPROVED' | 'PUBLISHED' | 'UNPUBLISHED';
 
 export interface TagInfo {
   id: number;

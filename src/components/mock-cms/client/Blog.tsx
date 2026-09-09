@@ -37,8 +37,12 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
         style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)' }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">Tin tức</div>
-          <h1 className="font-display text-4xl lg:text-5xl font-bold text-white mb-4">Kiến thức & Insights</h1>
+          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">
+            Tin tức
+          </div>
+          <h1 className="font-display text-4xl lg:text-5xl font-bold text-white mb-4">
+            Kiến thức & Insights
+          </h1>
           <p className="text-blue-200 text-lg max-w-2xl mb-8">
             Cập nhật bài viết, kiến thức chuyên sâu và thông tin mới nhất từ đội ngũ CMS.
           </p>
@@ -67,7 +71,9 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
               !categoryId ? 'text-white' : 'bg-white border text-slate-600 hover:bg-slate-50'
             }`}
-            style={!categoryId ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }}
+            style={
+              !categoryId ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }
+            }
           >
             Tất cả
           </Link>
@@ -107,7 +113,10 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
               </div>
               <div className="p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xs font-semibold text-white px-3 py-1 rounded-full" style={{ background: 'var(--primary)' }}>
+                  <span
+                    className="text-xs font-semibold text-white px-3 py-1 rounded-full"
+                    style={{ background: 'var(--primary)' }}
+                  >
                     Mới nhất
                   </span>
                   <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
@@ -117,13 +126,19 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
                 <h2 className="font-display font-bold text-2xl text-slate-900 leading-tight mb-3 group-hover:text-blue-600 transition-colors">
                   {featured.title}
                 </h2>
-                {featured.summary && <p className="text-slate-500 leading-relaxed mb-5 line-clamp-3">{featured.summary}</p>}
+                {featured.summary && (
+                  <p className="text-slate-500 leading-relaxed mb-5 line-clamp-3">
+                    {featured.summary}
+                  </p>
+                )}
                 <div className="flex items-center gap-3 text-xs text-slate-400">
                   <span>{featured.author?.name || 'System'}</span>
                   {featured.publishedAt && (
                     <>
                       <span>·</span>
-                      <time dateTime={featured.publishedAt}>{formatDate(featured.publishedAt)}</time>
+                      <time dateTime={featured.publishedAt}>
+                        {formatDate(featured.publishedAt)}
+                      </time>
                     </>
                   )}
                 </div>
@@ -163,7 +178,11 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
                   <h3 className="font-display font-semibold text-slate-900 leading-snug mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
                     {post.title}
                   </h3>
-                  {post.summary && <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 flex-1">{post.summary}</p>}
+                  {post.summary && (
+                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 flex-1">
+                      {post.summary}
+                    </p>
+                  )}
                   <div className="mt-4 flex items-center justify-between gap-3">
                     <div className="text-xs text-slate-400 truncate">
                       {post.author?.name || 'System'}
@@ -187,7 +206,10 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
         )}
 
         {data.meta.pages > 1 && (
-          <nav className="mt-10 flex flex-wrap items-center justify-center gap-2 text-sm" aria-label="Phân trang bài viết">
+          <nav
+            className="mt-10 flex flex-wrap items-center justify-center gap-2 text-sm"
+            aria-label="Phân trang bài viết"
+          >
             <Link
               rel={page > 1 ? 'prev' : undefined}
               href={page > 1 ? listHref(page - 1) : listHref(1)}
@@ -200,16 +222,24 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
 
             {paginationItems(page, data.meta.pages).map((item, index) =>
               item === 'ellipsis' ? (
-                <span key={`ellipsis-${index}`} className="px-1.5 text-slate-400">…</span>
+                <span key={`ellipsis-${index}`} className="px-1.5 text-slate-400">
+                  …
+                </span>
               ) : (
                 <Link
                   key={item}
                   href={listHref(item)}
                   aria-current={item === page ? 'page' : undefined}
                   className={`min-w-10 px-3 py-2 rounded-xl border text-center font-medium transition-colors ${
-                    item === page ? 'text-white border-transparent' : 'bg-white text-slate-600 hover:text-blue-600 hover:border-blue-200'
+                    item === page
+                      ? 'text-white border-transparent'
+                      : 'bg-white text-slate-600 hover:text-blue-600 hover:border-blue-200'
                   }`}
-                  style={item === page ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }}
+                  style={
+                    item === page
+                      ? { background: 'var(--primary)' }
+                      : { borderColor: 'var(--border)' }
+                  }
                 >
                   {item}
                 </Link>
@@ -235,7 +265,6 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
 function formatDate(value: string) {
   return value.slice(0, 10).split('-').reverse().join('/');
 }
-
 
 function paginationItems(current: number, total: number): Array<number | 'ellipsis'> {
   if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
