@@ -1,7 +1,7 @@
 export interface PostCategory {
   categoryId: number;
   categoryName: string;
-  slug?: string;
+  slug: string;
   createdAt?: string;
   createdBy?: number;
   updatedAt?: string;
@@ -10,10 +10,10 @@ export interface PostCategory {
 
 export interface ReqCategoryCreateDTO {
   categoryName: string;
-  slug?: string;
+  slug: string;
 }
 
+// Backend chỉ cho đổi tên; slug hiện tại được service backend giữ nguyên.
 export interface ReqCategoryUpdateDTO {
   categoryName: string;
-  slug?: string;
 }

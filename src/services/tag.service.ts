@@ -1,16 +1,20 @@
 import { apiFetch } from '@/utils/api-client';
-import { Tag } from '@/types/tag.type';
+import type { ReqTagCreateDTO, Tag } from '@/types/tag.type';
 
 export class TagService {
-  async getAllTags(): Promise<Tag[]> {
+  getAllTags(): Promise<Tag[]> {
     return apiFetch<Tag[]>('/api/v1/tags');
   }
 
-  async createTag(payload: { tagName: string; slug: string }): Promise<void> {
-    return apiFetch('/api/v1/tags', {
+  createTag(payload: ReqTagCreateDTO): Promise<void> {
+    return apiFetch<void>('/api/v1/tags', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+  }
+
+  deleteTag(id: number): Promise<void> {
+    return apiFetch<void>(`/api/v1/tags/${id}`, { method: 'DELETE' });
   }
 }
 

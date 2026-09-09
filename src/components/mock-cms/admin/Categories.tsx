@@ -1,300 +1,180 @@
 'use client';
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
-
-import { useState, useEffect } from 'react';
-import { Edit, Trash2, ChevronRight, ChevronDown, FolderOpen, Folder, Tag } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Edit, Folder, Tag as TagIcon, Trash2 } from 'lucide-react';
 
 import { categoryService } from '@/services/category.service';
+import { tagService } from '@/services/tag.service';
+import type { PostCategory } from '@/types/category.type';
+import type { Tag } from '@/types/tag.type';
 
-function CategoryItem({ item, depth = 0, onEdit, onDelete }: any) {
-  const [expanded, setExpanded] = useState(depth === 0);
+type Tab = 'categories' | 'tags';
 
-  const hasChildren = Array.isArray(item.children) && item.children.length > 0;
-
-  return (
-    <div>
-      <div
-        className="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-slate-50 group"
-        style={{
-          paddingLeft: `${12 + depth * 20}px`,
-        }}
-      >
-        <button type="button" onClick={() => setExpanded(!expanded)} className="w-5 flex-shrink-0">
-          {hasChildren ? (
-            expanded ? (
-              <ChevronDown size={14} className="text-slate-400" />
-            ) : (
-              <ChevronRight size={14} className="text-slate-400" />
-            )
-          ) : null}
-        </button>
-
-        {hasChildren ? (
-          expanded ? (
-            <FolderOpen size={15} className="text-amber-500 flex-shrink-0" />
-          ) : (
-            <Folder size={15} className="text-amber-500 flex-shrink-0" />
-          )
-        ) : (
-          <Folder size={15} className="text-slate-300 flex-shrink-0" />
-        )}
-
-        <span className="flex-1 text-sm text-slate-700 font-medium">{item.name}</span>
-
-        <span className="text-xs text-slate-400 font-mono">{item.posts || 0} bài</span>
-
-        <span className="text-xs text-slate-300 font-mono hidden group-hover:inline">
-          {item.slug}
-        </span>
-
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-          <button
-            type="button"
-            onClick={() => onEdit(item)}
-            className="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50"
-          >
-            <Edit size={12} />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onDelete(item.id, 'categories')}
-            className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50"
-          >
-            <Trash2 size={12} />
-          </button>
-        </div>
-      </div>
-
-      {hasChildren && expanded && (
-        <div>
-          {item.children.map((child: any) => (
-            <CategoryItem
-              key={child.id}
-              item={child}
-              depth={depth + 1}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+interface CategoriesProps {
+  initialTab?: Tab;
 }
 
-export default function Categories() {
-  const [activeTab, setActiveTab] = useState<'categories' | 'tags'>('categories');
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
-  const [categories, setCategories] = useState<any[]>([]);
-  const [tags, setTags] = useState<any[]>([]);
+export default function Categories({ initialTab = 'categories' }: CategoriesProps) {
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
+  const [categories, setCategories] = useState<PostCategory[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [editingCategory, setEditingCategory] = useState<PostCategory | null>(null);
+  const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
 
-  const [loading, setLoading] = useState(false);
-
-  const [editingId, setEditingId] = useState<number | string | null>(null);
-
-  const [newName, setNewName] = useState('');
-  const [newSlug, setNewSlug] = useState('');
-  const [newDescription, setNewDescription] = useState('');
-
-  const [selectedParentId, setSelectedParentId] = useState('');
-
-  // =========================
-  // LOAD DATA
-  // =========================
-
-  const fetchData = async () => {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
-
-      const [catData, tagData] = await Promise.all([
+      setError('');
+      const [categoryData, tagData] = await Promise.all([
         categoryService.getAllCategories(),
-        categoryService.getAllTags(),
+        tagService.getAllTags(),
       ]);
-
-      setCategories(Array.isArray(catData) ? catData : (catData as any)?.data || []);
-
-      setTags(Array.isArray(tagData) ? tagData : (tagData as any)?.data || []);
-    } catch (error) {
-      console.error('Lỗi khi tải danh mục / tag:', error);
+      setCategories(categoryData);
+      setTags(tagData);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Không thể tải danh mục và thẻ.');
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    const loadInitialData = async () => {
-      await fetchData();
-    };
-    loadInitialData();
   }, []);
 
-  // =========================
-  // RESET FORM
-  // =========================
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   const resetForm = () => {
-    setEditingId(null);
-    setNewName('');
-    setNewSlug('');
-    setNewDescription('');
-    setSelectedParentId('');
+    setEditingCategory(null);
+    setName('');
+    setSlug('');
   };
 
-  // =========================
-  // SLUG
-  // =========================
-
-  const generateSlug = (value: string) => {
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]/g, '');
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (!editingCategory) setSlug(slugify(value));
   };
 
-  // =========================
-  // CREATE / UPDATE
-  // =========================
-
-  const handleSubmit = async () => {
-    if (!newName.trim()) {
-      alert('Vui lòng nhập tên!');
+  const submit = async () => {
+    if (!name.trim()) {
+      setError(activeTab === 'categories' ? 'Vui lòng nhập tên danh mục.' : 'Vui lòng nhập tên thẻ.');
       return;
     }
 
     try {
-      const generatedSlug = newSlug.trim() || generateSlug(newName);
-
-      // =========================
-      // CATEGORY
-      // =========================
+      setBusy(true);
+      setError('');
 
       if (activeTab === 'categories') {
-        const payload = {
-          code: generatedSlug,
-          name: newName.trim(),
-          slug: generatedSlug,
-          description: newDescription.trim(),
-          status: 'ACTIVE',
-          parentId: selectedParentId ? Number(selectedParentId) : null,
-        };
-
-        if (editingId !== null) {
-          await categoryService.updateCategory(editingId, payload);
+        if (editingCategory) {
+          await categoryService.updateCategory(editingCategory.categoryId, {
+            categoryName: name.trim(),
+          });
         } else {
-          await categoryService.createCategory(payload);
+          const finalSlug = slug.trim() || slugify(name);
+          await categoryService.createCategory({
+            categoryName: name.trim(),
+            slug: finalSlug,
+          });
         }
-      }
-
-      // =========================
-      // TAG
-      // =========================
-      else {
-        const payload = {
-          code: generatedSlug,
-          name: newName.trim(),
-          slug: generatedSlug,
-        };
-
-        if (editingId !== null) {
-          await categoryService.updateTag(editingId, payload);
-        } else {
-          await categoryService.createTag(payload);
-        }
+      } else {
+        const finalSlug = slug.trim() || slugify(name);
+        await tagService.createTag({
+          tagName: name.trim(),
+          slug: finalSlug,
+        });
       }
 
       resetForm();
-
-      await fetchData();
-
-      alert('Thao tác thành công!');
-    } catch (error: any) {
-      console.error('Lỗi chi tiết từ backend:', error);
-
-      const errorMsg = error?.message || 'Không thể thực hiện thao tác';
-
-      alert(`Lỗi khi lưu vào database: ${errorMsg}`);
+      await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Không thể lưu dữ liệu.');
+    } finally {
+      setBusy(false);
     }
   };
 
-  // =========================
-  // EDIT
-  // =========================
-
-  const handleEdit = (item: any) => {
-    setEditingId(item.id);
-
-    setNewName(item.name || '');
-    setNewSlug(item.slug || '');
-
-    setNewDescription(item.description || '');
-
-    setSelectedParentId(item.parentId != null ? String(item.parentId) : '');
-  };
-
-  // =========================
-  // DELETE
-  // =========================
-
-  const handleDelete = async (id: number | string, type: 'categories' | 'tags' = activeTab) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa mục này khỏi database?')) {
-      return;
-    }
-
+  const removeCategory = async (item: PostCategory) => {
+    if (!confirm(`Xóa danh mục “${item.categoryName}”?`)) return;
     try {
-      if (type === 'categories') {
-        await categoryService.deleteCategory(id);
-      } else {
-        await categoryService.deleteTag(id);
-      }
-
-      if (editingId === id) {
-        resetForm();
-      }
-
-      await fetchData();
-    } catch (error: any) {
-      console.error('Lỗi khi xóa:', error);
-
-      alert(`Không thể xóa mục này: ${error?.message || 'Lỗi backend'}`);
+      setBusy(true);
+      setError('');
+      await categoryService.deleteCategory(item.categoryId);
+      if (editingCategory?.categoryId === item.categoryId) resetForm();
+      await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Không thể xóa danh mục.');
+    } finally {
+      setBusy(false);
     }
   };
 
-  // =========================
-  // RENDER
-  // =========================
+  const removeTag = async (item: Tag) => {
+    if (!confirm(`Xóa thẻ “${item.tagName}”?`)) return;
+    try {
+      setBusy(true);
+      setError('');
+      await tagService.deleteTag(item.tagId);
+      await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Không thể xóa thẻ.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const stats = useMemo(
+    () => [
+      { label: 'Tổng danh mục', value: categories.length },
+      { label: 'Tổng thẻ từ khóa', value: tags.length },
+    ],
+    [categories.length, tags.length]
+  );
 
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Danh mục</h1>
-
           <p className="text-slate-500 text-sm mt-0.5">Quản lý danh mục và thẻ từ khóa bài viết</p>
         </div>
       </div>
 
-      {/* Tabs */}
+      {error && (
+        <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
       <div className="flex gap-1 mb-5 p-1 bg-slate-100 rounded-xl w-fit">
         {[
-          {
-            key: 'categories',
-            label: 'Danh mục',
-          },
-          {
-            key: 'tags',
-            label: 'Thẻ từ khóa',
-          },
+          { key: 'categories' as const, label: 'Danh mục' },
+          { key: 'tags' as const, label: 'Thẻ từ khóa' },
         ].map(({ key, label }) => (
           <button
             key={key}
             type="button"
             onClick={() => {
-              setActiveTab(key as 'categories' | 'tags');
-
+              setActiveTab(key);
               resetForm();
+              setError('');
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === key
@@ -308,259 +188,161 @@ export default function Categories() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* =========================
-            TREE / TAG LIST
-        ========================= */}
-
         <div
           className="lg:col-span-3 bg-white rounded-xl border overflow-hidden"
-          style={{
-            borderColor: 'var(--border)',
-          }}
+          style={{ borderColor: 'var(--border)' }}
         >
-          <div
-            className="px-4 py-3 border-b bg-slate-50"
-            style={{
-              borderColor: 'var(--border)',
-            }}
-          >
+          <div className="px-4 py-3 border-b bg-slate-50" style={{ borderColor: 'var(--border)' }}>
             <h3 className="text-sm font-semibold text-slate-700">
-              {activeTab === 'categories' ? 'Cây danh mục' : 'Danh sách thẻ'}
+              {activeTab === 'categories' ? 'Danh sách danh mục' : 'Danh sách thẻ'}
             </h3>
           </div>
 
-          <div className="p-2">
+          <div className="p-2 min-h-40">
             {loading ? (
-              <div className="p-4 text-center text-sm text-slate-400">
-                Đang tải dữ liệu từ database...
-              </div>
+              <div className="p-8 text-center text-sm text-slate-400">Đang tải dữ liệu...</div>
             ) : activeTab === 'categories' ? (
-              categories.length > 0 ? (
-                categories.map((cat) => (
-                  <CategoryItem
-                    key={cat.id}
-                    item={cat}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
+              categories.length ? (
+                categories.map((item) => (
+                  <div
+                    key={item.categoryId}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-slate-50 group"
+                  >
+                    <span className="w-5 shrink-0" />
+                    <Folder size={15} className="text-amber-500 shrink-0" />
+                    <span className="flex-1 text-sm text-slate-700 font-medium">{item.categoryName}</span>
+                    <span className="text-xs text-slate-300 font-mono hidden sm:inline">{item.slug || '-'}</span>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingCategory(item);
+                          setName(item.categoryName);
+                          setSlug(item.slug || '');
+                        }}
+                        className="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                        title="Đổi tên"
+                      >
+                        <Edit size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => removeCategory(item)}
+                        className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-40"
+                        title="Xóa"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  </div>
                 ))
               ) : (
-                <div className="p-4 text-center text-sm text-slate-400">
-                  Chưa có danh mục nào trong database
-                </div>
+                <div className="p-8 text-center text-sm text-slate-400">Chưa có danh mục.</div>
               )
-            ) : (
+            ) : tags.length ? (
               <div className="flex flex-wrap gap-2 p-2">
-                {tags.length > 0 ? (
-                  tags.map((tag) => (
-                    <div
-                      key={tag.id}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-transparent hover:border-slate-200 group"
+                {tags.map((item) => (
+                  <div
+                    key={item.tagId}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-transparent hover:border-slate-200 group"
+                  >
+                    <TagIcon size={12} className="text-slate-400" />
+                    <span className="text-sm text-slate-700">{item.tagName}</span>
+                    {item.slug && <span className="text-[11px] text-slate-400 font-mono">{item.slug}</span>}
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => removeTag(item)}
+                      className="p-0.5 rounded text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 disabled:opacity-40"
+                      title="Xóa thẻ"
                     >
-                      <Tag size={12} className="text-slate-400" />
-
-                      <span className="text-sm text-slate-700">{tag.name}</span>
-
-                      <span className="text-xs text-slate-400 font-mono">{tag.posts || 0}</span>
-
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 ml-1">
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(tag)}
-                          className="p-0.5 rounded text-slate-300 hover:text-blue-600"
-                        >
-                          <Edit size={11} />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(tag.id, 'tags')}
-                          className="p-0.5 rounded text-slate-300 hover:text-red-500"
-                        >
-                          <Trash2 size={11} />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-4 text-center text-sm text-slate-400 w-full">
-                    Chưa có thẻ nào trong database
+                      <Trash2 size={11} />
+                    </button>
                   </div>
-                )}
+                ))}
               </div>
+            ) : (
+              <div className="p-8 text-center text-sm text-slate-400">Chưa có thẻ.</div>
             )}
           </div>
         </div>
 
-        {/* =========================
-            ADD / EDIT FORM
-        ========================= */}
-
         <div className="lg:col-span-2 space-y-4">
-          <div
-            className="bg-white rounded-xl border p-5"
-            style={{
-              borderColor: 'var(--border)',
-            }}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-sm font-semibold text-slate-800">
-                {editingId !== null
-                  ? activeTab === 'categories'
-                    ? 'Chỉnh sửa danh mục'
-                    : 'Chỉnh sửa thẻ'
-                  : activeTab === 'categories'
-                    ? 'Thêm danh mục mới'
-                    : 'Thêm thẻ mới'}
-              </h3>
-
-              {editingId !== null && (
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="text-xs text-blue-600 hover:underline"
-                >
-                  Hủy
-                </button>
-              )}
-            </div>
+          <div className="bg-white rounded-xl border p-5" style={{ borderColor: 'var(--border)' }}>
+            <h3 className="text-sm font-semibold text-slate-800 mb-4">
+              {activeTab === 'categories'
+                ? editingCategory
+                  ? 'Đổi tên danh mục'
+                  : 'Thêm danh mục mới'
+                : 'Thêm thẻ mới'}
+            </h3>
 
             <div className="space-y-3">
-              {/* NAME */}
-
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
                   Tên {activeTab === 'categories' ? 'danh mục' : 'thẻ'}
                 </label>
-
                 <input
-                  value={newName}
-                  onChange={(e) => {
-                    const value = e.target.value;
-
-                    setNewName(value);
-
-                    if (editingId === null) {
-                      setNewSlug(generateSlug(value));
-                    }
-                  }}
+                  value={name}
+                  onChange={(event) => handleNameChange(event.target.value)}
                   placeholder="Nhập tên..."
-                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500 text-slate-800"
-                  style={{
-                    borderColor: 'var(--border)',
-                  }}
+                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500"
+                  style={{ borderColor: 'var(--border)' }}
                 />
               </div>
-
-              {/* SLUG */}
 
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Đường dẫn (slug)
-                </label>
-
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Đường dẫn (slug)</label>
                 <input
-                  value={newSlug}
-                  onChange={(e) => setNewSlug(e.target.value)}
+                  value={slug}
+                  disabled={Boolean(editingCategory)}
+                  onChange={(event) => setSlug(event.target.value)}
                   placeholder="ten-danh-muc"
-                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500 font-mono text-slate-800"
-                  style={{
-                    borderColor: 'var(--border)',
-                  }}
+                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500 font-mono disabled:bg-slate-50 disabled:text-slate-400"
+                  style={{ borderColor: 'var(--border)' }}
                 />
+                {editingCategory && (
+                  <p className="text-[11px] text-slate-400 mt-1.5">Backend hiện chỉ hỗ trợ đổi tên, không đổi slug.</p>
+                )}
               </div>
-
-              {/* PARENT CATEGORY */}
-
-              {activeTab === 'categories' && (
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Danh mục cha
-                  </label>
-
-                  <select
-                    value={selectedParentId}
-                    onChange={(e) => setSelectedParentId(e.target.value)}
-                    className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none bg-white text-slate-800"
-                    style={{
-                      borderColor: 'var(--border)',
-                    }}
-                  >
-                    <option value="">-- Danh mục gốc --</option>
-
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* DESCRIPTION */}
-
-              {activeTab === 'categories' && (
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Mô tả</label>
-
-                  <textarea
-                    rows={2}
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    placeholder="Mô tả ngắn..."
-                    className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none resize-none text-slate-800"
-                    style={{
-                      borderColor: 'var(--border)',
-                    }}
-                  />
-                </div>
-              )}
             </div>
 
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className="mt-4 w-full py-2.5 rounded-xl text-white text-sm font-semibold transition hover:opacity-90"
-              style={{
-                background: 'var(--primary)',
-              }}
-            >
-              {editingId !== null
-                ? 'Cập nhật'
-                : `Thêm ${activeTab === 'categories' ? 'Danh mục' : 'Thẻ'}`}
-            </button>
+            <div className="flex gap-2 mt-4">
+              {editingCategory && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="flex-1 py-2.5 rounded-xl border text-slate-600 text-sm font-semibold hover:bg-slate-50"
+                  style={{ borderColor: 'var(--border)' }}
+                >
+                  Hủy
+                </button>
+              )}
+              <button
+                type="button"
+                disabled={busy}
+                onClick={submit}
+                className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-50"
+                style={{ background: 'var(--primary)' }}
+              >
+                {busy
+                  ? 'Đang lưu...'
+                  : activeTab === 'categories'
+                    ? editingCategory
+                      ? 'Lưu thay đổi'
+                      : 'Thêm Danh mục'
+                    : 'Thêm Thẻ'}
+              </button>
+            </div>
           </div>
 
-          {/* =========================
-              STATS
-          ========================= */}
-
-          <div
-            className="bg-white rounded-xl border p-5"
-            style={{
-              borderColor: 'var(--border)',
-            }}
-          >
+          <div className="bg-white rounded-xl border p-5" style={{ borderColor: 'var(--border)' }}>
             <h3 className="text-sm font-semibold text-slate-800 mb-3">Thống kê</h3>
-
             <div className="space-y-2.5">
-              {[
-                {
-                  label: 'Tổng danh mục',
-                  value: categories.length,
-                },
-                {
-                  label: 'Tổng thẻ từ khóa',
-                  value: tags.length,
-                },
-                {
-                  label: 'Bài viết đã phân loại',
-                  value: 384,
-                },
-              ].map((stat) => (
+              {stats.map((stat) => (
                 <div key={stat.label} className="flex justify-between items-center">
                   <span className="text-sm text-slate-600">{stat.label}</span>
-
                   <span className="text-sm font-bold font-mono text-slate-900">{stat.value}</span>
                 </div>
               ))}

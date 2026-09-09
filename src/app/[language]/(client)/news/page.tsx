@@ -1,5 +1,5 @@
-import Blog from '@/components/mock-cms/client/Blog';
+import { permanentRedirect } from 'next/navigation';
 
 export default function NewsPage() {
-  return <Blog />;
+  permanentRedirect('/vi/bai-viet');
 }

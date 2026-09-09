@@ -1,5 +1,11 @@
 export type PostStatus =
-  'PENDING' | 'DRAFT' | 'REJECTED' | 'DELETED' | 'APPROVED' | 'PUBLISHED' | 'UNPUBLISHED';
+  | 'PENDING'
+  | 'DRAFT'
+  | 'REJECTED'
+  | 'DELETED'
+  | 'APPROVED'
+  | 'PUBLISHED'
+  | 'UNPUBLISHED';
 
 export interface TagInfo {
   id: number;
@@ -24,18 +30,16 @@ export interface AuthorInfo {
   name: string;
 }
 
-export interface OpenGraph {
-  title?: string;
-  description?: string;
-  imageUrl?: string;
-}
-
 export interface PostMetadata {
   title?: string;
   description?: string;
   canonicalUrl?: string;
   robots?: string;
-  openGraph?: OpenGraph;
+  openGraph?: {
+    title?: string;
+    description?: string;
+    imageUrl?: string;
+  };
 }
 
 export interface ResPostDTO {
@@ -51,7 +55,6 @@ export interface ResPostDTO {
   createdAt?: string;
   updatedAt?: string;
   metadata?: PostMetadata;
-  jsonLd?: Record<string, unknown>;
   tags?: TagInfo[];
   mediaList?: MediaInfo[];
 }
@@ -92,6 +95,15 @@ export interface ReqPostCreateDTO {
 
 export type ReqPostUpdateDTO = ReqPostCreateDTO;
 
+export interface ReqPostFilterDTO {
+  keyword?: string;
+  status?: PostStatus | '';
+  categoryId?: number;
+  authorId?: number;
+  fromDate?: string;
+  toDate?: string;
+}
+
 export interface PaginationMeta {
   page: number;
   pageSize: number;
@@ -103,35 +115,35 @@ export interface PaginatedResponse<T> {
   meta: PaginationMeta;
   result: T[];
 }
-export interface ReqPostFilterDTO {
-  keyword?: string;
-  status?: PostStatus | '';
-  categoryId?: number;
-  authorId?: number;
-  fromDate?: string;
-  toDate?: string;
-}
 
-export type PostReviewActionEnum = 'REJECTED' | 'PUBLISHED' | 'UNPUBLISHED' | 'APPROVED';
+export type PostReviewAction = 'REJECTED' | 'PUBLISHED' | 'UNPUBLISHED' | 'APPROVED';
 
 export interface ReqPostReviewDTO {
-  action: PostReviewActionEnum;
+  action: PostReviewAction;
   comment?: string;
 }
 
-export interface ReviewerInfo {
-  userId: number;
-  fullName: string;
-  avatarUrl: string;
+export interface PostReviewRecord {
+  reviewId: number;
+  postId: number;
+  reviewerId?: number;
+  action: PostReviewAction;
+  comment?: string;
+  createdAt: string;
+  updatedAt?: string;
+  updatedBy?: number;
 }
 
 export interface ResPostReviewDTO {
   reviewId: number;
   postId: number;
-  reviewerId: number;
-  action: PostReviewActionEnum;
-  comment: string;
+  action: PostReviewAction;
+  comment?: string;
   createdAt: string;
   updatedAt?: string;
-  reviewer?: ReviewerInfo;
+  reviewer?: {
+    id: number;
+    fullName: string;
+    avatarUrl?: string;
+  };
 }

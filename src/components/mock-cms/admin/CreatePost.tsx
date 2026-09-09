@@ -11,7 +11,6 @@ import {
   Share2,
   LayoutList,
   Tags,
-  Calendar,
   ChevronDown,
   ChevronUp,
   FileText,
@@ -27,7 +26,9 @@ import dynamic from 'next/dynamic';
 import { postService } from '@/services/post.service';
 import { categoryService } from '@/services/category.service';
 import { tagService } from '@/services/tag.service';
-import { apiFetch } from '@/utils/api-client';
+import { apiFetch, ApiError } from '@/utils/api-client';
+import { mediaIdFromUrl, preparePostPayload } from '@/utils/post-payload';
+import type { Media, MediaResponse } from '@/types/media/media';
 import { ReqPostCreateDTO, ReqPostUpdateDTO, PostStatus } from '@/types/post.type';
 import { PostCategory } from '@/types/category.type';
 import { Tag } from '@/types/tag.type';
@@ -58,14 +59,20 @@ export default function PostEditor() {
 
   // State Thư viện Media
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
-  const [mediaItems, setMediaItems] = useState<any[]>([]);
+  const [mediaItems, setMediaItems] = useState<Media[]>([]);
+  const [formError, setFormError] = useState('');
+  const [loadingPost, setLoadingPost] = useState(Boolean(id));
+  const [savedPostId, setSavedPostId] = useState<number | null>(id);
+  const submitting = useRef(false);
   const [loadingMedia, setLoadingMedia] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingContentImage, setUploadingContentImage] = useState(false);
   const [showSeo, setShowSeo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [featuredImageUrl, setFeaturedImageUrl] = useState<string | null>(null);
+  const [mediaTarget, setMediaTarget] = useState<'featured' | 'og'>('featured');
 
   const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -88,7 +95,6 @@ export default function PostEditor() {
     mediaIds: [],
     featuredMediaId: null,
     ogImageId: null,
-    publishedAt: '',
   });
 
   // Tự động co giãn textarea
@@ -118,12 +124,16 @@ export default function PostEditor() {
       if (!isEditMode && cats.length > 0 && formData.categoryId === 0) {
         setFormData((prev) => ({ ...prev, categoryId: cats[0].categoryId }));
       }
-    }).catch((err) => console.error('Lỗi tải dữ liệu nền:', err));
+    }).catch((err) => setFormError(err instanceof Error ? err.message : 'Không thể tải danh mục và thẻ.'));
 
     if (isEditMode && id) {
       postService
         .getPostById(id)
-        .then((postData: any) => {
+        .then(async (postData) => {
+          const ogImageId = mediaIdFromUrl(postData.metadata?.openGraph?.imageUrl);
+          const firstMediaId = postData.mediaList?.[0]?.id || null;
+          const featuredId = ogImageId || firstMediaId;
+          const featuredUrl = featuredId ? `/api/v1/media/${featuredId}/view` : null;
           setFormData({
             title: postData.title || '',
             slug: postData.slug || '',
@@ -137,22 +147,18 @@ export default function PostEditor() {
             isFollowable: !postData.metadata?.robots?.includes('nofollow'),
             ogTitle: postData.metadata?.openGraph?.title || '',
             ogDescription: postData.metadata?.openGraph?.description || '',
-            featuredMediaId: postData.mediaList?.[0]?.id || null,
-            ogImageId: null,
-            tagIds: postData.tags?.map((t: any) => t.id) || [],
-            mediaIds: postData.mediaList?.map((m: any) => m.id) || [],
-            publishedAt: postData.publishedAt
-              ? new Date(postData.publishedAt).toISOString().slice(0, 16)
-              : '',
+            featuredMediaId: featuredId,
+            ogImageId,
+            tagIds: postData.tags?.map((t) => t.id) || [],
+            mediaIds: postData.mediaList?.map((m) => m.id) || [],
+            publishedAt: postData.publishedAt ? postData.publishedAt.slice(0, 16) : '',
           });
 
-          if (postData.metadata?.openGraph?.imageUrl) {
-            setFeaturedImageUrl(postData.metadata.openGraph.imageUrl);
-          } else if (postData.mediaList && postData.mediaList.length > 0) {
-            setFeaturedImageUrl(postData.mediaList[0].filePath);
-          }
+          setFeaturedImageUrl(featuredUrl);
+          setLoadingPost(false);
         })
-        .catch((err) => console.error('Lỗi lấy chi tiết bài viết:', err));
+        .catch((err) => setFormError(err instanceof Error ? err.message : 'Không thể tải bài viết. Vui lòng tải lại trang.'))
+        .finally(() => setLoadingPost(false));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEditMode]);
@@ -161,7 +167,7 @@ export default function PostEditor() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: name === 'categoryId' ? Number(value) : value }));
   };
 
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,30 +210,36 @@ export default function PostEditor() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    e.target.value = '';
+    if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      setFormError('Chọn ảnh JPEG, PNG, GIF hoặc WebP không quá 10 MB.');
+      return;
+    }
 
     const uploadData = new FormData();
     uploadData.append('file', file);
 
     setUploadingImage(true);
     try {
-      const res = await apiFetch<any>('/api/v1/media/upload', {
+      const res = await apiFetch<Media | { data: Media }>('/api/v1/media/upload', {
         method: 'POST',
         body: uploadData,
       });
 
       // Bóc tách data nếu BE bọc trong { data: ... }
       const result = (res && typeof res === 'object' && 'data' in res) ? res.data : res;
+      if (!result?.mediaId) throw new Error('Máy chủ không trả về ID ảnh hợp lệ.');
 
       setFormData((prev) => ({
         ...prev,
         featuredMediaId: result.mediaId,
-        mediaIds: [...(prev.mediaIds || []), result.mediaId]
+        mediaIds: [...new Set([...(prev.mediaIds || []), result.mediaId])]
       }));
-      setFeaturedImageUrl(result.filePath);
+      setFeaturedImageUrl(`/api/v1/media/${result.mediaId}/view`);
 
     } catch (error) {
       console.error(error);
-      alert('Lỗi khi upload ảnh!');
+      setFormError(error instanceof Error ? error.message : 'Lỗi khi upload ảnh!');
     } finally {
       setUploadingImage(false);
     }
@@ -237,50 +249,54 @@ export default function PostEditor() {
   const fetchMediaLibrary = async () => {
     setLoadingMedia(true);
     try {
-      const res = await apiFetch<any>('/api/v1/media?fileType=image');
+      const res = await apiFetch<MediaResponse>('/api/v1/media?fileType=image');
 
       // Bóc tách data nếu BE bọc trong { data: ... }
-      const items = (res && typeof res === 'object' && 'data' in res) ? res.data : res;
+      const items = Array.isArray(res) ? res : res.data || res.result || [];
       setMediaItems(Array.isArray(items) ? items : []);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Lỗi lấy danh sách media:', error);
-      alert(error.message || 'Không thể tải thư viện ảnh.');
+      setFormError(error instanceof Error ? error.message : 'Không thể tải thư viện ảnh.');
     } finally {
       setLoadingMedia(false);
     }
   };
 
   // Chọn Ảnh từ Thư viện
-  const handleSelectFromLibrary = (media: any) => {
+  const handleSelectFromLibrary = (media: Media) => {
     setFormData((prev) => ({
       ...prev,
-      featuredMediaId: media.mediaId,
-      mediaIds: [...(prev.mediaIds || []), media.mediaId]
+      ...(mediaTarget === 'og' ? { ogImageId: media.mediaId } : { featuredMediaId: media.mediaId }),
+      mediaIds: [...new Set([...(prev.mediaIds || []), media.mediaId])]
     }));
-    setFeaturedImageUrl(media.filePath);
+    if (mediaTarget === 'featured') setFeaturedImageUrl(`/api/v1/media/${media.mediaId}/view`);
     setIsMediaModalOpen(false);
+    setMediaTarget('featured');
   };
 
   const handleSubmit = async (e: React.FormEvent, targetStatus: PostStatus) => {
     e.preventDefault();
+    if (submitting.current || loadingPost) return;
+    if (uploadingContentImage || uploadingImage) {
+      alert('Vui lòng chờ tải ảnh hoàn tất trước khi lưu bài viết.');
+      return;
+    }
     if (!formData.title || !formData.slug || !formData.content || !formData.categoryId) {
       alert('Vui lòng nhập Tiêu đề, Slug, Nội dung và chọn Danh mục!');
       return;
     }
 
+    submitting.current = true;
+    let createdThisAttempt = false;
     setLoading(true);
+    setFormError('');
     try {
-      const payloadToSubmit = { ...formData };
-      if (payloadToSubmit.publishedAt) {
-        payloadToSubmit.publishedAt = new Date(payloadToSubmit.publishedAt).toISOString();
-      } else {
-        delete payloadToSubmit.publishedAt;
-      }
+      const payloadToSubmit = preparePostPayload(formData);
 
-      let currentPostId = id;
+      let currentPostId = savedPostId;
 
-      if (isEditMode && currentPostId) {
+      if (currentPostId) {
         const payload: ReqPostUpdateDTO = { ...payloadToSubmit };
         await postService.updatePost(currentPostId, payload);
         if (targetStatus === 'PENDING') {
@@ -289,15 +305,19 @@ export default function PostEditor() {
       } else {
         const createdPost = await postService.createPost(payloadToSubmit);
         currentPostId = createdPost.id;
+        setSavedPostId(currentPostId);
+        createdThisAttempt = true;
         if (targetStatus === 'PENDING') {
           await postService.changeStatus(currentPostId, targetStatus);
         }
       }
 
       navigate('/admin/bai-viet');
-    } catch (error: any) {
-      alert(error.message || 'Có lỗi xảy ra khi lưu bài viết!');
+    } catch (error: unknown) {
+      const message = error instanceof ApiError ? `HTTP ${error.status}: ${error.message}` : error instanceof Error ? error.message : 'Có lỗi xảy ra khi lưu bài viết!';
+      setFormError(createdThisAttempt ? `Bài viết đã được tạo ở dạng nháp nhưng gửi duyệt thất bại: ${message}. Bấm Gửi duyệt để thử lại trên bài vừa tạo.` : message);
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   };
@@ -311,6 +331,7 @@ export default function PostEditor() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto pb-24 relative">
+      {formError && <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{formError}</div>}
       <style jsx global>{`
         .sticky-editor-container .ck-editor__top {
           position: sticky !important;
@@ -364,7 +385,7 @@ export default function PostEditor() {
           </button>
           <button
             onClick={(e) => handleSubmit(e, 'DRAFT')}
-            disabled={loading || uploadingImage}
+            disabled={loading || loadingPost || uploadingImage || uploadingContentImage}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl border bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 shadow-sm transition-all"
             style={{ borderColor: 'var(--border)' }}
           >
@@ -372,7 +393,7 @@ export default function PostEditor() {
           </button>
           <button
             onClick={(e) => handleSubmit(e, 'PENDING')}
-            disabled={loading || uploadingImage}
+            disabled={loading || loadingPost || uploadingImage || uploadingContentImage}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50 shadow transition-all"
             style={{ background: 'var(--primary)' }}
           >
@@ -411,7 +432,7 @@ export default function PostEditor() {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={(e) => handleSubmit(e, 'DRAFT')}
-                      disabled={loading}
+                      disabled={loading || loadingPost || uploadingImage || uploadingContentImage}
                       className="px-3 py-1.5 rounded-lg border text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 shadow-sm"
                       style={{ borderColor: 'var(--border)' }}
                     >
@@ -479,10 +500,16 @@ export default function PostEditor() {
                   className={`sticky-editor-container ${isFullscreen ? 'fullscreen-editor' : ''}`}
                 >
                   <RichTextEditor
+                    onPendingChange={setUploadingContentImage}
                     value={formData.content}
                     onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
                     placeholder="Bắt đầu nội dung bài viết ở đây..."
                   />
+                  <p className="mt-2 text-sm text-slate-500" role="status">
+                    {uploadingContentImage
+                      ? 'Đang tải ảnh lên, vui lòng chờ trước khi lưu bài viết…'
+                      : 'Chèn ảnh bằng nút tải ảnh trên thanh công cụ, kéo thả hoặc dán ảnh vào nội dung. Hỗ trợ JPEG, PNG, GIF, WebP; tối đa 10 MB/ảnh.'}
+                  </p>
                 </div>
 
                 {!isFullscreen && (
@@ -762,6 +789,7 @@ export default function PostEditor() {
                   <button
                     type="button"
                     onClick={() => {
+                      setMediaTarget('featured');
                       setIsMediaModalOpen(true);
                       fetchMediaLibrary();
                     }}
@@ -780,34 +808,6 @@ export default function PostEditor() {
             )}
           </div>
 
-          {/* Lịch xuất bản */}
-          <div
-            className="bg-white rounded-2xl border shadow-sm p-5"
-            style={{ borderColor: 'var(--border)' }}
-          >
-            <div
-              className="flex items-center gap-2 mb-3 pb-2 border-b"
-              style={{ borderColor: 'var(--border)' }}
-            >
-              <Calendar size={16} className="text-slate-600" />
-              <h3 className="font-bold text-slate-900 text-sm">Lịch xuất bản</h3>
-            </div>
-            <div>
-              <input
-                type="datetime-local"
-                name="publishedAt"
-                value={formData.publishedAt}
-                onChange={handleChange}
-                className="w-full px-3.5 py-2 border rounded-xl text-sm outline-none focus:border-blue-500 bg-white"
-                style={{ borderColor: 'var(--border)' }}
-              />
-              <p className="text-[11px] text-slate-400 mt-1.5">
-                Bỏ trống nếu muốn xuất bản ngay khi được duyệt
-              </p>
-            </div>
-          </div>
-
-          {/* Mạng xã hội */}
           <div
             className="bg-white rounded-2xl border shadow-sm p-5"
             style={{ borderColor: 'var(--border)' }}
@@ -852,6 +852,45 @@ export default function PostEditor() {
                   className="w-full px-3 py-1.5 border rounded-lg text-xs outline-none focus:border-violet-500 resize-none overflow-hidden transition-all placeholder:text-slate-400 block leading-relaxed"
                   style={{ borderColor: 'var(--border)' }}
                 />
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1.5">Ảnh chia sẻ</label>
+                {formData.ogImageId ? (
+                  <div className="space-y-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/v1/media/${formData.ogImageId}/view`}
+                      alt="Ảnh chia sẻ bài viết"
+                      className="w-full aspect-video object-cover rounded-xl border"
+                      style={{ borderColor: 'var(--border)' }}
+                    />
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-blue-600"
+                        onClick={() => { setMediaTarget('og'); setIsMediaModalOpen(true); fetchMediaLibrary(); }}
+                      >
+                        Đổi ảnh
+                      </button>
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-red-500"
+                        onClick={() => setFormData((prev) => ({ ...prev, ogImageId: null }))}
+                      >
+                        Dùng ảnh đại diện
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => { setMediaTarget('og'); setIsMediaModalOpen(true); fetchMediaLibrary(); }}
+                    className="w-full px-3 py-2 border border-dashed rounded-xl text-xs font-medium text-slate-500 hover:text-violet-600 hover:bg-violet-50/40"
+                    style={{ borderColor: 'var(--border)' }}
+                  >
+                    Chọn ảnh OG riêng (mặc định dùng ảnh đại diện)
+                  </button>
+                )}
               </div>
             </div>
           </div>

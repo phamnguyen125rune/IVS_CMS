@@ -27,6 +27,12 @@ import {
   AutoLink,
   Image,
   ImageInsert,
+  ImageUpload,
+  FileRepository,
+  PendingActions,
+  type FileLoader,
+  type Editor,
+  type UploadAdapter,
   ImageCaption,
   ImageResize,
   ImageStyle,
@@ -44,11 +50,46 @@ import {
 } from 'ckeditor5';
 
 import 'ckeditor5/ckeditor5.css';
+import { apiFetch } from '@/utils/api-client';
+import type { Media } from '@/types/media/media';
+
+class MediaUploadAdapter implements UploadAdapter {
+  private controller = new AbortController();
+
+  constructor(private loader: FileLoader) {}
+
+  async upload() {
+    const file = await this.loader.file;
+    if (this.controller.signal.aborted) throw new Error('Đã hủy tải ảnh.');
+    if (!file || !['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+      throw new Error('Vui lòng chọn ảnh JPEG, PNG, GIF hoặc WebP.');
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      throw new Error('Ảnh không được vượt quá 10 MB.');
+    }
+    const body = new FormData();
+    body.append('file', file);
+    const media = await apiFetch<Media>('/api/v1/media/upload', {
+      method: 'POST', body, signal: this.controller.signal,
+    });
+    if (!media?.mediaId) throw new Error('Máy chủ không trả về thông tin ảnh hợp lệ.');
+    return { default: `/api/v1/media/${media.mediaId}/view` };
+  }
+
+  abort() {
+    this.controller.abort();
+  }
+}
+
+function mediaUploadPlugin(editor: Editor) {
+  editor.plugins.get(FileRepository).createUploadAdapter = (loader) => new MediaUploadAdapter(loader);
+}
 
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  onPendingChange?: (pending: boolean) => void;
 }
 
 const emptySubscribe = () => () => {};
@@ -60,7 +101,7 @@ export function useIsMounted() {
   );
 }
 
-export default function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
+export default function RichTextEditor({ value, onChange, placeholder, onPendingChange }: RichTextEditorProps) {
   const isMounted = useIsMounted();
   // Khai báo đúng kiểu instance ClassicEditor
   const editorRef = useRef<ClassicEditor | null>(null);
@@ -99,8 +140,12 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         }}
         onReady={(editor) => {
           editorRef.current = editor;
+          const pending = editor.plugins.get(PendingActions);
+          pending.on('change:hasAny', () => onPendingChange?.(pending.hasAny));
         }}
+        onAfterDestroy={() => onPendingChange?.(false)}
         config={{
+          extraPlugins: [mediaUploadPlugin],
           licenseKey: 'GPL', // Bắt buộc cho bản mã nguồn mở miễn phí
           plugins: [
             Essentials,
@@ -126,6 +171,8 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
             AutoLink,
             Image,
             ImageInsert,
+            ImageUpload,
+            PendingActions,
             ImageCaption,
             ImageResize,
             ImageStyle,
@@ -158,6 +205,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
               'alignment',
               '|',
               'link',
+              'uploadImage',
               'insertImage',
               'mediaEmbed',
               'insertTable',
@@ -201,6 +249,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
             ],
           },
           image: {
+            upload: { types: ['jpeg', 'png', 'gif', 'webp'] },
             insert: { type: 'auto' },
             toolbar: [
               'imageTextAlternative',
