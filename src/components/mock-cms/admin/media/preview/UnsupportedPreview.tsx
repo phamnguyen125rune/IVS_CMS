@@ -2,7 +2,7 @@
 
 import { Download, File, FileArchive, FileSpreadsheet, FileText, Presentation } from 'lucide-react';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 import { getFileExtension, getFileTypeLabel } from '@/utils/media/media-file';
 
 import '@/components/layout/admin/media_styles/UnsupportedPreview.css';

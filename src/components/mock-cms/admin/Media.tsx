@@ -10,7 +10,7 @@ import MediaList from './media/MediaList';
 import MediaPreview from './media/preview/MediaPreview';
 
 import { useMedia } from './media/hooks/useMedia';
-import { Media, ViewMode } from '@/types/media/media';
+import { Media, ViewMode } from '@/types/media.type';
 
 import '@/components/layout/admin/media_styles/MediaPage.css';
 

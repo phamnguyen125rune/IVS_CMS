@@ -1,6 +1,6 @@
 'use client';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 import '@/components/layout/admin/media_styles/ImagePreview.css';
 
 interface ImagePreviewProps {

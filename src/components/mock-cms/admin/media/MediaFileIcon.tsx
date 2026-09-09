@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { FileArchive, File, Presentation } from 'lucide-react';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 import { getFileExtension } from '@/utils/media/media-file';
 
 import pdfIcon from '@/app/icon/pdf.png';

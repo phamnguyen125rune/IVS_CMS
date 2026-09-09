@@ -2,7 +2,7 @@
 
 import { Download, X } from 'lucide-react';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 
 import {
   getFileExtension,
@@ -48,8 +48,6 @@ export default function MediaPreview({ file, onClose, onDownload }: MediaPreview
         className="relative flex h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* HEADER */}
-
         <div className="flex shrink-0 items-center justify-between border-b px-5 py-4">
           <div className="min-w-0">
             <h2 className="truncate text-lg font-semibold text-[#08142f]" title={getFileName(file)}>
@@ -78,8 +76,6 @@ export default function MediaPreview({ file, onClose, onDownload }: MediaPreview
           </button>
         </div>
 
-        {/* BODY */}
-
         <div className="min-h-0 flex-1 overflow-auto bg-gray-100">
           {image && <ImagePreview file={file} />}
 
@@ -91,8 +87,6 @@ export default function MediaPreview({ file, onClose, onDownload }: MediaPreview
 
           {unsupported && <UnsupportedPreview file={file} onDownload={onDownload} />}
         </div>
-
-        {/* FOOTER */}
 
         <div className="flex shrink-0 justify-end gap-3 border-t bg-white px-5 py-4">
           <button

@@ -1,6 +1,6 @@
 'use client';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 import MediaCard from './MediaCard';
 
 import '@/components/layout/admin/media_styles/MediaGrid.css';

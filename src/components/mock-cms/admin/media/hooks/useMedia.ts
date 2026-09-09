@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { apiFetch } from '@/utils/api-client';
-import { Media, MediaResponse } from '@/types/media/media';
+import { Media, MediaResponse } from '@/types/media.type';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 

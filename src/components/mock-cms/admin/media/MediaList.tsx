@@ -3,7 +3,7 @@
 import { Download, Eye, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 import { getFileName, getFileTypeLabel, isImage } from '@/utils/media/media-file';
 import { formatDate, formatFileSize } from '@/utils/media/media-format';
 import MediaFileIcon from './MediaFileIcon';

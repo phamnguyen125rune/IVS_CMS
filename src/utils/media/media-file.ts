@@ -1,4 +1,4 @@
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 
 export const getFileName = (item: Media) => {
   return item.fileName || 'Không có tên';
