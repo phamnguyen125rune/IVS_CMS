@@ -107,12 +107,21 @@ export default function ProjectDetail() {
   useParams();
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
-      {/* Header Banner */}
+    <div
+      className="min-h-screen pb-16"
+      style={{ background: 'var(--surface-secondary)' }}
+    >
+      {/* =========================================================
+          Header Banner
+          ========================================================= */}
       <section
         className="pt-12 pb-20 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
+          background: `linear-gradient(
+            135deg,
+            var(--hero-start) 0%,
+            var(--hero-middle) 100%
+          )`,
         }}
       >
         <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -120,7 +129,8 @@ export default function ProjectDetail() {
             to="/du-an"
             className="inline-flex items-center gap-2 text-sm text-blue-300 hover:text-white mb-8 transition-colors"
           >
-            <ArrowLeft size={16} /> Quay lại danh sách dự án
+            <ArrowLeft size={16} />
+            Quay lại danh sách dự án
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
@@ -132,8 +142,13 @@ export default function ProjectDetail() {
                 >
                   {projectData.category}
                 </span>
-                <span className="text-blue-200 text-xs flex items-center gap-1">
-                  <Calendar size={13} /> Năm thực hiện: {projectData.year}
+
+                <span
+                  className="text-xs flex items-center gap-1"
+                  style={{ color: 'var(--dark-text-secondary)' }}
+                >
+                  <Calendar size={13} />
+                  Năm thực hiện: {projectData.year}
                 </span>
               </div>
 
@@ -141,7 +156,10 @@ export default function ProjectDetail() {
                 {projectData.title}
               </h1>
 
-              <p className="text-blue-100 text-base sm:text-lg leading-relaxed max-w-3xl">
+              <p
+                className="text-base sm:text-lg leading-relaxed max-w-3xl"
+                style={{ color: 'var(--dark-text-secondary)' }}
+              >
                 {projectData.summary}
               </p>
             </div>
@@ -151,10 +169,16 @@ export default function ProjectDetail() {
                 href={projectData.website}
                 target="_blank"
                 rel="noreferrer"
-                className="px-5 py-3 rounded-xl bg-white text-slate-900 text-sm font-semibold hover:bg-blue-50 transition-colors inline-flex items-center gap-2 shadow-lg"
+                className="px-5 py-3 rounded-xl text-sm font-semibold hover:bg-[var(--primary-button-background-hover)] transition-colors inline-flex items-center gap-2 shadow-lg"
+                style={{
+                  background: 'var(--primary-button-background)',
+                  color: 'var(--primary-button-text)',
+                }}
               >
-                Ghé thăm Website <ExternalLink size={16} />
+                Ghé thăm Website
+                <ExternalLink size={16} />
               </a>
+
               <button
                 className="p-3 rounded-xl border border-white/20 text-white hover:bg-white/10 transition-colors"
                 title="Chia sẻ dự án"
@@ -166,10 +190,18 @@ export default function ProjectDetail() {
         </div>
       </section>
 
-      {/* Main Container */}
+      {/* =========================================================
+          Main Container
+          ========================================================= */}
       <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-20">
         {/* Main Featured Image */}
-        <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200/80 bg-white mb-12">
+        <div
+          className="rounded-2xl overflow-hidden shadow-2xl border mb-12"
+          style={{
+            borderColor: 'var(--border)',
+            background: 'var(--surface)',
+          }}
+        >
           <img
             src={projectData.heroImage}
             alt={projectData.title}
@@ -177,18 +209,35 @@ export default function ProjectDetail() {
           />
         </div>
 
-        {/* Project Meta Metrics Bar */}
+        {/* =========================================================
+            Project Meta Metrics Bar
+            ========================================================= */}
         <div
-          className="bg-white rounded-2xl border p-6 sm:p-8 shadow-sm mb-12 grid grid-cols-2 lg:grid-cols-4 gap-6"
-          style={{ borderColor: 'var(--border)' }}
+          className="rounded-2xl border p-6 sm:p-8 shadow-sm mb-12 grid grid-cols-2 lg:grid-cols-4 gap-6"
+          style={{
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
+          }}
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
               <Building2 size={22} />
             </div>
+
             <div>
-              <p className="text-xs text-slate-400 font-medium">Khách hàng</p>
-              <p className="font-bold text-slate-900 text-base">{projectData.client}</p>
+              <p
+                className="text-xs font-medium"
+                style={{ color: 'var(--text-placeholder)' }}
+              >
+                Khách hàng
+              </p>
+
+              <p
+                className="font-bold text-base"
+                style={{ color: 'var(--text)' }}
+              >
+                {projectData.client}
+              </p>
             </div>
           </div>
 
@@ -196,9 +245,19 @@ export default function ProjectDetail() {
             <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
               <Calendar size={22} />
             </div>
+
             <div>
-              <p className="text-xs text-slate-400 font-medium">Thời gian</p>
-              <p className="font-bold text-slate-900 text-base">
+              <p
+                className="text-xs font-medium"
+                style={{ color: 'var(--text-placeholder)' }}
+              >
+                Thời gian
+              </p>
+
+              <p
+                className="font-bold text-base"
+                style={{ color: 'var(--text)' }}
+              >
                 {projectData.duration} ({projectData.year})
               </p>
             </div>
@@ -208,9 +267,21 @@ export default function ProjectDetail() {
             <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
               <Users size={22} />
             </div>
+
             <div>
-              <p className="text-xs text-slate-400 font-medium">Quy mô đội ngũ</p>
-              <p className="font-bold text-slate-900 text-base">{projectData.teamSize}</p>
+              <p
+                className="text-xs font-medium"
+                style={{ color: 'var(--text-placeholder)' }}
+              >
+                Quy mô đội ngũ
+              </p>
+
+              <p
+                className="font-bold text-base"
+                style={{ color: 'var(--text)' }}
+              >
+                {projectData.teamSize}
+              </p>
             </div>
           </div>
 
@@ -218,29 +289,53 @@ export default function ProjectDetail() {
             <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
               <Layers size={22} />
             </div>
+
             <div>
-              <p className="text-xs text-slate-400 font-medium">Lĩnh vực</p>
-              <p className="font-bold text-slate-900 text-base">{projectData.category}</p>
+              <p
+                className="text-xs font-medium"
+                style={{ color: 'var(--text-placeholder)' }}
+              >
+                Lĩnh vực
+              </p>
+
+              <p
+                className="font-bold text-base"
+                style={{ color: 'var(--text)' }}
+              >
+                {projectData.category}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Content & Sidebar Grid */}
+        {/* =========================================================
+            Content & Sidebar Grid
+            ========================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Main Body Column */}
+          {/* =======================================================
+              Main Body Column
+              ======================================================= */}
           <div className="lg:col-span-8 space-y-12">
             {/* Results Grid */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 text-white shadow-xl">
               <div className="flex items-center gap-2 mb-6 text-emerald-400 text-sm font-semibold uppercase tracking-wider">
-                <TrendingUp size={18} /> Kết quả nổi bật đạt được
+                <TrendingUp size={18} />
+                Kết quả nổi bật đạt được
               </div>
+
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 {projectData.results.map((r, i) => (
-                  <div key={i} className="border-l-2 border-emerald-500/40 pl-4">
+                  <div
+                    key={i}
+                    className="border-l-2 border-emerald-500/40 pl-4"
+                  >
                     <div className="font-display font-extrabold text-2xl sm:text-3xl text-white mb-1">
                       {r.metric}
                     </div>
-                    <div className="text-xs text-slate-300 font-medium leading-snug">{r.label}</div>
+
+                    <div className="text-xs text-slate-300 font-medium leading-snug">
+                      {r.label}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -248,10 +343,17 @@ export default function ProjectDetail() {
 
             {/* Overview */}
             <div>
-              <h2 className="font-display text-2xl font-bold text-slate-900 mb-4">
+              <h2
+                className="font-display text-2xl font-bold mb-4"
+                style={{ color: 'var(--text)' }}
+              >
                 Tổng quan dự án
               </h2>
-              <div className="space-y-4 text-slate-600 text-base leading-relaxed">
+
+              <div
+                className="space-y-4 text-base leading-relaxed"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 {projectData.overview.map((p, i) => (
                   <p key={i}>{p}</p>
                 ))}
@@ -260,18 +362,28 @@ export default function ProjectDetail() {
 
             {/* Challenges & Solutions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Challenges */}
               <div
-                className="bg-white rounded-2xl border p-6 shadow-sm"
-                style={{ borderColor: 'var(--border)' }}
+                className="rounded-2xl border p-6 shadow-sm"
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
               >
-                <h3 className="font-display font-bold text-slate-900 text-lg mb-4 flex items-center gap-2">
-                  <Tag className="text-amber-500" size={20} /> Bài toán & Thách thức
+                <h3
+                  className="font-display font-bold text-lg mb-4 flex items-center gap-2"
+                  style={{ color: 'var(--text)' }}
+                >
+                  <Tag className="text-amber-500" size={20} />
+                  Bài toán & Thách thức
                 </h3>
+
                 <ul className="space-y-3">
                   {projectData.challenges.map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"
+                      className="flex items-start gap-2.5 text-sm leading-relaxed"
+                      style={{ color: 'var(--text-secondary)' }}
                     >
                       <span className="w-2 h-2 rounded-full bg-amber-500 mt-2 shrink-0" />
                       <span>{item}</span>
@@ -280,20 +392,33 @@ export default function ProjectDetail() {
                 </ul>
               </div>
 
+              {/* Solutions */}
               <div
-                className="bg-white rounded-2xl border p-6 shadow-sm"
-                style={{ borderColor: 'var(--border)' }}
+                className="rounded-2xl border p-6 shadow-sm"
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
               >
-                <h3 className="font-display font-bold text-slate-900 text-lg mb-4 flex items-center gap-2">
-                  <CheckCircle2 className="text-emerald-500" size={20} /> Giải pháp áp dụng
+                <h3
+                  className="font-display font-bold text-lg mb-4 flex items-center gap-2"
+                  style={{ color: 'var(--text)' }}
+                >
+                  <CheckCircle2 className="text-emerald-500" size={20} />
+                  Giải pháp áp dụng
                 </h3>
+
                 <ul className="space-y-3">
                   {projectData.solutions.map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"
+                      className="flex items-start gap-2.5 text-sm leading-relaxed"
+                      style={{ color: 'var(--text-secondary)' }}
                     >
-                      <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+                      <CheckCircle2
+                        size={16}
+                        className="text-emerald-500 shrink-0 mt-0.5"
+                      />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -303,15 +428,22 @@ export default function ProjectDetail() {
 
             {/* Gallery */}
             <div>
-              <h2 className="font-display text-2xl font-bold text-slate-900 mb-6">
+              <h2
+                className="font-display text-2xl font-bold mb-6"
+                style={{ color: 'var(--text)' }}
+              >
                 Hình ảnh giao diện thực tế
               </h2>
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {projectData.gallery.map((img, i) => (
                   <div
                     key={i}
-                    className="rounded-xl overflow-hidden border bg-slate-100 group shadow-sm"
-                    style={{ borderColor: 'var(--border)' }}
+                    className="rounded-xl overflow-hidden border group shadow-sm"
+                    style={{
+                      background: 'var(--surface-tertiary)',
+                      borderColor: 'var(--border)',
+                    }}
                   >
                     <img
                       src={img}
@@ -324,24 +456,47 @@ export default function ProjectDetail() {
             </div>
 
             {/* Testimonial */}
-            <div className="bg-blue-50/70 border border-blue-100 rounded-2xl p-8 relative overflow-hidden">
-              <Award className="absolute -bottom-4 -right-4 w-32 h-32 text-blue-100/50 pointer-events-none" />
+            <div
+              className="border rounded-2xl p-8 relative overflow-hidden"
+              style={{
+                background: 'var(--primary-light)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <Award
+                className="absolute -bottom-4 -right-4 w-32 h-32 pointer-events-none"
+                style={{ color: 'var(--primary-soft)' }}
+              />
+
               <div className="relative z-10">
-                <p className="text-slate-800 text-base sm:text-lg italic font-medium leading-relaxed mb-6">
+                <p
+                  className="text-base sm:text-lg italic font-medium leading-relaxed mb-6"
+                  style={{ color: 'var(--text)' }}
+                >
                   "{projectData.testimonial.quote}"
                 </p>
+
                 <div className="flex items-center gap-4">
                   <img
                     src={projectData.testimonial.avatar}
                     alt={projectData.testimonial.author}
                     className="w-12 h-12 rounded-full object-cover border-2 border-white shadow"
                   />
+
                   <div>
-                    <h4 className="font-bold text-slate-900 text-sm">
+                    <h4
+                      className="font-bold text-sm"
+                      style={{ color: 'var(--text)' }}
+                    >
                       {projectData.testimonial.author}
                     </h4>
-                    <p className="text-xs text-slate-500">
-                      {projectData.testimonial.role} · {projectData.testimonial.company}
+
+                    <p
+                      className="text-xs"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      {projectData.testimonial.role} ·{' '}
+                      {projectData.testimonial.company}
                     </p>
                   </div>
                 </div>
@@ -349,21 +504,38 @@ export default function ProjectDetail() {
             </div>
           </div>
 
-          {/* Right Sidebar Column */}
+          {/* =======================================================
+              Right Sidebar Column
+              ======================================================= */}
           <div className="lg:col-span-4 space-y-6">
             {/* Tech Stack Box */}
             <div
-              className="bg-white rounded-2xl border p-6 shadow-sm"
-              style={{ borderColor: 'var(--border)' }}
+              className="rounded-2xl border p-6 shadow-sm"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
             >
-              <h4 className="font-display font-bold text-slate-900 text-base mb-4 flex items-center gap-2">
-                <Layers size={18} className="text-blue-600" /> Công nghệ sử dụng
+              <h4
+                className="font-display font-bold text-base mb-4 flex items-center gap-2"
+                style={{ color: 'var(--text)' }}
+              >
+                <Layers
+                  size={18}
+                  style={{ color: 'var(--primary)' }}
+                />
+                Công nghệ sử dụng
               </h4>
+
               <div className="flex flex-wrap gap-2">
                 {projectData.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors hover:bg-[var(--primary-light)] hover:text-[var(--primary-text)]"
+                    style={{
+                      background: 'var(--surface-tertiary)',
+                      color: 'var(--text-secondary)',
+                    }}
                   >
                     {tech}
                   </span>
@@ -376,14 +548,22 @@ export default function ProjectDetail() {
               className="rounded-2xl p-6 text-white text-center shadow-lg"
               style={{ background: 'var(--primary)' }}
             >
-              <h4 className="font-display font-bold text-xl mb-2">Bạn có ý tưởng dự án mới?</h4>
+              <h4 className="font-display font-bold text-xl mb-2">
+                Bạn có ý tưởng dự án mới?
+              </h4>
+
               <p className="text-blue-100 text-xs leading-relaxed mb-5">
-                Đội ngũ tư vấn kiến trúc công nghệ của CMS sẵn sàng hỗ trợ khảo sát và lên giải pháp
-                tối ưu nhất cho bạn.
+                Đội ngũ tư vấn kiến trúc công nghệ của CMS sẵn sàng hỗ trợ
+                khảo sát và lên giải pháp tối ưu nhất cho bạn.
               </p>
+
               <Link
                 to="/lien-he"
-                className="block w-full py-3 rounded-xl bg-white text-slate-900 font-bold text-sm hover:bg-blue-50 transition-colors shadow-md"
+                className="block w-full py-3 rounded-xl font-bold text-sm hover:bg-[var(--primary-button-background-hover)] transition-colors shadow-md"
+                style={{
+                  background: 'var(--primary-button-background)',
+                  color: 'var(--primary-button-text)',
+                }}
               >
                 Nhận tư vấn giải pháp
               </Link>
@@ -391,25 +571,45 @@ export default function ProjectDetail() {
 
             {/* Related Projects */}
             <div
-              className="bg-white rounded-2xl border p-6 shadow-sm"
-              style={{ borderColor: 'var(--border)' }}
+              className="rounded-2xl border p-6 shadow-sm"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
             >
-              <h4 className="font-display font-semibold text-slate-900 text-sm mb-4">
+              <h4
+                className="font-display font-semibold text-sm mb-4"
+                style={{ color: 'var(--text)' }}
+              >
                 Dự án tương tự
               </h4>
+
               <div className="space-y-4">
                 {relatedProjects.map((p) => (
-                  <Link key={p.id} to={`/du-an/${p.id}`} className="flex gap-3 group items-center">
+                  <Link
+                    key={p.id}
+                    to={`/du-an/${p.id}`}
+                    className="flex gap-3 group items-center"
+                  >
                     <img
                       src={p.image}
                       alt={p.title}
-                      className="w-20 h-14 rounded-lg object-cover bg-slate-100 shrink-0 group-hover:scale-105 transition-transform"
+                      className="w-20 h-14 rounded-lg object-cover shrink-0 group-hover:scale-105 transition-transform"
+                      style={{ background: 'var(--surface-tertiary)' }}
                     />
+
                     <div className="flex-1 min-w-0">
-                      <span className="text-[10px] uppercase font-bold text-blue-600 tracking-wider">
+                      <span
+                        className="text-[10px] uppercase font-bold tracking-wider"
+                        style={{ color: 'var(--primary)' }}
+                      >
                         {p.category}
                       </span>
-                      <h5 className="text-xs font-semibold text-slate-800 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2 mt-0.5">
+
+                      <h5
+                        className="text-xs font-semibold leading-snug group-hover:text-[var(--primary)] transition-colors line-clamp-2 mt-0.5"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
                         {p.title}
                       </h5>
                     </div>

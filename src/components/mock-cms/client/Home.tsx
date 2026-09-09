@@ -4,7 +4,14 @@
 
 import { useState, useEffect } from 'react';
 import { LocalizedLink as Link } from '@/components/navigation/LocalizedLink';
-import { ArrowRight, ChevronLeft, ChevronRight, Star, Play, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Play,
+  CheckCircle2,
+} from 'lucide-react';
 
 const services = [
   {
@@ -145,16 +152,24 @@ export default function Home() {
       () => setTestimonialIdx((prev) => (prev + 1) % testimonials.length),
       5000
     );
+
     return () => clearInterval(timer);
   }, []);
 
   return (
     <div>
-      {/* Hero */}
+      {/* =========================================================
+          Hero
+          ========================================================= */}
       <section
         className="relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1d4ed8 100%)',
+          background: `linear-gradient(
+            135deg,
+            var(--hero-start) 0%,
+            var(--hero-middle) 50%,
+            var(--hero-end) 100%
+          )`,
           minHeight: 600,
         }}
       >
@@ -166,29 +181,40 @@ export default function Home() {
             backgroundSize: '32px 32px',
           }}
         />
+
         <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32 flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white/80 text-sm mb-6">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Đã phục vụ 500+ doanh nghiệp trên toàn quốc
             </div>
+
             <h1 className="font-display font-bold text-4xl lg:text-6xl text-white leading-tight mb-6">
               Kiến tạo tương lai
               <span style={{ color: '#60a5fa' }}> cho doanh nghiệp </span>
               của bạn
             </h1>
-            <p className="text-blue-200 text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+
+            <p
+              className="text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
+              style={{ color: 'var(--dark-text-secondary)' }}
+            >
               CMS cung cấp giải pháp công nghệ toàn diện — từ phát triển phần mềm đến chuyển đổi số
               — giúp doanh nghiệp tăng trưởng bền vững trong kỷ nguyên số.
             </p>
+
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
                 to="/lien-he"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white border border-white/30 hover:bg-white/10"
-                style={{ background: 'var(--primary)' }}
+                style={{
+                  background: 'var(--primary)',
+                  color: 'var(--primary-foreground)',
+                }}
               >
                 Tư vấn miễn phí <ArrowRight size={16} />
               </Link>
+
               <Link
                 to="/du-an"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white border border-white/30 hover:bg-white/10"
@@ -197,6 +223,7 @@ export default function Home() {
                 Xem dự án
               </Link>
             </div>
+
             <div className="flex items-center gap-8 mt-10 justify-center lg:justify-start">
               {[
                 ['500+', 'Khách hàng'],
@@ -204,12 +231,21 @@ export default function Home() {
                 ['10+', 'Năm kinh nghiệm'],
               ].map(([num, label]) => (
                 <div key={label} className="text-center lg:text-left">
-                  <div className="text-2xl font-bold font-display text-white">{num}</div>
-                  <div className="text-blue-300 text-xs">{label}</div>
+                  <div className="text-2xl font-bold font-display text-white">
+                    {num}
+                  </div>
+
+                  <div
+                    className="text-xs"
+                    style={{ color: 'var(--dark-text-secondary)' }}
+                  >
+                    {label}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
+
           <div className="flex-1 flex items-center justify-center">
             <div className="relative">
               <img
@@ -217,13 +253,35 @@ export default function Home() {
                 alt="Dashboard analytics"
                 className="rounded-2xl shadow-2xl border border-white/10"
               />
-              <div className="absolute -bottom-4 -left-6 bg-white rounded-xl shadow-xl p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                  <CheckCircle2 size={18} className="text-emerald-600" />
+
+              <div
+                className="absolute -bottom-4 -left-6 rounded-xl shadow-xl p-4 flex items-center gap-3"
+                style={{ background: 'var(--surface)' }}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: 'var(--success-light)' }}
+                >
+                  <CheckCircle2
+                    size={18}
+                    style={{ color: 'var(--success)' }}
+                  />
                 </div>
+
                 <div>
-                  <div className="text-xs text-slate-400">Dự án hoàn thành</div>
-                  <div className="font-bold text-slate-900">+18 tháng này</div>
+                  <div
+                    className="text-xs"
+                    style={{ color: 'var(--text-placeholder)' }}
+                  >
+                    Dự án hoàn thành
+                  </div>
+
+                  <div
+                    className="font-bold"
+                    style={{ color: 'var(--text)' }}
+                  >
+                    +18 tháng này
+                  </div>
                 </div>
               </div>
             </div>
@@ -231,8 +289,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About snippet */}
-      <section className="py-20 bg-white">
+      {/* =========================================================
+          About snippet
+          ========================================================= */}
+      <section
+        className="py-20"
+        style={{ background: 'var(--background)' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -242,17 +305,30 @@ export default function Home() {
               >
                 Về chúng tôi
               </div>
-              <h2 className="font-display text-3xl lg:text-4xl font-bold text-slate-900 leading-tight mb-5">
+
+              <h2
+                className="font-display text-3xl lg:text-4xl font-bold leading-tight mb-5"
+                style={{ color: 'var(--text)' }}
+              >
                 Đối tác công nghệ đáng tin cậy của doanh nghiệp Việt
               </h2>
-              <p className="text-slate-500 text-base leading-relaxed mb-6">
+
+              <p
+                className="text-base leading-relaxed mb-6"
+                style={{ color: 'var(--text-muted)' }}
+              >
                 Thành lập từ năm 2014, CMS đã trở thành một trong những công ty công nghệ hàng đầu
                 Việt Nam, chuyên cung cấp giải pháp phần mềm tùy chỉnh và dịch vụ chuyển đổi số.
               </p>
-              <p className="text-slate-500 text-base leading-relaxed mb-8">
+
+              <p
+                className="text-base leading-relaxed mb-8"
+                style={{ color: 'var(--text-muted)' }}
+              >
                 Với đội ngũ hơn 150 kỹ sư và chuyên gia, chúng tôi đã đồng hành cùng hàng trăm doanh
                 nghiệp trong và ngoài nước, từ startup đến tập đoàn lớn.
               </p>
+
               <Link
                 to="/gioi-thieu"
                 className="inline-flex items-center gap-2 font-semibold text-sm"
@@ -261,6 +337,7 @@ export default function Home() {
                 Tìm hiểu thêm về CMS <ArrowRight size={15} />
               </Link>
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               {[
                 {
@@ -284,11 +361,21 @@ export default function Home() {
                   color: 'bg-emerald-50 border-emerald-200',
                 },
               ].map((stat) => (
-                <div key={stat.num} className={`p-6 rounded-2xl border ${stat.color}`}>
-                  <div className="font-display font-bold text-3xl text-slate-900 mb-1">
+                <div
+                  key={stat.num}
+                  className={`p-6 rounded-2xl border ${stat.color}`}
+                >
+                  <div
+                    className="font-display font-bold text-3xl text-slate-900 mb-1"
+                  >
                     {stat.num}
                   </div>
-                  <div className="text-sm text-slate-600">{stat.label}</div>
+
+                  <div
+                    className="text-sm text-slate-600"
+                  >
+                    {stat.label}
+                  </div>
                 </div>
               ))}
             </div>
@@ -296,8 +383,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services */}
-      <section className="py-20" style={{ background: 'var(--background)' }}>
+      {/* =========================================================
+          Services
+          ========================================================= */}
+      <section
+        className="py-20"
+        style={{ background: 'var(--background)' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <div
@@ -306,29 +398,57 @@ export default function Home() {
             >
               Dịch vụ
             </div>
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-slate-900">
+
+            <h2
+              className="font-display text-3xl lg:text-4xl font-bold"
+              style={{ color: 'var(--text)' }}
+            >
               Giải pháp công nghệ toàn diện
             </h2>
-            <p className="text-slate-500 mt-3 max-w-2xl mx-auto">
+
+            <p
+              className="mt-3 max-w-2xl mx-auto"
+              style={{ color: 'var(--text-muted)' }}
+            >
               Chúng tôi cung cấp đầy đủ các dịch vụ công nghệ giúp doanh nghiệp phát triển trong kỷ
               nguyên số
             </p>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {services.map((service) => (
               <div
                 key={service.title}
-                className="bg-white rounded-2xl p-6 border hover:shadow-lg transition-all group cursor-pointer"
-                style={{ borderColor: 'var(--border)' }}
+                className="rounded-2xl p-6 border hover:shadow-lg transition-all group cursor-pointer"
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
               >
                 <div
                   className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform`}
                 >
                   {service.icon}
                 </div>
-                <h3 className="font-display font-semibold text-slate-900 mb-2">{service.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{service.desc}</p>
-                <div className="mt-4 flex items-center gap-1 text-sm font-medium text-blue-600 group-hover:gap-2 transition-all">
+
+                <h3
+                  className="font-display font-semibold mb-2"
+                  style={{ color: 'var(--text)' }}
+                >
+                  {service.title}
+                </h3>
+
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  {service.desc}
+                </p>
+
+                <div
+                  className="mt-4 flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all"
+                  style={{ color: 'var(--primary)' }}
+                >
                   Tìm hiểu thêm <ArrowRight size={14} />
                 </div>
               </div>
@@ -337,8 +457,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Project slider */}
-      <section className="py-20 bg-white">
+      {/* =========================================================
+          Project slider
+          ========================================================= */}
+      <section
+        className="py-20"
+        style={{ background: 'var(--surface)' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-10">
             <div>
@@ -348,23 +473,41 @@ export default function Home() {
               >
                 Dự án nổi bật
               </div>
-              <h2 className="font-display text-3xl font-bold text-slate-900">
+
+              <h2
+                className="font-display text-3xl font-bold"
+                style={{ color: 'var(--text)' }}
+              >
                 Công trình tiêu biểu của chúng tôi
               </h2>
             </div>
+
             <div className="flex gap-2">
               <button
-                onClick={() => setProjectIdx(Math.max(0, projectIdx - 1))}
-                className="w-10 h-10 rounded-xl border flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-30"
-                style={{ borderColor: 'var(--border)' }}
+                onClick={() =>
+                  setProjectIdx(Math.max(0, projectIdx - 1))
+                }
+                className="w-10 h-10 rounded-xl border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--hover)]"
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
+                }}
                 disabled={projectIdx === 0}
               >
                 <ChevronLeft size={18} />
               </button>
+
               <button
-                onClick={() => setProjectIdx(Math.min(projects.length - 1, projectIdx + 1))}
-                className="w-10 h-10 rounded-xl border flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-30"
-                style={{ borderColor: 'var(--border)' }}
+                onClick={() =>
+                  setProjectIdx(
+                    Math.min(projects.length - 1, projectIdx + 1)
+                  )
+                }
+                className="w-10 h-10 rounded-xl border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--hover)]"
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
+                }}
                 disabled={projectIdx === projects.length - 1}
               >
                 <ChevronRight size={18} />
@@ -377,33 +520,55 @@ export default function Home() {
               <Link
                 key={project.title}
                 to="/du-an"
-                className="group block rounded-2xl overflow-hidden border hover:shadow-xl transition-all bg-slate-100"
-                style={{ borderColor: 'var(--border)' }}
+                className="group block rounded-2xl overflow-hidden border hover:shadow-xl transition-all"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
+                }}
               >
-                <div className="relative aspect-video overflow-hidden">
+                <div
+                  className="relative aspect-video overflow-hidden"
+                  style={{ background: 'var(--surface-tertiary)' }}
+                >
                   <img
                     src={project.image}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
+
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
                   <span className="absolute top-3 left-3 text-xs font-semibold text-white bg-blue-600 px-2.5 py-1 rounded-full">
                     {project.tag}
                   </span>
                 </div>
-                <div className="p-4 bg-white">
-                  <h3 className="font-display font-semibold text-slate-900 leading-snug">
+
+                <div
+                  className="p-4"
+                  style={{ background: 'var(--surface)' }}
+                >
+                  <h3
+                    className="font-display font-semibold leading-snug"
+                    style={{ color: 'var(--text)' }}
+                  >
                     {project.title}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">Khách hàng: {project.client}</p>
+
+                  <p
+                    className="text-xs mt-1"
+                    style={{ color: 'var(--text-placeholder)' }}
+                  >
+                    Khách hàng: {project.client}
+                  </p>
                 </div>
               </Link>
             ))}
           </div>
+
           <div className="text-center mt-8">
             <Link
               to="/du-an"
-              className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2.5 rounded-xl border hover:bg-slate-50"
+              className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2.5 rounded-xl border hover:bg-[var(--hover)]"
               style={{
                 borderColor: 'var(--border)',
                 color: 'var(--foreground)',
@@ -415,57 +580,106 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20" style={{ background: '#0f172a' }}>
+      {/* =========================================================
+          Testimonials
+          ========================================================= */}
+      <section
+        className="py-20"
+        style={{ background: 'var(--dark-background)' }}
+      >
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">
+          <div
+            className="text-sm font-semibold uppercase tracking-widest mb-3"
+            style={{ color: 'var(--primary)' }}
+          >
             Đánh giá khách hàng
           </div>
-          <h2 className="font-display text-3xl font-bold text-white mb-12">
+
+          <h2
+            className="font-display text-3xl font-bold mb-12"
+            style={{ color: 'var(--dark-text)' }}
+          >
             Khách hàng nói gì về chúng tôi
           </h2>
+
           <div className="relative">
             {testimonials.map((t, i) => (
               <div
                 key={i}
-                className={`transition-all duration-500 ${i === testimonialIdx ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
+                className={`transition-all duration-500 ${
+                  i === testimonialIdx
+                    ? 'opacity-100'
+                    : 'opacity-0 absolute inset-0'
+                }`}
               >
                 <div className="flex justify-center mb-3">
                   {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} size={18} fill="#f59e0b" className="text-amber-400" />
+                    <Star
+                      key={j}
+                      size={18}
+                      fill="var(--rating)"
+                      style={{ color: 'var(--rating)' }}
+                    />
                   ))}
                 </div>
-                <blockquote className="text-blue-100 text-xl leading-relaxed italic mb-8">
+
+                <blockquote
+                  className="text-xl leading-relaxed italic mb-8"
+                  style={{ color: 'var(--dark-text-secondary)' }}
+                >
                   "{t.content}"
                 </blockquote>
+
                 <div className="flex items-center justify-center gap-4">
                   <img
                     src={t.avatar}
                     className="w-12 h-12 rounded-full object-cover"
                     alt={t.name}
                   />
+
                   <div className="text-left">
-                    <div className="font-semibold text-white">{t.name}</div>
-                    <div className="text-blue-300 text-sm">{t.role}</div>
+                    <div
+                      className="font-semibold"
+                      style={{ color: 'var(--dark-text)' }}
+                    >
+                      {t.name}
+                    </div>
+
+                    <div
+                      className="text-sm"
+                      style={{ color: 'var(--dark-text-secondary)' }}
+                    >
+                      {t.role}
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+
           <div className="flex justify-center gap-2 mt-8">
             {testimonials.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setTestimonialIdx(i)}
-                className={`w-2 h-2 rounded-full transition-all ${i === testimonialIdx ? 'bg-blue-400 w-6' : 'bg-white/20'}`}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  i === testimonialIdx
+                    ? 'bg-blue-400 w-6'
+                    : 'bg-white/20'
+                }`}
               />
             ))}
           </div>
         </div>
       </section>
 
-      {/* News */}
-      <section className="py-20 bg-white">
+      {/* =========================================================
+          News
+          ========================================================= */}
+      <section
+        className="py-20"
+        style={{ background: 'var(--surface)' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-10">
             <div>
@@ -475,8 +689,15 @@ export default function Home() {
               >
                 Tin tức & Bài viết
               </div>
-              <h2 className="font-display text-3xl font-bold text-slate-900">Cập nhật mới nhất</h2>
+
+              <h2
+                className="font-display text-3xl font-bold"
+                style={{ color: 'var(--text)' }}
+              >
+                Cập nhật mới nhất
+              </h2>
             </div>
+
             <Link
               to="/bai-viet"
               className="text-sm font-semibold flex items-center gap-1"
@@ -485,35 +706,61 @@ export default function Home() {
               Tất cả bài viết <ArrowRight size={14} />
             </Link>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {news.map((item) => (
               <Link
                 key={item.title}
                 to="/bai-viet/bai-viet-1"
-                className="group block rounded-2xl overflow-hidden border hover:shadow-lg transition-all bg-white"
-                style={{ borderColor: 'var(--border)' }}
+                className="group block rounded-2xl overflow-hidden border hover:shadow-lg transition-all"
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
               >
-                <div className="aspect-video overflow-hidden bg-slate-100">
+                <div
+                  className="aspect-video overflow-hidden"
+                  style={{ background: 'var(--surface-tertiary)' }}
+                >
                   <img
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
+
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">
                       {item.category}
                     </span>
-                    <span className="text-xs text-slate-400">{item.date}</span>
+
+                    <span
+                      className="text-xs"
+                      style={{ color: 'var(--text-placeholder)' }}
+                    >
+                      {item.date}
+                    </span>
                   </div>
-                  <h3 className="font-display font-semibold text-slate-900 leading-snug mb-2 group-hover:text-blue-600 transition-colors">
+
+                  <h3
+                    className="font-display font-semibold leading-snug mb-2 group-hover:text-[var(--primary)] transition-colors"
+                    style={{ color: 'var(--text)' }}
+                  >
                     {item.title}
                   </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">
+
+                  <p
+                    className="text-sm leading-relaxed line-clamp-2"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
                     {item.excerpt}
                   </p>
-                  <div className="mt-4 text-sm font-medium text-blue-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+
+                  <div
+                    className="mt-4 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all"
+                    style={{ color: 'var(--primary)' }}
+                  >
                     Đọc tiếp <ArrowRight size={13} />
                   </div>
                 </div>
@@ -523,18 +770,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA banner */}
-      <section className="py-16 px-6" style={{ background: 'var(--primary)' }}>
+      {/* =========================================================
+          CTA banner
+          ========================================================= */}
+      <section
+        className="py-16 px-6"
+        style={{ background: 'var(--primary)' }}
+      >
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-display text-3xl font-bold text-black mb-4">
+          <h2
+            className="font-display text-3xl font-bold text-white mb-4"
+          >
             Sẵn sàng chuyển đổi doanh nghiệp?
           </h2>
-          <p className="text-black-200 text-base mb-8">
+
+          <p
+            className="text-base mb-8 text-white"
+          >
             Liên hệ ngay để nhận tư vấn miễn phí từ đội ngũ chuyên gia của chúng tôi.
           </p>
+
           <Link
             to="/lien-he"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-blue-700 bg-white hover:bg-blue-50 transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold transition-colors"
+            style={{
+              background: 'var(--primary-button-background)',
+              color: 'var(--primary-button-text)',
+            }}
           >
             Liên hệ với chúng tôi <ArrowRight size={16} />
           </Link>
