@@ -9,6 +9,7 @@ import { Search, ChevronDown, Globe, Share2, ExternalLink, Menu, X } from 'lucid
 import ThemeToggle from '@/components/theme/ThemeToggle';
 
 interface MenuItem {
+
   menuId: number;
   parentId: number | null;
   title: string;
@@ -323,7 +324,7 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 overflow-visible">
           <ThemeToggle />
 
           <div className="relative">

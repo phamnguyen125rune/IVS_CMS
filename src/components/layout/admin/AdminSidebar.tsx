@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   FileText,
   CheckSquare,
+  MenuIcon,
   FolderTree,
   Image as ImageIcon,
   Mail,
@@ -63,6 +64,11 @@ const navItems = [
     label: 'Quản lý Media',
     icon: ImageIcon,
     path: '/admin/media',
+  },
+  {
+    label: 'Quản lý Menu',
+    icon: MenuIcon,
+    path: '/admin/menu',
   },
   {
     label: 'Quản lý Biểu mẫu',
