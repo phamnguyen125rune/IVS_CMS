@@ -31,10 +31,7 @@ const relatedPosts = [
 
 export default function PostDetail() {
   return (
-    <div
-      className="max-w-7xl mx-auto px-6 py-12"
-      style={{ color: 'var(--text)' }}
-    >
+    <div className="max-w-7xl mx-auto px-6 py-12" style={{ color: 'var(--text)' }}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* =========================================================
             Main content
@@ -75,8 +72,7 @@ export default function PostDetail() {
             className="font-display font-bold text-3xl lg:text-4xl leading-tight mb-5"
             style={{ color: 'var(--text)' }}
           >
-            Xu hướng công nghệ AI trong năm 2024 và tác động sâu rộng đến
-            doanh nghiệp Việt Nam
+            Xu hướng công nghệ AI trong năm 2024 và tác động sâu rộng đến doanh nghiệp Việt Nam
           </h1>
 
           {/* Author info */}
@@ -91,10 +87,7 @@ export default function PostDetail() {
             />
 
             <div className="flex-1">
-              <p
-                className="font-semibold text-sm"
-                style={{ color: 'var(--text)' }}
-              >
+              <p className="font-semibold text-sm" style={{ color: 'var(--text)' }}>
                 Nguyễn Thị Hoa
               </p>
 
@@ -108,8 +101,7 @@ export default function PostDetail() {
                 <span>·</span>
 
                 <span className="flex items-center gap-1">
-                  <Clock size={10} />
-                  8 phút đọc
+                  <Clock size={10} />8 phút đọc
                 </span>
               </div>
             </div>
@@ -157,10 +149,9 @@ export default function PostDetail() {
               className="text-base leading-relaxed mb-5"
               style={{ color: 'var(--text-secondary)' }}
             >
-              Năm 2024 đánh dấu bước ngoặt quan trọng trong ứng dụng trí tuệ
-              nhân tạo tại Việt Nam. Từ những mô hình ngôn ngữ lớn (LLM) như
-              GPT-4 và Gemini cho đến các giải pháp AI chuyên biệt cho từng
-              ngành, làn sóng AI đang tái định hình cách doanh nghiệp hoạt động
+              Năm 2024 đánh dấu bước ngoặt quan trọng trong ứng dụng trí tuệ nhân tạo tại Việt Nam.
+              Từ những mô hình ngôn ngữ lớn (LLM) như GPT-4 và Gemini cho đến các giải pháp AI
+              chuyên biệt cho từng ngành, làn sóng AI đang tái định hình cách doanh nghiệp hoạt động
               và tạo ra giá trị.
             </p>
 
@@ -175,10 +166,10 @@ export default function PostDetail() {
               className="text-base leading-relaxed mb-4"
               style={{ color: 'var(--text-secondary)' }}
             >
-              Nếu năm 2023 là năm của sự thử nghiệm với Generative AI, thì 2024
-              là năm doanh nghiệp bắt đầu tích hợp nghiêm túc vào quy trình kinh
-              doanh. Theo khảo sát của CMS với 300 doanh nghiệp Việt Nam, 68%
-              đã triển khai ít nhất một ứng dụng AI trong hoạt động hàng ngày.
+              Nếu năm 2023 là năm của sự thử nghiệm với Generative AI, thì 2024 là năm doanh nghiệp
+              bắt đầu tích hợp nghiêm túc vào quy trình kinh doanh. Theo khảo sát của CMS với 300
+              doanh nghiệp Việt Nam, 68% đã triển khai ít nhất một ứng dụng AI trong hoạt động hàng
+              ngày.
             </p>
 
             {/* Quote */}
@@ -189,13 +180,9 @@ export default function PostDetail() {
                 borderLeft: '4px solid var(--primary)',
               }}
             >
-              <p
-                className="font-medium italic"
-                style={{ color: 'var(--primary-text)' }}
-              >
-                "AI không thay thế con người, mà trao quyền cho con người làm
-                được những điều mà trước đây chỉ là ước mơ." — Nguyễn Văn
-                Hoàng, CEO CMS
+              <p className="font-medium italic" style={{ color: 'var(--primary-text)' }}>
+                "AI không thay thế con người, mà trao quyền cho con người làm được những điều mà
+                trước đây chỉ là ước mơ." — Nguyễn Văn Hoàng, CEO CMS
               </p>
             </div>
 
@@ -210,11 +197,10 @@ export default function PostDetail() {
               className="text-base leading-relaxed mb-4"
               style={{ color: 'var(--text-secondary)' }}
             >
-              Chatbot và virtual assistant được nâng cấp mạnh mẽ nhờ LLM.
-              Không còn là những bot trả lời cứng nhắc, các hệ thống AI mới có
-              thể hiểu ngữ cảnh, xử lý tiếng Việt tự nhiên và thậm chí có khả
-              năng nhận biết cảm xúc khách hàng. Điều này giúp giảm 40-60% tải
-              cho bộ phận CSKH mà không làm giảm chất lượng trải nghiệm.
+              Chatbot và virtual assistant được nâng cấp mạnh mẽ nhờ LLM. Không còn là những bot trả
+              lời cứng nhắc, các hệ thống AI mới có thể hiểu ngữ cảnh, xử lý tiếng Việt tự nhiên và
+              thậm chí có khả năng nhận biết cảm xúc khách hàng. Điều này giúp giảm 40-60% tải cho
+              bộ phận CSKH mà không làm giảm chất lượng trải nghiệm.
             </p>
 
             <h2
@@ -228,11 +214,10 @@ export default function PostDetail() {
               className="text-base leading-relaxed mb-4"
               style={{ color: 'var(--text-secondary)' }}
             >
-              Dù tiềm năng rõ ràng, việc ứng dụng AI không phải không có thách
-              thức. Thiếu dữ liệu chất lượng cao, thiếu nhân lực hiểu biết AI,
-              và lo ngại về quyền riêng tư vẫn là ba rào cản lớn nhất. Tuy
-              nhiên, đây cũng là cơ hội cho các doanh nghiệp tiên phong xây dựng
-              lợi thế cạnh tranh khó sao chép.
+              Dù tiềm năng rõ ràng, việc ứng dụng AI không phải không có thách thức. Thiếu dữ liệu
+              chất lượng cao, thiếu nhân lực hiểu biết AI, và lo ngại về quyền riêng tư vẫn là ba
+              rào cản lớn nhất. Tuy nhiên, đây cũng là cơ hội cho các doanh nghiệp tiên phong xây
+              dựng lợi thế cạnh tranh khó sao chép.
             </p>
 
             {/* Statistics */}
@@ -257,10 +242,7 @@ export default function PostDetail() {
                     {num}
                   </div>
 
-                  <div
-                    className="text-xs"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
+                  <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     {label}
                   </div>
                 </div>
@@ -299,14 +281,10 @@ export default function PostDetail() {
               ))}
             </ul>
 
-            <p
-              className="text-base leading-relaxed"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              Kết luận: AI năm 2024 không còn là lựa chọn mà là điều kiện cần
-              để duy trì tính cạnh tranh. Doanh nghiệp nào hành động sớm sẽ có
-              lợi thế đáng kể trong 3-5 năm tới. CMS sẵn sàng đồng hành cùng bạn
-              trên hành trình này.
+            <p className="text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              Kết luận: AI năm 2024 không còn là lựa chọn mà là điều kiện cần để duy trì tính cạnh
+              tranh. Doanh nghiệp nào hành động sớm sẽ có lợi thế đáng kể trong 3-5 năm tới. CMS sẵn
+              sàng đồng hành cùng bạn trên hành trình này.
             </p>
           </div>
 
@@ -317,20 +295,18 @@ export default function PostDetail() {
             className="flex flex-wrap gap-2 mt-8 pt-6 border-t"
             style={{ borderColor: 'var(--border)' }}
           >
-            {['AI', 'Machine Learning', 'Chuyển đổi số', 'Doanh nghiệp', '2024'].map(
-              (tag) => (
-                <span
-                  key={tag}
-                  className="text-xs px-3 py-1.5 rounded-full border cursor-pointer transition-colors hover:bg-[var(--hover)] hover:text-[var(--primary)]"
-                  style={{
-                    borderColor: 'var(--border)',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  #{tag}
-                </span>
-              ),
-            )}
+            {['AI', 'Machine Learning', 'Chuyển đổi số', 'Doanh nghiệp', '2024'].map((tag) => (
+              <span
+                key={tag}
+                className="text-xs px-3 py-1.5 rounded-full border cursor-pointer transition-colors hover:bg-[var(--hover)] hover:text-[var(--primary)]"
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                #{tag}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -352,26 +328,17 @@ export default function PostDetail() {
               alt="Nguyễn Thị Hoa"
             />
 
-            <h4
-              className="font-semibold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h4 className="font-semibold" style={{ color: 'var(--text)' }}>
               Nguyễn Thị Hoa
             </h4>
 
-            <p
-              className="text-xs mt-0.5 mb-3"
-              style={{ color: 'var(--text-placeholder)' }}
-            >
+            <p className="text-xs mt-0.5 mb-3" style={{ color: 'var(--text-placeholder)' }}>
               Chuyên gia Công nghệ AI · CMS
             </p>
 
-            <p
-              className="text-xs leading-relaxed"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              Hơn 8 năm nghiên cứu và ứng dụng AI trong doanh nghiệp. Tác giả
-              của 40+ bài viết chuyên sâu.
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              Hơn 8 năm nghiên cứu và ứng dụng AI trong doanh nghiệp. Tác giả của 40+ bài viết
+              chuyên sâu.
             </p>
           </div>
 
@@ -392,11 +359,7 @@ export default function PostDetail() {
 
             <div className="space-y-4">
               {relatedPosts.map((post) => (
-                <Link
-                  key={post.title}
-                  to="/bai-viet/bai-viet-1"
-                  className="flex gap-3 group"
-                >
+                <Link key={post.title} to="/bai-viet/bai-viet-1" className="flex gap-3 group">
                   <div
                     className="w-20 h-14 rounded-xl overflow-hidden flex-shrink-0"
                     style={{ background: 'var(--surface-tertiary)' }}
@@ -409,10 +372,7 @@ export default function PostDetail() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p
-                      className="text-xs mb-1"
-                      style={{ color: 'var(--text-placeholder)' }}
-                    >
+                    <p className="text-xs mb-1" style={{ color: 'var(--text-placeholder)' }}>
                       {post.category}
                     </p>
 
@@ -423,10 +383,7 @@ export default function PostDetail() {
                       {post.title}
                     </h5>
 
-                    <p
-                      className="text-xs mt-1"
-                      style={{ color: 'var(--text-placeholder)' }}
-                    >
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-placeholder)' }}>
                       {post.date}
                     </p>
                   </div>
@@ -438,13 +395,8 @@ export default function PostDetail() {
           {/* =========================================================
               Newsletter
               ========================================================= */}
-          <div
-            className="rounded-2xl p-5 text-white"
-            style={{ background: 'var(--primary)' }}
-          >
-            <h4 className="font-display font-semibold mb-2">
-              Đăng ký nhận tin
-            </h4>
+          <div className="rounded-2xl p-5 text-white" style={{ background: 'var(--primary)' }}>
+            <h4 className="font-display font-semibold mb-2">Đăng ký nhận tin</h4>
 
             <p className="text-blue-200 text-xs mb-3">
               Nhận bài viết mới nhất và insights hàng tuần từ CMS.

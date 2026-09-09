@@ -65,10 +65,7 @@ export default function Customers() {
             Đồng hành cùng sự phát triển
           </h1>
 
-          <p
-            className="text-lg max-w-2xl mx-auto"
-            style={{ color: 'var(--dark-text-secondary)' }}
-          >
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--dark-text-secondary)' }}>
             Hơn 500+ doanh nghiệp hàng đầu đã tin tưởng và lựa chọn CMS làm đối tác chiến lược trong
             hành trình chuyển đổi số.
           </p>
@@ -78,10 +75,7 @@ export default function Customers() {
       {/* =========================================================
           Logos Grid
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--surface-secondary)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--surface-secondary)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {partners.map((partner, index) => (
@@ -89,7 +83,7 @@ export default function Customers() {
                 key={index}
                 className="border rounded-2xl h-32 flex items-center justify-center p-6 hover:shadow-lg transition-all cursor-pointer"
                 style={{
-                  background: 'white'
+                  background: 'white',
                 }}
               >
                 <img
@@ -114,17 +108,11 @@ export default function Customers() {
         }}
       >
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2
-            className="font-display text-3xl font-bold mb-4"
-            style={{ color: 'var(--text)' }}
-          >
+          <h2 className="font-display text-3xl font-bold mb-4" style={{ color: 'var(--text)' }}>
             Trở thành đối tác của chúng tôi
           </h2>
 
-          <p
-            className="mb-8"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <p className="mb-8" style={{ color: 'var(--text-muted)' }}>
             Cùng nhau xây dựng những giải pháp công nghệ mang tính đột phá và tạo ra giá trị bền
             vững cho doanh nghiệp.
           </p>

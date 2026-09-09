@@ -48,8 +48,7 @@ export default function NotFound() {
               <div
                 className="w-28 h-28 mx-auto rounded-3xl flex flex-col items-center justify-center relative"
                 style={{
-                  background:
-                    'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+                  background: 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
                 }}
               >
                 {/* Robot eyes */}
@@ -81,19 +80,13 @@ export default function NotFound() {
           Content
           ========================================================= */}
       <div className="text-center max-w-md">
-        <h1
-          className="font-display text-3xl font-bold mb-3"
-          style={{ color: 'var(--text)' }}
-        >
+        <h1 className="font-display text-3xl font-bold mb-3" style={{ color: 'var(--text)' }}>
           Ôi! Trang không tìm thấy
         </h1>
 
-        <p
-          className="text-base leading-relaxed mb-8"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          Có vẻ như trang bạn đang tìm kiếm đã bị di chuyển, xóa, hoặc chưa
-          bao giờ tồn tại. Đừng lo, robot của chúng tôi đang cố tìm kiếm nó!
+        <p className="text-base leading-relaxed mb-8" style={{ color: 'var(--text-muted)' }}>
+          Có vẻ như trang bạn đang tìm kiếm đã bị di chuyển, xóa, hoặc chưa bao giờ tồn tại. Đừng
+          lo, robot của chúng tôi đang cố tìm kiếm nó!
         </p>
 
         {/* =========================================================

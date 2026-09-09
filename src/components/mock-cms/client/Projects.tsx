@@ -185,16 +185,11 @@ export default function Projects() {
   const [activeFilter, setActiveFilter] = useState('Tất cả');
   const [page, setPage] = useState(1);
 
-  const filtered = projects.filter(
-    (p) => activeFilter === 'Tất cả' || p.category === activeFilter,
-  );
+  const filtered = projects.filter((p) => activeFilter === 'Tất cả' || p.category === activeFilter);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  const paginated = filtered.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE,
-  );
+  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
     <div style={{ background: 'var(--background)' }}>
@@ -223,10 +218,7 @@ export default function Projects() {
             Những công trình tiêu biểu
           </h1>
 
-          <p
-            className="text-lg max-w-2xl"
-            style={{ color: 'var(--dark-text-secondary)' }}
-          >
+          <p className="text-lg max-w-2xl" style={{ color: 'var(--dark-text-secondary)' }}>
             Hơn 200 dự án đã hoàn thành cho các doanh nghiệp thuộc nhiều lĩnh vực khác nhau trên
             khắp Việt Nam và khu vực.
           </p>
@@ -250,9 +242,7 @@ export default function Projects() {
                   setPage(1);
                 }}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  isActive
-                    ? 'text-white shadow-md'
-                    : 'border hover:bg-[var(--hover)]'
+                  isActive ? 'text-white shadow-md' : 'border hover:bg-[var(--hover)]'
                 }`}
                 style={
                   isActive
@@ -320,10 +310,7 @@ export default function Projects() {
                   {project.title}
                 </h3>
 
-                <p
-                  className="text-xs mb-2"
-                  style={{ color: 'var(--text-placeholder)' }}
-                >
+                <p className="text-xs mb-2" style={{ color: 'var(--text-placeholder)' }}>
                   {project.client}
                 </p>
 
@@ -374,9 +361,7 @@ export default function Projects() {
                   key={pageNumber}
                   onClick={() => setPage(pageNumber)}
                   className={`w-9 h-9 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? 'text-white'
-                      : 'border hover:bg-[var(--hover)]'
+                    isActive ? 'text-white' : 'border hover:bg-[var(--hover)]'
                   }`}
                   style={
                     isActive
@@ -412,18 +397,15 @@ export default function Projects() {
         )}
 
         {/* Pagination info */}
-        <p
-          className="text-center text-xs mt-3"
-          style={{ color: 'var(--text-placeholder)' }}
-        >
+        <p className="text-center text-xs mt-3" style={{ color: 'var(--text-placeholder)' }}>
           Hiển thị{' '}
           {filtered.length > 0
             ? `${(page - 1) * ITEMS_PER_PAGE + 1}–${Math.min(
                 page * ITEMS_PER_PAGE,
-                filtered.length,
+                filtered.length
               )}`
-            : '0'}
-          {' '}trong {filtered.length} dự án
+            : '0'}{' '}
+          trong {filtered.length} dự án
         </p>
       </div>
     </div>

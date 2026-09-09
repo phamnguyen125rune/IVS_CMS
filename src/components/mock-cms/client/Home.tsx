@@ -4,14 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { LocalizedLink as Link } from '@/components/navigation/LocalizedLink';
-import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Star,
-  Play,
-  CheckCircle2,
-} from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Star, Play, CheckCircle2 } from 'lucide-react';
 
 const services = [
   {
@@ -231,14 +224,9 @@ export default function Home() {
                 ['10+', 'Năm kinh nghiệm'],
               ].map(([num, label]) => (
                 <div key={label} className="text-center lg:text-left">
-                  <div className="text-2xl font-bold font-display text-white">
-                    {num}
-                  </div>
+                  <div className="text-2xl font-bold font-display text-white">{num}</div>
 
-                  <div
-                    className="text-xs"
-                    style={{ color: 'var(--dark-text-secondary)' }}
-                  >
+                  <div className="text-xs" style={{ color: 'var(--dark-text-secondary)' }}>
                     {label}
                   </div>
                 </div>
@@ -262,24 +250,15 @@ export default function Home() {
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{ background: 'var(--success-light)' }}
                 >
-                  <CheckCircle2
-                    size={18}
-                    style={{ color: 'var(--success)' }}
-                  />
+                  <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
                 </div>
 
                 <div>
-                  <div
-                    className="text-xs"
-                    style={{ color: 'var(--text-placeholder)' }}
-                  >
+                  <div className="text-xs" style={{ color: 'var(--text-placeholder)' }}>
                     Dự án hoàn thành
                   </div>
 
-                  <div
-                    className="font-bold"
-                    style={{ color: 'var(--text)' }}
-                  >
+                  <div className="font-bold" style={{ color: 'var(--text)' }}>
                     +18 tháng này
                   </div>
                 </div>
@@ -292,10 +271,7 @@ export default function Home() {
       {/* =========================================================
           About snippet
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--background)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--background)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -313,18 +289,12 @@ export default function Home() {
                 Đối tác công nghệ đáng tin cậy của doanh nghiệp Việt
               </h2>
 
-              <p
-                className="text-base leading-relaxed mb-6"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              <p className="text-base leading-relaxed mb-6" style={{ color: 'var(--text-muted)' }}>
                 Thành lập từ năm 2014, CMS đã trở thành một trong những công ty công nghệ hàng đầu
                 Việt Nam, chuyên cung cấp giải pháp phần mềm tùy chỉnh và dịch vụ chuyển đổi số.
               </p>
 
-              <p
-                className="text-base leading-relaxed mb-8"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              <p className="text-base leading-relaxed mb-8" style={{ color: 'var(--text-muted)' }}>
                 Với đội ngũ hơn 150 kỹ sư và chuyên gia, chúng tôi đã đồng hành cùng hàng trăm doanh
                 nghiệp trong và ngoài nước, từ startup đến tập đoàn lớn.
               </p>
@@ -361,21 +331,12 @@ export default function Home() {
                   color: 'bg-emerald-50 border-emerald-200',
                 },
               ].map((stat) => (
-                <div
-                  key={stat.num}
-                  className={`p-6 rounded-2xl border ${stat.color}`}
-                >
-                  <div
-                    className="font-display font-bold text-3xl text-slate-900 mb-1"
-                  >
+                <div key={stat.num} className={`p-6 rounded-2xl border ${stat.color}`}>
+                  <div className="font-display font-bold text-3xl text-slate-900 mb-1">
                     {stat.num}
                   </div>
 
-                  <div
-                    className="text-sm text-slate-600"
-                  >
-                    {stat.label}
-                  </div>
+                  <div className="text-sm text-slate-600">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -386,10 +347,7 @@ export default function Home() {
       {/* =========================================================
           Services
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--background)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--background)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <div
@@ -406,10 +364,7 @@ export default function Home() {
               Giải pháp công nghệ toàn diện
             </h2>
 
-            <p
-              className="mt-3 max-w-2xl mx-auto"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <p className="mt-3 max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
               Chúng tôi cung cấp đầy đủ các dịch vụ công nghệ giúp doanh nghiệp phát triển trong kỷ
               nguyên số
             </p>
@@ -431,17 +386,11 @@ export default function Home() {
                   {service.icon}
                 </div>
 
-                <h3
-                  className="font-display font-semibold mb-2"
-                  style={{ color: 'var(--text)' }}
-                >
+                <h3 className="font-display font-semibold mb-2" style={{ color: 'var(--text)' }}>
                   {service.title}
                 </h3>
 
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: 'var(--text-muted)' }}
-                >
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   {service.desc}
                 </p>
 
@@ -460,10 +409,7 @@ export default function Home() {
       {/* =========================================================
           Project slider
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--surface)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--surface)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-10">
             <div>
@@ -474,19 +420,14 @@ export default function Home() {
                 Dự án nổi bật
               </div>
 
-              <h2
-                className="font-display text-3xl font-bold"
-                style={{ color: 'var(--text)' }}
-              >
+              <h2 className="font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
                 Công trình tiêu biểu của chúng tôi
               </h2>
             </div>
 
             <div className="flex gap-2">
               <button
-                onClick={() =>
-                  setProjectIdx(Math.max(0, projectIdx - 1))
-                }
+                onClick={() => setProjectIdx(Math.max(0, projectIdx - 1))}
                 className="w-10 h-10 rounded-xl border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--hover)]"
                 style={{
                   borderColor: 'var(--border)',
@@ -498,11 +439,7 @@ export default function Home() {
               </button>
 
               <button
-                onClick={() =>
-                  setProjectIdx(
-                    Math.min(projects.length - 1, projectIdx + 1)
-                  )
-                }
+                onClick={() => setProjectIdx(Math.min(projects.length - 1, projectIdx + 1))}
                 className="w-10 h-10 rounded-xl border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--hover)]"
                 style={{
                   borderColor: 'var(--border)',
@@ -543,10 +480,7 @@ export default function Home() {
                   </span>
                 </div>
 
-                <div
-                  className="p-4"
-                  style={{ background: 'var(--surface)' }}
-                >
+                <div className="p-4" style={{ background: 'var(--surface)' }}>
                   <h3
                     className="font-display font-semibold leading-snug"
                     style={{ color: 'var(--text)' }}
@@ -554,10 +488,7 @@ export default function Home() {
                     {project.title}
                   </h3>
 
-                  <p
-                    className="text-xs mt-1"
-                    style={{ color: 'var(--text-placeholder)' }}
-                  >
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-placeholder)' }}>
                     Khách hàng: {project.client}
                   </p>
                 </div>
@@ -583,10 +514,7 @@ export default function Home() {
       {/* =========================================================
           Testimonials
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--dark-background)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--dark-background)' }}>
         <div className="max-w-4xl mx-auto px-6 text-center">
           <div
             className="text-sm font-semibold uppercase tracking-widest mb-3"
@@ -607,9 +535,7 @@ export default function Home() {
               <div
                 key={i}
                 className={`transition-all duration-500 ${
-                  i === testimonialIdx
-                    ? 'opacity-100'
-                    : 'opacity-0 absolute inset-0'
+                  i === testimonialIdx ? 'opacity-100' : 'opacity-0 absolute inset-0'
                 }`}
               >
                 <div className="flex justify-center mb-3">
@@ -638,17 +564,11 @@ export default function Home() {
                   />
 
                   <div className="text-left">
-                    <div
-                      className="font-semibold"
-                      style={{ color: 'var(--dark-text)' }}
-                    >
+                    <div className="font-semibold" style={{ color: 'var(--dark-text)' }}>
                       {t.name}
                     </div>
 
-                    <div
-                      className="text-sm"
-                      style={{ color: 'var(--dark-text-secondary)' }}
-                    >
+                    <div className="text-sm" style={{ color: 'var(--dark-text-secondary)' }}>
                       {t.role}
                     </div>
                   </div>
@@ -663,9 +583,7 @@ export default function Home() {
                 key={i}
                 onClick={() => setTestimonialIdx(i)}
                 className={`w-2 h-2 rounded-full transition-all ${
-                  i === testimonialIdx
-                    ? 'bg-blue-400 w-6'
-                    : 'bg-white/20'
+                  i === testimonialIdx ? 'bg-blue-400 w-6' : 'bg-white/20'
                 }`}
               />
             ))}
@@ -676,10 +594,7 @@ export default function Home() {
       {/* =========================================================
           News
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--surface)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--surface)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-10">
             <div>
@@ -690,10 +605,7 @@ export default function Home() {
                 Tin tức & Bài viết
               </div>
 
-              <h2
-                className="font-display text-3xl font-bold"
-                style={{ color: 'var(--text)' }}
-              >
+              <h2 className="font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
                 Cập nhật mới nhất
               </h2>
             </div>
@@ -735,10 +647,7 @@ export default function Home() {
                       {item.category}
                     </span>
 
-                    <span
-                      className="text-xs"
-                      style={{ color: 'var(--text-placeholder)' }}
-                    >
+                    <span className="text-xs" style={{ color: 'var(--text-placeholder)' }}>
                       {item.date}
                     </span>
                   </div>
@@ -773,20 +682,13 @@ export default function Home() {
       {/* =========================================================
           CTA banner
           ========================================================= */}
-      <section
-        className="py-16 px-6"
-        style={{ background: 'var(--primary)' }}
-      >
+      <section className="py-16 px-6" style={{ background: 'var(--primary)' }}>
         <div className="max-w-4xl mx-auto text-center">
-          <h2
-            className="font-display text-3xl font-bold text-white mb-4"
-          >
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
             Sẵn sàng chuyển đổi doanh nghiệp?
           </h2>
 
-          <p
-            className="text-base mb-8 text-white"
-          >
+          <p className="text-base mb-8 text-white">
             Liên hệ ngay để nhận tư vấn miễn phí từ đội ngũ chuyên gia của chúng tôi.
           </p>
 

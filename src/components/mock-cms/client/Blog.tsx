@@ -154,8 +154,7 @@ export default function Blog() {
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.excerpt.toLowerCase().includes(search.toLowerCase());
 
-    const matchCat =
-      activeCategory === 'Tất cả' || p.category === activeCategory;
+    const matchCat = activeCategory === 'Tất cả' || p.category === activeCategory;
 
     return matchSearch && matchCat;
   });
@@ -190,10 +189,7 @@ export default function Blog() {
             Kiến thức & Insights
           </h1>
 
-          <p
-            className="text-lg max-w-2xl mb-8"
-            style={{ color: 'var(--dark-text-secondary)' }}
-          >
+          <p className="text-lg max-w-2xl mb-8" style={{ color: 'var(--dark-text-secondary)' }}>
             Cập nhật xu hướng công nghệ, chia sẻ kiến thức chuyên sâu và câu chuyện thành công từ
             đội ngũ CMS.
           </p>
@@ -212,10 +208,7 @@ export default function Blog() {
         </div>
       </section>
 
-      <main
-        className="max-w-7xl mx-auto px-6 py-12"
-        style={{ background: 'var(--background)' }}
-      >
+      <main className="max-w-7xl mx-auto px-6 py-12" style={{ background: 'var(--background)' }}>
         {/* =========================================================
             Category filters
             ========================================================= */}
@@ -225,9 +218,7 @@ export default function Blog() {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                activeCategory === cat
-                  ? 'text-white'
-                  : 'border hover:bg-[var(--hover)]'
+                activeCategory === cat ? 'text-white' : 'border hover:bg-[var(--hover)]'
               }`}
               style={
                 activeCategory === cat
@@ -250,10 +241,7 @@ export default function Blog() {
             Featured post
             ========================================================= */}
         {featured && (
-          <Link
-            to={`/bai-viet/${featured.slug}`}
-            className="group block mb-10"
-          >
+          <Link to={`/bai-viet/${featured.slug}`} className="group block mb-10">
             <div
               className="grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-2xl overflow-hidden border hover:shadow-xl transition-all"
               style={{
@@ -299,10 +287,7 @@ export default function Blog() {
                   {featured.title}
                 </h2>
 
-                <p
-                  className="leading-relaxed mb-5"
-                  style={{ color: 'var(--text-muted)' }}
-                >
+                <p className="leading-relaxed mb-5" style={{ color: 'var(--text-muted)' }}>
                   {featured.excerpt}
                 </p>
 
@@ -337,11 +322,7 @@ export default function Blog() {
             ========================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {rest.map((post) => (
-            <Link
-              key={post.id}
-              to={`/bai-viet/${post.slug}`}
-              className="group block"
-            >
+            <Link key={post.id} to={`/bai-viet/${post.slug}`} className="group block">
               <article
                 className="rounded-2xl overflow-hidden border hover:shadow-lg transition-all h-full"
                 style={{
@@ -396,10 +377,7 @@ export default function Blog() {
                   </p>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div
-                      className="text-xs"
-                      style={{ color: 'var(--text-placeholder)' }}
-                    >
+                    <div className="text-xs" style={{ color: 'var(--text-placeholder)' }}>
                       {post.author} · {post.date}
                     </div>
 
@@ -420,21 +398,12 @@ export default function Blog() {
             Empty state
             ========================================================= */}
         {filtered.length === 0 && (
-          <div
-            className="text-center py-20"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            <p
-              className="text-lg font-medium"
-              style={{ color: 'var(--text-secondary)' }}
-            >
+          <div className="text-center py-20" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-lg font-medium" style={{ color: 'var(--text-secondary)' }}>
               Không tìm thấy bài viết phù hợp
             </p>
 
-            <p
-              className="text-sm mt-1"
-              style={{ color: 'var(--text-placeholder)' }}
-            >
+            <p className="text-sm mt-1" style={{ color: 'var(--text-placeholder)' }}>
               Thử thay đổi từ khóa tìm kiếm hoặc danh mục khác.
             </p>
           </div>

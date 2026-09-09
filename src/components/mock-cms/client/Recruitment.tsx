@@ -88,14 +88,11 @@ export default function Recruitment() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredJobs = jobOpenings.filter((job) =>
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    job.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div
-      className="flex flex-col min-h-screen"
-      style={{ background: 'var(--surface-secondary)' }}
-    >
+    <div className="flex flex-col min-h-screen" style={{ background: 'var(--surface-secondary)' }}>
       {/* =========================================================
           Hero Section
           ========================================================= */}
@@ -121,9 +118,7 @@ export default function Recruitment() {
             <span className="text-blue-600">tương lai số</span>
           </h1>
 
-          <p
-            className="text-lg max-w-2xl mb-10 text-white"
-          >
+          <p className="text-lg max-w-2xl mb-10 text-white">
             Chúng tôi luôn tìm kiếm những tài năng đam mê công nghệ, sáng tạo và không ngại thử
             thách để cùng nhau xây dựng những sản phẩm mang lại giá trị thực cho cộng đồng.
           </p>
@@ -154,23 +149,14 @@ export default function Recruitment() {
       {/* =========================================================
           Benefits Section
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--background)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--background)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2
-              className="text-3xl font-display font-bold mb-4"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="text-3xl font-display font-bold mb-4" style={{ color: 'var(--text)' }}>
               Tại sao chọn chúng tôi?
             </h2>
 
-            <p
-              className="max-w-2xl mx-auto"
-              style={{ color: 'var(--text-secondary)' }}
-            >
+            <p className="max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
               Chúng tôi tin rằng nhân sự là tài sản quý giá nhất. Tại đây, bạn sẽ được trao quyền,
               hỗ trợ và ghi nhận xứng đáng.
             </p>
@@ -193,17 +179,11 @@ export default function Recruitment() {
                   {benefit.icon}
                 </div>
 
-                <h3
-                  className="text-lg font-bold mb-3"
-                  style={{ color: 'var(--text)' }}
-                >
+                <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text)' }}>
                   {benefit.title}
                 </h3>
 
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   {benefit.description}
                 </p>
               </div>
@@ -225,10 +205,7 @@ export default function Recruitment() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
-              <h2
-                className="text-3xl font-display font-bold mb-4"
-                style={{ color: 'var(--text)' }}
-              >
+              <h2 className="text-3xl font-display font-bold mb-4" style={{ color: 'var(--text)' }}>
                 Vị trí đang tuyển
               </h2>
 
@@ -323,14 +300,9 @@ export default function Recruitment() {
                       color: 'var(--primary)',
                     }}
                   >
-                    <span className="group-hover:text-white">
-                      Ứng tuyển ngay
-                    </span>
+                    <span className="group-hover:text-white">Ứng tuyển ngay</span>
 
-                    <ChevronRight
-                      size={16}
-                      className="group-hover:text-white"
-                    />
+                    <ChevronRight size={16} className="group-hover:text-white" />
                   </Link>
                 </div>
               ))

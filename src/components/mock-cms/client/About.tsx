@@ -118,10 +118,7 @@ export default function About() {
       {/* =========================================================
           Vision & Mission
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--background)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--background)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
@@ -165,10 +162,7 @@ export default function About() {
                   {title}
                 </h3>
 
-                <p
-                  className="leading-relaxed"
-                  style={{ color: 'var(--text-muted)' }}
-                >
+                <p className="leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   {desc}
                 </p>
               </div>
@@ -180,10 +174,7 @@ export default function About() {
       {/* =========================================================
           History timeline
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--background)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--background)' }}>
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
@@ -193,10 +184,7 @@ export default function About() {
               Lịch sử hình thành
             </div>
 
-            <h2
-              className="font-display text-3xl font-bold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
               Hành trình 10 năm phát triển
             </h2>
           </div>
@@ -214,11 +202,7 @@ export default function About() {
                   i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
                 }`}
               >
-                <div
-                  className={`flex-1 ${
-                    i % 2 === 0 ? 'text-right' : 'text-left'
-                  }`}
-                >
+                <div className={`flex-1 ${i % 2 === 0 ? 'text-right' : 'text-left'}`}>
                   <div
                     className="rounded-2xl border p-5 inline-block max-w-sm"
                     style={{
@@ -226,10 +210,7 @@ export default function About() {
                       borderColor: 'var(--border)',
                     }}
                   >
-                    <div
-                      className="text-sm font-bold mb-1"
-                      style={{ color: 'var(--primary)' }}
-                    >
+                    <div className="text-sm font-bold mb-1" style={{ color: 'var(--primary)' }}>
                       {item.year}
                     </div>
 
@@ -240,10 +221,7 @@ export default function About() {
                       {item.title}
                     </h4>
 
-                    <p
-                      className="text-sm"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
+                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                       {item.desc}
                     </p>
                   </div>
@@ -267,10 +245,7 @@ export default function About() {
       {/* =========================================================
           Team
           ========================================================= */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--surface)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--surface)' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <div
@@ -280,17 +255,11 @@ export default function About() {
               Đội ngũ lãnh đạo
             </div>
 
-            <h2
-              className="font-display text-3xl font-bold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
               Những con người tài năng
             </h2>
 
-            <p
-              className="mt-3"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <p className="mt-3" style={{ color: 'var(--text-muted)' }}>
               Đội ngũ lãnh đạo với kinh nghiệm dày dặn, đam mê công nghệ và cam kết với sự thành
               công của khách hàng
             </p>
@@ -312,17 +281,11 @@ export default function About() {
                   <div className="absolute inset-0 bg-blue-900/40 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
 
-                <h4
-                  className="font-display font-semibold text-sm"
-                  style={{ color: 'var(--text)' }}
-                >
+                <h4 className="font-display font-semibold text-sm" style={{ color: 'var(--text)' }}>
                   {member.name}
                 </h4>
 
-                <p
-                  className="text-xs mt-0.5"
-                  style={{ color: 'var(--text-muted)' }}
-                >
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                   {member.role}
                 </p>
               </div>
