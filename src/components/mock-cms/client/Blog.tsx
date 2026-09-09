@@ -37,9 +37,13 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
         style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)' }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">
+          <div
+            className="text-sm font-semibold uppercase tracking-widest mb-3"
+            style={{ color: 'var(--primary)' }}
+          >
             Tin tức
           </div>
+
           <h1 className="font-display text-4xl lg:text-5xl font-bold text-white mb-4">
             Kiến thức & Insights
           </h1>
@@ -52,6 +56,7 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
             className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-3 max-w-lg"
           >
             <Search size={16} className="text-white/60" />
+
             <input
               name="q"
               defaultValue={keyword}
@@ -97,8 +102,11 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
         {featured && (
           <Link href={postPath(featured.slug)} className="group block mb-10">
             <div
-              className="grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-2xl overflow-hidden border hover:shadow-xl transition-all bg-white"
-              style={{ borderColor: 'var(--border)' }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-2xl overflow-hidden border hover:shadow-xl transition-all"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
             >
               <div className="aspect-video overflow-hidden bg-slate-100">
                 {featured.featuredMedia ? (
@@ -111,6 +119,7 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
                   <div className="w-full h-full bg-slate-100" />
                 )}
               </div>
+
               <div className="p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-4">
                   <span
@@ -123,7 +132,11 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
                     {featured.category?.name || 'Bài viết'}
                   </span>
                 </div>
-                <h2 className="font-display font-bold text-2xl text-slate-900 leading-tight mb-3 group-hover:text-blue-600 transition-colors">
+
+                <h2
+                  className="font-display font-bold text-2xl leading-tight mb-3 group-hover:text-[var(--primary)] transition-colors"
+                  style={{ color: 'var(--text)' }}
+                >
                   {featured.title}
                 </h2>
                 {featured.summary && (
@@ -142,7 +155,11 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
                     </>
                   )}
                 </div>
-                <div className="mt-5 flex items-center gap-1.5 text-sm font-semibold text-blue-600 group-hover:gap-3 transition-all">
+
+                <div
+                  className="mt-5 flex items-center gap-1.5 text-sm font-semibold group-hover:gap-3 transition-all"
+                  style={{ color: 'var(--primary)' }}
+                >
                   Đọc bài viết <ArrowRight size={15} />
                 </div>
               </div>
@@ -154,8 +171,11 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
           {rest.map((post) => (
             <Link key={post.id} href={postPath(post.slug)} className="group block">
               <article
-                className="rounded-2xl overflow-hidden border hover:shadow-lg transition-all bg-white h-full"
-                style={{ borderColor: 'var(--border)' }}
+                className="rounded-2xl overflow-hidden border hover:shadow-lg transition-all h-full"
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
               >
                 <div className="aspect-video overflow-hidden bg-slate-100">
                   {post.featuredMedia ? (

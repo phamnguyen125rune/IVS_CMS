@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+
 import { Search, ChevronDown, Globe, Share2, ExternalLink, Menu, X } from 'lucide-react';
 
 import ThemeToggle from '@/components/theme/ThemeToggle';
@@ -164,24 +165,61 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
   return (
     <header
-      className="sticky top-0 z-50 bg-white border-b"
+      className="
+        sticky
+        top-0
+        z-50
+        border-b
+      "
       style={{
         borderColor: 'var(--border, #e2e8f0)',
       }}
     >
       <div
-        className="hidden md:flex items-center justify-end px-6 py-1.5 text-xs text-slate-500 border-b"
+        className="
+          hidden
+          items-center
+          justify-end
+          border-b
+          px-6
+          py-1.5
+          text-xs
+          md:flex
+        "
         style={{
-          background: '#0f172a',
-          borderColor: '#1e293b',
+          background: 'var(--dark-background)',
+          borderColor: 'var(--dark-border)',
         }}
       >
-        <div className="flex items-center gap-3 text-slate-400">
-          <a href="#" className="hover:text-white transition-colors">
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+          "
+          style={{
+            color: 'var(--dark-text-secondary)',
+          }}
+        >
+          <a
+            href="#"
+            className="
+              transition-colors
+              hover:text-[var(--primary)]
+            "
+            aria-label="Chia sẻ"
+          >
             <Share2 size={12} />
           </a>
 
-          <a href="#" className="hover:text-white transition-colors">
+          <a
+            href="#"
+            className="
+              transition-colors
+              hover:text-[var(--primary)]
+            "
+            aria-label="Liên kết bên ngoài"
+          >
             <ExternalLink size={12} />
           </a>
         </div>
@@ -190,15 +228,36 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
       <div className="flex items-center justify-between px-6 py-3">
         <Link href={getLocalizedPath('/')} className="flex items-center gap-2.5">
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
+            className="
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-xl
+              text-base
+              font-bold
+            "
             style={{
-              background: 'var(--primary, #2563eb)',
+              background: 'var(--primary)',
+              color: 'var(--primary-foreground)',
             }}
           >
             C
           </div>
 
-          <span className="font-display font-bold text-slate-900 text-lg">CMS</span>
+          <span
+            className="
+              font-display
+              text-lg
+              font-bold
+            "
+            style={{
+              color: 'var(--text)',
+            }}
+          >
+            CMS
+          </span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1">
@@ -269,65 +328,154 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
           <div className="relative">
             <button
+              type="button"
               onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 border transition-colors"
+              className="
+                flex
+                items-center
+                gap-1.5
+                rounded-lg
+                border
+                px-3
+                py-2
+                text-sm
+                font-medium
+                transition-colors
+                hover:bg-[var(--hover)]
+                hover:text-[var(--primary)]
+              "
               style={{
-                borderColor: 'var(--border, #e2e8f0)',
+                color: 'var(--text)',
+                borderColor: 'var(--border)',
+                background: langOpen ? 'var(--active)' : 'transparent',
               }}
+              aria-label="Chọn ngôn ngữ"
+              aria-expanded={langOpen}
             >
               <Globe size={14} />
 
               <span>{activeLang.flag}</span>
 
-              <ChevronDown size={12} />
+              <ChevronDown
+                size={12}
+                style={{
+                  color: langOpen ? 'var(--primary)' : 'var(--text-secondary)',
+                }}
+              />
             </button>
+
+            {/* Language dropdown */}
 
             {langOpen && (
               <div
-                className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border py-1.5 w-44 z-50"
+                className="
+                  absolute
+                  right-0
+                  top-full
+                  z-50
+                  mt-1
+                  w-44
+                  rounded-xl
+                  border
+                  py-1.5
+                  shadow-xl
+                "
                 style={{
-                  borderColor: 'var(--border, #e2e8f0)',
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
                 }}
               >
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => handleLanguageChange(lang.code)}
-                    className={`flex items-center gap-3 px-4 py-2 w-full text-sm transition-colors ${
-                      activeLang.code === lang.code
-                        ? 'text-blue-600 bg-blue-50 font-medium'
-                        : 'text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{lang.flag}</span>
+                {languages.map((lang) => {
+                  const isActive = activeLang.code === lang.code;
 
-                    {lang.label}
-                  </button>
-                ))}
+                  return (
+                    <button
+                      key={lang.code}
+                      type="button"
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className="
+                        flex
+                        w-full
+                        items-center
+                        gap-3
+                        px-4
+                        py-2
+                        text-sm
+                        transition-colors
+                        hover:bg-[var(--hover)]
+                        hover:text-[var(--primary)]
+                      "
+                      style={{
+                        color: isActive ? 'var(--primary-text)' : 'var(--text-secondary)',
+                        background: isActive ? 'var(--active)' : undefined,
+                        fontWeight: isActive ? 500 : undefined,
+                      }}
+                    >
+                      <span>{lang.flag}</span>
+
+                      <span>{lang.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
 
           <button
+            type="button"
             onClick={() => setSearchOpen(!searchOpen)}
-            className="p-2 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors"
+            className="
+              rounded-lg
+              p-2
+              transition-colors
+              hover:bg-[var(--hover)]
+              hover:text-[var(--primary)]
+            "
+            style={{
+              color: 'var(--text)',
+            }}
+            aria-label="Tìm kiếm"
           >
             <Search size={18} />
           </button>
 
           <Link
             href={getLocalizedPath('/lien-he')}
-            className="hidden md:flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="
+              hidden
+              items-center
+              rounded-lg
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              transition-colors
+              hover:bg-[var(--primary-hover)]
+              md:flex
+            "
             style={{
-              background: 'var(--primary, #2563eb)',
+              background: 'var(--primary)',
+              color: 'white',
             }}
           >
             Liên hệ ngay
           </Link>
 
           <button
-            className="lg:hidden p-2 rounded-lg text-slate-500"
+            type="button"
+            className="
+              rounded-lg
+              p-2
+              transition-colors
+              hover:bg-[var(--hover)]
+              hover:text-[var(--primary)]
+              lg:hidden
+            "
+            style={{
+              color: 'var(--text)',
+            }}
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu'}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -336,18 +484,45 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
       {searchOpen && (
         <div
-          className="border-t px-6 py-3 bg-slate-50/50"
+          className="
+            border-t
+            px-6
+            py-3
+          "
           style={{
-            borderColor: 'var(--border, #e2e8f0)',
+            background: 'var(--surface-secondary)',
+            borderColor: 'var(--border)',
           }}
         >
-          <div className="flex items-center gap-3 max-w-xl mx-auto">
-            <Search size={18} className="text-slate-400" />
+          <div
+            className="
+              mx-auto
+              flex
+              max-w-xl
+              items-center
+              gap-3
+            "
+          >
+            <Search
+              size={18}
+              style={{
+                color: 'var(--text-muted)',
+              }}
+            />
 
             <input
               autoFocus
               placeholder="Tìm kiếm bài viết, dự án..."
-              className="flex-1 text-sm bg-transparent outline-none text-slate-700 placeholder:text-slate-400"
+              className="
+                flex-1
+                bg-transparent
+                text-sm
+                outline-none
+                placeholder:text-[var(--text-placeholder)]
+              "
+              style={{
+                color: 'var(--text)',
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   setSearchOpen(false);
@@ -356,8 +531,19 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             />
 
             <button
+              type="button"
               onClick={() => setSearchOpen(false)}
-              className="text-slate-400 hover:text-slate-700 p-1"
+              className="
+                rounded-lg
+                p-1
+                transition-colors
+                hover:bg-[var(--hover)]
+                hover:text-[var(--primary)]
+              "
+              style={{
+                color: 'var(--text-muted)',
+              }}
+              aria-label="Đóng tìm kiếm"
             >
               <X size={16} />
             </button>
@@ -367,9 +553,16 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
       {mobileOpen && (
         <div
-          className="lg:hidden border-t px-4 py-3 bg-white space-y-1"
+          className="
+            space-y-1
+            border-t
+            px-4
+            py-3
+            lg:hidden
+          "
           style={{
-            borderColor: 'var(--border, #e2e8f0)',
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
           }}
         >
           {!loading &&

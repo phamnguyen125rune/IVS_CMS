@@ -32,3 +32,7 @@ npm run dev
 | `npm run lint`     | Kiểm tra ESLint                         |
 | `npm run lint:fix` | Tự động sửa lỗi lint                    |
 | `npm run format`   | Format code bằng Prettier               |
+
+## Lệnh lấy cấu trúc thư mục
+
+tree src\app /F /A > app-tree.txt

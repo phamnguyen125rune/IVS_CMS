@@ -8,6 +8,7 @@ import { Bell, Globe, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 import AdminSidebar from '@/components/layout/admin/AdminSidebar';
 import AdminFooter from '@/components/layout/admin/AdminFooter';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -16,89 +17,181 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const language = typeof params?.language === 'string' ? params.language : 'vi';
 
+  const toggleSidebar = () => {
+    setSidebarOpen((current) => !current);
+  };
+
   return (
-    <div className="flex h-screen bg-slate-50 font-['Plus_Jakarta_Sans'] overflow-hidden">
+    <div
+      className="
+        flex
+        h-screen
+        overflow-hidden
+        font-['Plus_Jakarta_Sans']
+      "
+      style={{
+        background: 'var(--surface-secondary)',
+        color: 'var(--text)',
+      }}
+    >
       {/* ========================================
           SIDEBAR
       ======================================== */}
 
-      <AdminSidebar sidebarOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <AdminSidebar sidebarOpen={sidebarOpen} onToggle={toggleSidebar} />
 
       {/* ========================================
           MAIN AREA
       ======================================== */}
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+      <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* ======================================
             HEADER
         ====================================== */}
 
-        <header className="h-16 shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 z-10">
-          {/* Left */}
+        <header
+          className="
+            z-10
+            flex
+            h-16
+            shrink-0
+            items-center
+            justify-between
+            px-4
+            lg:px-8
+          "
+          style={{
+            background: 'var(--surface)',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          {/* ==================================
+              LEFT
+          ================================== */}
+
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
+              type="button"
+              onClick={toggleSidebar}
               className="
-                p-2
                 rounded-lg
-                text-slate-500
-                hover:bg-slate-100
+                p-2
                 transition-colors
+                hover:bg-[var(--hover)]
+                hover:text-[var(--primary)]
               "
+              style={{
+                color: 'var(--text)',
+              }}
+              aria-label={sidebarOpen ? 'Thu gọn sidebar' : 'Mở rộng sidebar'}
             >
               {sidebarOpen ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
             </button>
           </div>
 
-          {/* Right */}
+          {/* ==================================
+              RIGHT
+          ================================== */}
+
           <div className="flex items-center gap-4">
-            {/* Notification */}
+            {/* ==============================
+                THEME TOGGLE
+            ============================== */}
+
+            <ThemeToggle />
+
+            {/* ==============================
+                NOTIFICATION
+            ============================== */}
+
             <button
+              type="button"
               className="
-                p-2
-                rounded-full
-                text-slate-500
-                hover:bg-slate-100
                 relative
+                rounded-full
+                p-2
                 transition-colors
+                hover:bg-[var(--hover)]
+                hover:text-[var(--primary)]
               "
+              style={{
+                color: 'var(--text)',
+              }}
+              aria-label="Thông báo"
             >
               <Bell size={20} />
 
+              {/* Notification indicator
+                  Decorative color - giữ nguyên */}
               <span
                 className="
                   absolute
-                  top-1
                   right-1.5
-                  w-2
+                  top-1
                   h-2
-                  bg-red-500
+                  w-2
                   rounded-full
                   border-2
-                  border-white
+                  bg-red-500
                 "
+                style={{
+                  borderColor: 'var(--surface)',
+                }}
               />
             </button>
 
-            {/* User */}
-            <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-slate-700">Nguyễn Văn A</p>
+            {/* ==============================
+                USER
+            ============================== */}
 
-                <p className="text-xs text-slate-500">Quản trị viên</p>
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+                border-l
+                pl-4
+              "
+              style={{
+                borderLeftColor: 'var(--border)',
+              }}
+            >
+              {/* User information */}
+
+              <div className="hidden text-right sm:block">
+                <p
+                  className="text-sm font-semibold"
+                  style={{
+                    color: 'var(--text)',
+                  }}
+                >
+                  Nguyễn Văn A
+                </p>
+
+                <p
+                  className="text-xs"
+                  style={{
+                    color: 'var(--text-secondary)',
+                  }}
+                >
+                  Quản trị viên
+                </p>
               </div>
 
+              {/* Avatar
+                  Decorative / identity color - giữ nguyên */}
               <div
                 className="
-                  w-9 h-9
-                  shrink-0
-                  rounded-full
-                  bg-blue-100
-                  text-blue-700
                   flex
+                  h-9
+                  w-9
+                  shrink-0
                   items-center
                   justify-center
+                  rounded-full
+                  bg-blue-100
                   font-bold
+                  text-blue-700
                 "
               >
                 A
@@ -111,7 +204,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             CONTENT
         ====================================== */}
 
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-8">{children}</main>
+        <main
+          className="
+            flex-1
+            overflow-y-auto
+            p-4
+            lg:p-8
+          "
+          style={{
+            background: 'var(--surface-secondary)',
+          }}
+        >
+          {children}
+        </main>
 
         {/* ======================================
             FOOTER
@@ -126,26 +231,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link
           href={`/${language}`}
           target="_blank"
+          rel="noopener noreferrer"
           className="
             fixed
             bottom-6
             right-6
-            bg-blue-600
-            hover:bg-blue-700
-            text-white
-            px-5
-            py-3
-            rounded-full
-            shadow-lg
-            shadow-blue-600/30
+            z-40
             flex
             items-center
             gap-2
+            rounded-full
+            px-5
+            py-3
             font-medium
-            transition-transform
+            shadow-lg
+            transition-all
             hover:-translate-y-1
-            z-40
+            hover:bg-[var(--primary-hover)]
           "
+          style={{
+            background: 'var(--primary)',
+            color: 'var(--primary-foreground)',
+            boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--primary) 30%, transparent)',
+          }}
         >
           <Globe size={20} />
 

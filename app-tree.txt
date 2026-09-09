@@ -1,5 +1,5 @@
 Folder PATH listing for volume New Volume
-Volume serial number is 000001EC 14E4:3E14
+Volume serial number is 00000235 14E4:3E14
 D:\SOURCE\REPOS\IVS_CMS\SRC\APP
 |   favicon.ico
 |   globals.css
@@ -37,7 +37,6 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
 |                   
 \---[language]
     |   layout.tsx
-    |   page.tsx
     |   
     +---(admin)
     |   |   layout.tsx
@@ -101,6 +100,7 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
     |           
     +---(client)
     |   |   layout.tsx
+    |   |   page.tsx
     |   |   
     |   +---about
     |   |       page.tsx

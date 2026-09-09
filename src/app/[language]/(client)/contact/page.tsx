@@ -1,3 +1,5 @@
-﻿export default function Contact() {
-  return <div>Trang liên hệ đang cập nhật...</div>;
+﻿import Contact from '@/components/mock-cms/client/Contact';
+
+export default function ContactPage() {
+  return <Contact />;
 }

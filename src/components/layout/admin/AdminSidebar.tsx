@@ -64,11 +64,6 @@ const navItems = [
     path: '/admin/bieu-mau',
   },
   {
-    label: 'Quản lý Liên hệ',
-    icon: Mail,
-    path: '/admin-contact',
-  },
-  {
     label: 'Cài đặt',
     icon: Settings,
     path: '/admin/cai-dat',
@@ -94,36 +89,75 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
     <>
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div onClick={onToggle} className="fixed inset-0 bg-slate-900/50 z-20 lg:hidden" />
+        <div onClick={onToggle} className="fixed inset-0 z-20 bg-slate-900/50 lg:hidden" />
       )}
 
       <aside
         className={`
-          flex flex-col
-          bg-slate-900
-          text-slate-300
-          transition-all duration-300
           z-30
+          flex
           shrink-0
+          flex-col
           overflow-hidden
           whitespace-nowrap
+          transition-all
+          duration-300
 
           ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'}
         `}
+        style={{
+          background: 'var(--dark-background)',
+          color: 'var(--dark-text-secondary)',
+        }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-6 h-16 bg-slate-950/50 shrink-0">
-          <div className="w-8 h-8 shrink-0 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+        <div
+          className="
+            flex
+            h-16
+            shrink-0
+            items-center
+            gap-3
+            px-6
+          "
+          style={{
+            background: 'var(--dark-surface)',
+          }}
+        >
+          <div
+            className="
+              flex
+              h-8
+              w-8
+              shrink-0
+              items-center
+              justify-center
+              rounded-lg
+              text-sm
+              font-bold
+            "
+            style={{
+              background: 'var(--primary)',
+              color: 'var(--primary-foreground)',
+            }}
+          >
             C
           </div>
 
           {sidebarOpen && (
-            <span className="font-bold text-white text-lg tracking-tight">CMS Admin</span>
+            <span
+              className="text-lg font-bold tracking-tight"
+              style={{
+                color: 'var(--dark-text)',
+              }}
+            >
+              CMS Admin
+            </span>
           )}
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
           {navItems.map((item) => {
             const href = localizePath(item.path, language);
 
@@ -134,19 +168,23 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
                 key={item.path}
                 href={href}
                 title={!sidebarOpen ? item.label : undefined}
-                className={`
-                  flex items-center gap-3
-                  px-4 py-3
+                className="
+                  flex
+                  items-center
+                  gap-3
                   rounded-xl
-                  text-sm font-medium
+                  px-4
+                  py-3
+                  text-sm
+                  font-medium
                   transition-all
-
-                  ${
-                    isActive
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-900/20'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                  }
-                `}
+                  hover:text-[var(--dark-text)]
+                "
+                style={{
+                  background: isActive ? 'var(--primary)' : undefined,
+                  color: isActive ? 'var(--primary-foreground)' : 'var(--dark-text-secondary)',
+                  boxShadow: isActive ? '0 4px 6px -1px rgb(30 58 138 / 0.2)' : undefined,
+                }}
               >
                 <item.icon size={20} className="shrink-0" />
 
@@ -157,21 +195,33 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
         </nav>
 
         {/* Logout */}
-        <div className="p-4 border-t border-slate-800">
+        <div
+          className="border-t p-4"
+          style={{
+            borderColor: 'var(--dark-border)',
+          }}
+        >
           <button
+            type="button"
             onClick={handleLogout}
             title={!sidebarOpen ? 'Đăng xuất' : undefined}
             className="
-              flex items-center gap-3
-              px-4 py-3
+              flex
               w-full
+              items-center
+              gap-3
               rounded-xl
-              text-sm font-medium
-              text-slate-400
-              hover:text-white
-              hover:bg-slate-800
+              px-4
+              py-3
+              text-sm
+              font-medium
               transition-all
+              hover:bg-[var(--dark-surface)]
+              hover:text-[var(--dark-text)]
             "
+            style={{
+              color: 'var(--dark-text-secondary)',
+            }}
           >
             <LogOut size={20} className="shrink-0" />
 

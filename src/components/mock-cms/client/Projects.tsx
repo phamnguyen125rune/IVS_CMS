@@ -186,90 +186,145 @@ export default function Projects() {
   const [page, setPage] = useState(1);
 
   const filtered = projects.filter((p) => activeFilter === 'Tất cả' || p.category === activeFilter);
+
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
-    <div>
-      {/* Hero */}
+    <div style={{ background: 'var(--background)' }}>
+      {/* =========================================================
+          Hero
+          ========================================================= */}
       <section
         className="py-16 lg:py-20"
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
+          background: `linear-gradient(
+            135deg,
+            var(--hero-start) 0%,
+            var(--hero-middle) 100%
+          )`,
         }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">
+          <div
+            className="text-sm font-semibold uppercase tracking-widest mb-3"
+            style={{ color: 'var(--primary)' }}
+          >
             Dịch vụ
           </div>
+
           <h1 className="font-display text-4xl lg:text-5xl font-bold text-white mb-4">
             Những công trình tiêu biểu
           </h1>
-          <p className="text-blue-200 text-lg max-w-2xl">
+
+          <p className="text-lg max-w-2xl" style={{ color: 'var(--dark-text-secondary)' }}>
             Hơn 200 dự án đã hoàn thành cho các doanh nghiệp thuộc nhiều lĩnh vực khác nhau trên
             khắp Việt Nam và khu vực.
           </p>
         </div>
       </section>
 
+      {/* =========================================================
+          Main content
+          ========================================================= */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Filter tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => {
-                setActiveFilter(cat);
-                setPage(1);
-              }}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                activeFilter === cat
-                  ? 'text-white shadow-md'
-                  : 'text-slate-600 bg-white border hover:bg-slate-50'
-              }`}
-              style={
-                activeFilter === cat
-                  ? { background: 'var(--primary)' }
-                  : { borderColor: 'var(--border)' }
-              }
-            >
-              {cat}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const isActive = activeFilter === cat;
+
+            return (
+              <button
+                key={cat}
+                onClick={() => {
+                  setActiveFilter(cat);
+                  setPage(1);
+                }}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  isActive ? 'text-white shadow-md' : 'border hover:bg-[var(--hover)]'
+                }`}
+                style={
+                  isActive
+                    ? {
+                        background: 'var(--primary)',
+                      }
+                    : {
+                        background: 'var(--surface)',
+                        borderColor: 'var(--border)',
+                        color: 'var(--text-secondary)',
+                      }
+                }
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Grid */}
+        {/* =========================================================
+            Project Grid
+            ========================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {paginated.map((project) => (
             <Link
               key={project.id}
               to={`/du-an/${project.id}`}
-              className="group rounded-2xl overflow-hidden border hover:shadow-xl transition-all duration-300 bg-white cursor-pointer block"
-              style={{ borderColor: 'var(--border)' }}
+              className="group rounded-2xl overflow-hidden border hover:shadow-xl transition-all duration-300 cursor-pointer block"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
             >
-              <div className="relative aspect-video overflow-hidden bg-slate-100">
+              {/* Project image */}
+              <div
+                className="relative aspect-video overflow-hidden"
+                style={{ background: 'var(--surface-tertiary)' }}
+              >
                 <img
                   src={project.image}
                   alt={project.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
+
+                {/* Decorative image overlay - keep original */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                {/* Category badge - decorative */}
                 <span className="absolute top-3 left-3 text-xs font-semibold text-white bg-blue-600/90 backdrop-blur-sm px-2.5 py-1 rounded-full">
                   {project.category}
                 </span>
+
+                {/* Year - decorative */}
                 <span className="absolute top-3 right-3 text-xs text-white/80 font-mono">
                   {project.year}
                 </span>
               </div>
+
+              {/* Project information */}
               <div className="p-4">
-                <h3 className="font-display font-semibold text-slate-900 text-sm leading-snug mb-1 group-hover:text-blue-600 transition-colors">
+                <h3
+                  className="font-display font-semibold text-sm leading-snug mb-1 group-hover:text-[var(--primary)] transition-colors"
+                  style={{ color: 'var(--text)' }}
+                >
                   {project.title}
                 </h3>
-                <p className="text-xs text-slate-400 mb-2">{project.client}</p>
-                <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+
+                <p className="text-xs mb-2" style={{ color: 'var(--text-placeholder)' }}>
+                  {project.client}
+                </p>
+
+                <p
+                  className="text-xs leading-relaxed line-clamp-2"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   {project.desc}
                 </p>
-                <div className="mt-3 flex items-center gap-1 text-xs font-medium text-blue-600 group-hover:gap-2 transition-all">
+
+                <div
+                  className="mt-3 flex items-center gap-1 text-xs font-medium group-hover:gap-2 transition-all"
+                  style={{ color: 'var(--primary)' }}
+                >
                   Xem chi tiết <ArrowRight size={12} />
                 </div>
               </div>
@@ -277,46 +332,80 @@ export default function Projects() {
           ))}
         </div>
 
-        {/* Pagination */}
+        {/* =========================================================
+            Pagination
+            ========================================================= */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-10">
+            {/* Previous */}
             <button
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
-              className="w-9 h-9 rounded-xl border flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-30"
-              style={{ borderColor: 'var(--border)' }}
+              className="w-9 h-9 rounded-xl border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--hover)] transition-colors"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--text-secondary)',
+                background: 'var(--surface)',
+              }}
             >
               <ChevronLeft size={16} />
             </button>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i + 1)}
-                className={`w-9 h-9 rounded-xl text-sm font-medium transition-all ${
-                  page === i + 1 ? 'text-white' : 'border text-slate-600 hover:bg-slate-50'
-                }`}
-                style={
-                  page === i + 1
-                    ? { background: 'var(--primary)' }
-                    : { borderColor: 'var(--border)' }
-                }
-              >
-                {i + 1}
-              </button>
-            ))}
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }).map((_, i) => {
+              const pageNumber = i + 1;
+              const isActive = page === pageNumber;
+
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setPage(pageNumber)}
+                  className={`w-9 h-9 rounded-xl text-sm font-medium transition-all ${
+                    isActive ? 'text-white' : 'border hover:bg-[var(--hover)]'
+                  }`}
+                  style={
+                    isActive
+                      ? {
+                          background: 'var(--primary)',
+                        }
+                      : {
+                          background: 'var(--surface)',
+                          borderColor: 'var(--border)',
+                          color: 'var(--text-secondary)',
+                        }
+                  }
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+
+            {/* Next */}
             <button
               onClick={() => setPage(Math.min(totalPages, page + 1))}
               disabled={page === totalPages}
-              className="w-9 h-9 rounded-xl border flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-30"
-              style={{ borderColor: 'var(--border)' }}
+              className="w-9 h-9 rounded-xl border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--hover)] transition-colors"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--text-secondary)',
+                background: 'var(--surface)',
+              }}
             >
               <ChevronRight size={16} />
             </button>
           </div>
         )}
-        <p className="text-center text-xs text-slate-400 mt-3">
-          Hiển thị {(page - 1) * ITEMS_PER_PAGE + 1}–
-          {Math.min(page * ITEMS_PER_PAGE, filtered.length)} trong {filtered.length} dự án
+
+        {/* Pagination info */}
+        <p className="text-center text-xs mt-3" style={{ color: 'var(--text-placeholder)' }}>
+          Hiển thị{' '}
+          {filtered.length > 0
+            ? `${(page - 1) * ITEMS_PER_PAGE + 1}–${Math.min(
+                page * ITEMS_PER_PAGE,
+                filtered.length
+              )}`
+            : '0'}{' '}
+          trong {filtered.length} dự án
         </p>
       </div>
     </div>
