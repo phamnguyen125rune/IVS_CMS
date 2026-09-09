@@ -4,7 +4,7 @@ import { Search, Grid3X3, List, X } from 'lucide-react';
 
 import { useState } from 'react';
 
-import { ViewMode } from '@/types/media/media';
+import { ViewMode } from '@/types/media.type';
 
 import '@/components/layout/admin/media_styles/MediaToolbar.css';
 

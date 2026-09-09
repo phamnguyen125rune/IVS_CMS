@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 import '@/components/layout/admin/media_styles/ExcelPreview.css';
 
 interface ExcelSheet {

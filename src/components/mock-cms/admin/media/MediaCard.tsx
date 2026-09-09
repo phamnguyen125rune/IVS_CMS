@@ -2,7 +2,7 @@
 
 import { Download, Eye, Trash2 } from 'lucide-react';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 
 import {
   getFileName,

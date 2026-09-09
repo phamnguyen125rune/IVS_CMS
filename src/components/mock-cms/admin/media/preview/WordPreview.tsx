@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { renderAsync } from 'docx-preview';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 
 import '@/components/layout/admin/media_styles/WordPreview.css';
 

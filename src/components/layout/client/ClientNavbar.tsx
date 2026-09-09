@@ -7,49 +7,19 @@ import { Search, ChevronDown, Globe, Share2, ExternalLink, Menu, X } from 'lucid
 
 import ThemeToggle from '@/components/theme/ThemeToggle';
 
-const navLinks = [
-  { label: 'Trang chủ', path: '' },
-
-  { label: 'Giới thiệu', path: '/gioi-thieu' },
-
-  {
-    label: 'Bài viết',
-    path: '/bai-viet',
-    children: [
-      { label: 'Tất cả bài viết', path: '/bai-viet' },
-      {
-        label: 'Tin tức công ty',
-        path: '/bai-viet?danh-muc=tin-tuc',
-      },
-      {
-        label: 'Kiến thức chuyên ngành',
-        path: '/bai-viet?danh-muc=kien-thuc',
-      },
-    ],
-  },
-
-  {
-    label: 'Dự án',
-    path: '/du-an',
-    children: [
-      { label: 'Tất cả dự án', path: '/du-an' },
-      {
-        label: 'Dự án nổi bật',
-        path: '/du-an?loai=noi-bat',
-      },
-      {
-        label: 'Đã hoàn thành',
-        path: '/du-an?loai=hoan-thanh',
-      },
-    ],
-  },
-
-  { label: 'Khách hàng', path: '/khach-hang' },
-
-  { label: 'Tuyển dụng', path: '/tuyen-dung' },
-
-  { label: 'Liên hệ', path: '/lien-he' },
-];
+interface MenuItem {
+  menuId: number;
+  parentId: number | null;
+  title: string;
+  url: string;
+  displayOrder: number;
+  level: number;
+  visible: boolean;
+  createdAt?: string;
+  createdBy?: number;
+  updatedAt?: string;
+  updatedBy?: number;
+}
 
 const languages = [
   {
@@ -77,14 +47,61 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const [menus, setMenus] = useState<MenuItem[]>([]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const dropdownTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const activeLang = languages.find((lang) => lang.code === language) || languages[0];
+
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch('/api/v1/menus', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`Không thể lấy menu: ${response.status}`);
+        }
+
+        const data: MenuItem[] = await response.json();
+
+        setMenus(
+          data.filter((menu) => menu.visible).sort((a, b) => a.displayOrder - b.displayOrder)
+        );
+      } catch (error) {
+        console.error('Fetch menu error:', error);
+        setMenus([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenus();
+
+    const channel = new BroadcastChannel('menu-updated');
+
+    channel.onmessage = (event) => {
+      if (event.data?.type === 'updated') {
+        fetchMenus();
+      }
+    };
+
+    return () => {
+      channel.close();
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -94,31 +111,36 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
     };
   }, []);
 
-  /*
-   * Tạo URL có prefix language
-   *
-   * Ví dụ:
-   * /gioi-thieu
-   *
-   * =>
-   *
-   * /vi/gioi-thieu
-   */
   const getLocalizedPath = (path: string) => {
+    if (!path) {
+      return `/${language}`;
+    }
+
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
 
-    return `/${language}${cleanPath === '/' ? '' : cleanPath}`;
+    return `/${language}${cleanPath}`;
   };
 
-  /*
-   * Đổi ngôn ngữ nhưng giữ nguyên trang hiện tại
-   *
-   * /vi/gioi-thieu
-   *
-   * =>
-   *
-   * /en/gioi-thieu
-   */
+  const rootMenus = menus
+    .filter((menu) => menu.parentId === null)
+    .sort((a, b) => a.displayOrder - b.displayOrder);
+
+  const getChildren = (parentId: number) => {
+    return menus
+      .filter((menu) => menu.parentId === parentId)
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+  };
+
+  const isMenuActive = (menu: MenuItem) => {
+    const fullPath = getLocalizedPath(menu.url);
+
+    if (menu.url === '/' || menu.url === '') {
+      return pathname === `/${language}` || pathname === `/${language}/`;
+    }
+
+    return pathname === fullPath || pathname.startsWith(`${fullPath}/`);
+  };
+
   const handleLanguageChange = (newLangCode: string) => {
     const segments = pathname.split('/');
 
@@ -129,6 +151,15 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
     router.push(newPath);
 
     setLangOpen(false);
+    setMobileOpen(false);
+  };
+
+  const closeDropdown = () => {
+    if (dropdownTimer.current) {
+      clearTimeout(dropdownTimer.current);
+    }
+
+    setOpenDropdown(null);
   };
 
   return (
@@ -138,10 +169,6 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
         borderColor: 'var(--border, #e2e8f0)',
       }}
     >
-      {/* =====================================================
-          TOP BAR
-      ====================================================== */}
-
       <div
         className="hidden md:flex items-center justify-end px-6 py-1.5 text-xs text-slate-500 border-b"
         style={{
@@ -160,13 +187,7 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
         </div>
       </div>
 
-      {/* =====================================================
-          MAIN NAVBAR
-      ====================================================== */}
-
       <div className="flex items-center justify-between px-6 py-3">
-        {/* Logo */}
-
         <Link href={getLocalizedPath('/')} className="flex items-center gap-2.5">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
@@ -180,85 +201,71 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
           <span className="font-display font-bold text-slate-900 text-lg">CMS</span>
         </Link>
 
-        {/* =================================================
-            DESKTOP NAVIGATION
-        ================================================== */}
-
         <nav className="hidden lg:flex items-center gap-1">
-          {navLinks.map((link) => {
-            const fullPath = getLocalizedPath(link.path);
+          {!loading &&
+            rootMenus.map((menu) => {
+              const children = getChildren(menu.menuId);
+              const fullPath = getLocalizedPath(menu.url);
+              const isActive = isMenuActive(menu);
 
-            const isActive =
-              link.path === ''
-                ? pathname === `/${language}` || pathname === `/${language}/`
-                : pathname.startsWith(fullPath);
+              return (
+                <div
+                  key={menu.menuId}
+                  className="relative"
+                  onMouseEnter={() => {
+                    if (dropdownTimer.current) {
+                      clearTimeout(dropdownTimer.current);
+                    }
 
-            return (
-              <div
-                key={link.path}
-                className="relative"
-                onMouseEnter={() => {
-                  if (dropdownTimer.current) {
-                    clearTimeout(dropdownTimer.current);
-                  }
-
-                  setOpenDropdown(link.label);
-                }}
-                onMouseLeave={() => {
-                  dropdownTimer.current = setTimeout(() => {
-                    setOpenDropdown(null);
-                  }, 150);
-                }}
-              >
-                <Link
-                  href={fullPath}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-blue-600 font-semibold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                  }`}
+                    if (children.length > 0) {
+                      setOpenDropdown(menu.menuId);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    dropdownTimer.current = setTimeout(() => {
+                      setOpenDropdown(null);
+                    }, 150);
+                  }}
                 >
-                  {link.label}
-
-                  {link.children && <ChevronDown size={13} className="text-slate-400" />}
-                </Link>
-
-                {/* Dropdown */}
-
-                {link.children && openDropdown === link.label && (
-                  <div
-                    className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border py-1.5 w-52 z-50"
-                    style={{
-                      borderColor: 'var(--border, #e2e8f0)',
-                    }}
+                  <Link
+                    href={fullPath}
+                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'text-blue-600 font-semibold'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
                   >
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.path}
-                        href={getLocalizedPath(child.path)}
-                        onClick={() => setOpenDropdown(null)}
-                        className="block px-4 py-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    {menu.title}
+
+                    {children.length > 0 && <ChevronDown size={13} className="text-slate-400" />}
+                  </Link>
+
+                  {children.length > 0 && openDropdown === menu.menuId && (
+                    <div
+                      className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border py-1.5 w-52 z-50"
+                      style={{
+                        borderColor: 'var(--border, #e2e8f0)',
+                      }}
+                    >
+                      {children.map((child) => (
+                        <Link
+                          key={child.menuId}
+                          href={getLocalizedPath(child.url)}
+                          onClick={closeDropdown}
+                          className="block px-4 py-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                        >
+                          {child.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </nav>
 
-        {/* =================================================
-            RIGHT SIDE
-        ================================================== */}
-
         <div className="flex items-center gap-2">
-          {/* Theme */}
-
           <ThemeToggle />
-
-          {/* Language */}
 
           <div className="relative">
             <button
@@ -301,16 +308,12 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             )}
           </div>
 
-          {/* Search */}
-
           <button
             onClick={() => setSearchOpen(!searchOpen)}
             className="p-2 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors"
           >
             <Search size={18} />
           </button>
-
-          {/* CTA */}
 
           <Link
             href={getLocalizedPath('/lien-he')}
@@ -322,8 +325,6 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             Liên hệ ngay
           </Link>
 
-          {/* Mobile */}
-
           <button
             className="lg:hidden p-2 rounded-lg text-slate-500"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -332,10 +333,6 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
           </button>
         </div>
       </div>
-
-      {/* =====================================================
-          SEARCH
-      ====================================================== */}
 
       {searchOpen && (
         <div
@@ -368,10 +365,6 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
         </div>
       )}
 
-      {/* =====================================================
-          MOBILE MENU
-      ====================================================== */}
-
       {mobileOpen && (
         <div
           className="lg:hidden border-t px-4 py-3 bg-white space-y-1"
@@ -379,43 +372,43 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             borderColor: 'var(--border, #e2e8f0)',
           }}
         >
-          {navLinks.map((link) => {
-            const fullPath = getLocalizedPath(link.path);
+          {!loading &&
+            rootMenus.map((menu) => {
+              const children = getChildren(menu.menuId);
+              const fullPath = getLocalizedPath(menu.url);
+              const isActive = isMenuActive(menu);
 
-            const isActive =
-              link.path === '' ? pathname === `/${language}` : pathname.startsWith(fullPath);
+              return (
+                <div key={menu.menuId}>
+                  <Link
+                    href={fullPath}
+                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                      isActive
+                        ? 'text-blue-600 bg-blue-50 font-semibold'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {menu.title}
+                  </Link>
 
-            return (
-              <div key={link.path}>
-                <Link
-                  href={fullPath}
-                  className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
-                    isActive
-                      ? 'text-blue-600 bg-blue-50 font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
-
-                {link.children && (
-                  <div className="pl-4 space-y-1 my-1 border-l-2 border-slate-100 ml-3">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.path}
-                        href={getLocalizedPath(child.path)}
-                        onClick={() => setMobileOpen(false)}
-                        className="block px-3 py-1.5 rounded-md text-xs text-slate-500 hover:text-blue-600 hover:bg-slate-50"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  {children.length > 0 && (
+                    <div className="pl-4 space-y-1 my-1 border-l-2 border-slate-100 ml-3">
+                      {children.map((child) => (
+                        <Link
+                          key={child.menuId}
+                          href={getLocalizedPath(child.url)}
+                          onClick={() => setMobileOpen(false)}
+                          className="block px-3 py-1.5 rounded-md text-xs text-slate-500 hover:text-blue-600 hover:bg-slate-50"
+                        >
+                          {child.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
       )}
     </header>

@@ -1,0 +1,21 @@
+.menu-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.menu-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.menu-form-wrapper {
+  width: 100%;
+}
+
+.menu-card {
+  width: 100%;
+  box-sizing: border-box;
+}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { Media } from '@/types/media/media';
+import { Media } from '@/types/media.type';
 
 import '@/components/layout/admin/media_styles/PdfPreview.css';
 
