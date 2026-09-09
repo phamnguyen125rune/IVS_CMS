@@ -74,7 +74,23 @@ export interface ResUserDTO {
   createdBy?: string;
   updatedAt?: string;
   updatedBy?: string;
-} // ----------------------------
+  deletedAt?: string;
+  deletedBy?: string;
+}
+
+export interface UserCreatePayload {
+  fullname?: string;
+  email: string;
+  phone?: string;
+  age?: number;
+  address?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  avatarUrl?: string;
+  roleId?: number;
+}
+
+// ----------------------------
 // Role (Nhóm người dùng)
 // ----------------------------
 export interface RoleUser2 {
