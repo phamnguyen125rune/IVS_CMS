@@ -1,134 +1,170 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  EyeOff,
+  Globe,
+  Image as ImageIcon,
+  Plus,
+  Search,
+  Send,
+  Trash2,
+} from 'lucide-react';
+
 import { useLocalizedNavigate as useNavigate } from '@/components/navigation/LocalizedLink';
-import { Search, Plus, Edit, Trash2, Image as ImageIcon, ChevronLeft, ChevronRight, Globe, Send, EyeOff } from 'lucide-react';
 import { postService } from '@/services/post.service';
-import { ResPostListDTO, PostStatus } from '@/types/post.type';
+import type { PostStatus, ResPostListDTO } from '@/types/post.type';
 
-const STATUS_MAP: Record<string, PostStatus | ''> = {
-  'Tất cả': '',
-  'Xuất bản': 'PUBLISHED',
-  'Đã duyệt': 'APPROVED',
-  'Chờ duyệt': 'PENDING',
-  'Bản nháp': 'DRAFT',
-  'Từ chối': 'REJECTED',
-  'Ngừng xuất bản': 'UNPUBLISHED',
-  'Đã xóa': 'DELETED',
-};
+const STATUS_OPTIONS: Array<{ value: PostStatus | ''; label: string }> = [
+  { value: '', label: 'Tất cả' },
+  { value: 'DRAFT', label: 'Bản nháp' },
+  { value: 'PENDING', label: 'Chờ duyệt' },
+  { value: 'APPROVED', label: 'Đã duyệt' },
+  { value: 'REJECTED', label: 'Bị từ chối' },
+  { value: 'PUBLISHED', label: 'Đã xuất bản' },
+  { value: 'UNPUBLISHED', label: 'Ngừng xuất bản' },
+  { value: 'DELETED', label: 'Đã xóa' },
+];
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  PUBLISHED: { label: 'Xuất bản', className: 'bg-blue-100 text-blue-700' },
-  APPROVED: { label: 'Đã duyệt', className: 'bg-emerald-100 text-emerald-700' },
-  PENDING: { label: 'Chờ duyệt', className: 'bg-amber-100 text-amber-700' },
+const STATUS_CONFIG: Record<PostStatus, { label: string; className: string }> = {
   DRAFT: { label: 'Bản nháp', className: 'bg-slate-100 text-slate-600' },
+  PENDING: { label: 'Chờ duyệt', className: 'bg-amber-100 text-amber-700' },
+  APPROVED: { label: 'Đã duyệt', className: 'bg-emerald-100 text-emerald-700' },
   REJECTED: { label: 'Bị từ chối', className: 'bg-red-100 text-red-700' },
-  DELETED: { label: 'Đã xóa', className: 'bg-slate-800 text-white' },
+  PUBLISHED: { label: 'Đã xuất bản', className: 'bg-blue-100 text-blue-700' },
   UNPUBLISHED: { label: 'Ngừng xuất bản', className: 'bg-orange-100 text-orange-700' },
+  DELETED: { label: 'Đã xóa', className: 'bg-slate-800 text-white' },
 };
 
 export default function Posts() {
   const navigate = useNavigate();
-  const [postList, setPostList] = useState<ResPostListDTO[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [busy, setBusy] = useState(false);
   const requestId = useRef(0);
 
+  const [posts, setPosts] = useState<ResPostListDTO[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('Tất cả');
+  const [status, setStatus] = useState<PostStatus | ''>('');
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const pageSize = 10;
   const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [deletePost, setDeletePost] = useState<ResPostListDTO | null>(null);
 
   const fetchPosts = useCallback(async () => {
     const currentRequest = ++requestId.current;
+    setLoading(true);
+    setErrorMessage('');
+
     try {
-      setLoading(true);
-      setErrorMessage('');
-      const res = await postService.getPosts(
+      const response = await postService.getPosts(
         {
-          keyword: search,
-          status: STATUS_MAP[statusFilter],
+          keyword: search.trim() || undefined,
+          status,
         },
         page,
         pageSize
       );
+
       if (currentRequest !== requestId.current) return;
-      setPostList(res.result || []);
-      setTotal(res.meta?.total || 0);
+
+      const pages = response.meta?.pages || 0;
+      if (pages > 0 && page > pages) {
+        setPage(pages);
+        return;
+      }
+
+      setPosts(response.result || []);
+      setTotal(response.meta?.total || 0);
+      setTotalPages(pages);
     } catch (error) {
       if (currentRequest !== requestId.current) return;
+      setPosts([]);
+      setTotal(0);
+      setTotalPages(0);
       setErrorMessage(error instanceof Error ? error.message : 'Không thể tải danh sách bài viết.');
-      setPostList([]);
     } finally {
       if (currentRequest === requestId.current) setLoading(false);
     }
-  }, [search, statusFilter, page, pageSize]);
+  }, [page, search, status]);
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchPosts();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+    const timer = window.setTimeout(fetchPosts, 350);
+    return () => window.clearTimeout(timer);
   }, [fetchPosts]);
 
   const handleDelete = async () => {
-    if (busy || !deletePost) return;
+    if (!deletePost || busy) return;
+
     setBusy(true);
     try {
       await postService.deletePost(deletePost.id);
-      if (postList.length === 1 && page > 1) setPage(page - 1);
+      setDeletePost(null);
+      if (posts.length === 1 && page > 1) setPage((current) => current - 1);
       else await fetchPosts();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Không thể xóa bài viết.');
     } finally {
       setBusy(false);
-      setDeletePost(null);
     }
   };
 
-  const handleAction = async (post: ResPostListDTO, actionType: 'PENDING' | 'PUBLISHED' | 'UNPUBLISHED') => {
+  const handleAction = async (
+    post: ResPostListDTO,
+    action: 'PENDING' | 'PUBLISHED' | 'UNPUBLISHED'
+  ) => {
     if (busy) return;
-    const confirmMsg = actionType === 'PENDING' ? 'Gửi bài viết này đi kiểm duyệt?' : actionType === 'PUBLISHED' ? 'Xuất bản bài viết này ngay?' : 'Ngừng xuất bản bài viết này?';
 
-    if (!confirm(confirmMsg)) return;
+    const message =
+      action === 'PENDING'
+        ? 'Gửi bài viết này đi kiểm duyệt?'
+        : action === 'PUBLISHED'
+          ? 'Xuất bản bài viết này?'
+          : 'Ngừng xuất bản bài viết này?';
+
+    if (!window.confirm(message)) return;
 
     setBusy(true);
+    setErrorMessage('');
     try {
-      if (actionType === 'UNPUBLISHED') {
-        // BE cấm changeStatus cho UNPUBLISHED, phải dùng reviewPost
-        await postService.reviewPost(post.id, { action: 'UNPUBLISHED', comment: 'Tác giả/Admin chủ động gỡ bài' });
+      if (action === 'UNPUBLISHED') {
+        await postService.reviewPost(post.id, {
+          action: 'UNPUBLISHED',
+          comment: 'Ngừng xuất bản từ trang quản lý bài viết',
+        });
       } else {
-        // Các trạng thái khác dùng changeStatus bình thường
-        await postService.changeStatus(post.id, actionType);
+        await postService.changeStatus(post.id, action);
       }
       await fetchPosts();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Lỗi khi thay đổi trạng thái.');
+      setErrorMessage(error instanceof Error ? error.message : 'Không thể thay đổi trạng thái bài viết.');
     } finally {
       setBusy(false);
     }
   };
 
-  const totalPages = Math.ceil(total / pageSize);
+  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
 
   return (
     <div className="p-6 relative">
       {errorMessage && (
-        <div role="alert" className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between">
+        <div role="alert" className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4">
           <span>{errorMessage}</span>
-          <button className="underline font-medium" onClick={() => fetchPosts()}>Tải lại</button>
+          <button className="underline font-medium shrink-0" onClick={fetchPosts}>Tải lại</button>
         </div>
       )}
 
-      {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-xl font-bold text-slate-900">Quản lý bài viết</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Tổng cộng {total} bài viết</p>
+          <p className="text-slate-500 text-sm mt-0.5">{total} bài viết phù hợp bộ lọc</p>
         </div>
         <button
           onClick={() => navigate('/admin/bai-viet/tao-moi')}
@@ -139,172 +175,154 @@ export default function Posts() {
         </button>
       </div>
 
-      {/* FILTERS */}
       <div className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex-1 min-w-48 relative">
+        <div className="flex-1 min-w-56 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Tìm kiếm theo tiêu đề..."
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Tìm theo tiêu đề, slug hoặc tóm tắt..."
             className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
             style={{ borderColor: 'var(--border)' }}
           />
         </div>
-        <div className="flex flex-wrap gap-1">
-          {Object.keys(STATUS_MAP).map((s) => (
+
+        <div className="flex flex-wrap gap-1.5">
+          {STATUS_OPTIONS.map((option) => (
             <button
-              key={s}
-              onClick={() => { setStatusFilter(s); setPage(1); }}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${statusFilter === s ? 'text-white' : 'text-slate-500 hover:bg-slate-100'}`}
-              style={statusFilter === s ? { background: 'var(--primary)' } : {}}
+              key={option.value || 'ALL'}
+              type="button"
+              onClick={() => {
+                setStatus(option.value);
+                setPage(1);
+              }}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                status === option.value ? 'text-white' : 'text-slate-500 hover:bg-slate-100'
+              }`}
+              style={status === option.value ? { background: 'var(--primary)' } : undefined}
             >
-              {s}
+              {option.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* TABLE */}
       <div className="bg-white rounded-xl border overflow-hidden shadow-sm" style={{ borderColor: 'var(--border)' }}>
-        <table className="w-full text-sm table-fixed">
-          <thead>
-            <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[35%]">Bài viết</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Danh mục</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Tác giả</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Thời gian</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">Trạng thái</th>
-              <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="px-5 py-16 text-center text-slate-500">
-                  <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                  Đang tải dữ liệu...
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm table-fixed min-w-[980px]">
+            <thead>
+              <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[35%]">Bài viết</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Danh mục</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Tác giả</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[15%]">Thời gian</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">Trạng thái</th>
+                <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase w-[10%]">Thao tác</th>
               </tr>
-            ) : postList.length > 0 ? (
-              postList.map((post) => {
-                const sc = STATUS_CONFIG[post.status] || { label: post.status, className: 'bg-slate-100 text-slate-700' };
-                return (
-                  <tr key={post.id} className="border-t hover:bg-slate-50 transition-colors" style={{ borderColor: 'var(--border)' }}>
-                    <td className="px-5 py-4 w-full">
-                      <div className="flex items-center gap-3">
-                        {post.featuredMedia ? (
-                          <img src={post.featuredMedia} alt={post.title} className="w-16 h-12 rounded-lg object-cover bg-slate-100 shrink-0 border border-slate-200" />
-                        ) : (
-                          <div className="w-16 h-12 rounded-lg bg-slate-100 shrink-0 border border-slate-200 border-dashed flex items-center justify-center">
-                            <ImageIcon size={16} className="text-slate-300" />
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-5 py-16 text-center text-slate-500">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                    Đang tải dữ liệu...
+                  </td>
+                </tr>
+              ) : posts.length > 0 ? (
+                posts.map((post) => {
+                  const statusConfig = STATUS_CONFIG[post.status];
+                  return (
+                    <tr key={post.id} className="border-t hover:bg-slate-50 transition-colors" style={{ borderColor: 'var(--border)' }}>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          {post.featuredMedia ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={post.featuredMedia} alt={post.title} className="w-16 h-12 rounded-lg object-cover bg-slate-100 shrink-0 border border-slate-200" />
+                          ) : (
+                            <div className="w-16 h-12 rounded-lg bg-slate-100 shrink-0 border border-slate-200 border-dashed flex items-center justify-center">
+                              <ImageIcon size={16} className="text-slate-300" />
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="font-semibold text-slate-800 truncate" title={post.title}>{post.title}</div>
+                            <div className="text-xs text-slate-400 mt-1 truncate" title={post.summary || ''}>{post.summary || 'Không có tóm tắt'}</div>
                           </div>
-                        )}
-                        <div className="min-w-0 flex-1 overflow-hidden">
-                          <div className="font-semibold text-slate-800 truncate block" title={post.title}>{post.title}</div>
-                          <div className="text-xs text-slate-400 mt-1 truncate block" title={post.summary}>{post.summary || 'Không có tóm tắt'}</div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 truncate">
-                      <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200">
-                        {post.category?.name || 'Chung'}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-slate-600 font-medium text-xs truncate">
-                      {post.author?.name || 'Admin System'}
-                    </td>
-                    <td className="px-5 py-4 text-xs whitespace-nowrap">
-                      {post.publishedAt ? (
+                      </td>
+                      <td className="px-5 py-4 truncate">
+                        <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200">
+                          {post.category?.name || 'Chung'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-slate-600 font-medium text-xs truncate">{post.author?.name || 'System'}</td>
+                      <td className="px-5 py-4 text-xs whitespace-nowrap">
                         <div>
-                          <span className="font-semibold text-slate-700">{new Date(post.publishedAt).toLocaleDateString('vi-VN')}</span>
+                          <span className={post.publishedAt ? 'font-semibold text-slate-700' : 'text-slate-400 italic'}>
+                            {post.publishedAt ? `Xuất bản: ${formatDate(post.publishedAt)}` : 'Chưa xuất bản'}
+                          </span>
                           <span className="block text-[11px] text-slate-400 mt-0.5">
-                            Tạo: {post.createdAt ? new Date(post.createdAt).toLocaleDateString('vi-VN') : '---'}
+                            Tạo: {post.createdAt ? formatDate(post.createdAt) : '---'}
                           </span>
                         </div>
-                      ) : (
-                        <div>
-                          <span className="text-slate-400 italic">Chưa xuất bản</span>
-                          <span className="block text-[11px] text-slate-400 mt-0.5">
-                            Tạo: {post.createdAt ? new Date(post.createdAt).toLocaleDateString('vi-VN') : '---'}
-                          </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${statusConfig.className}`}>
+                          {statusConfig.label}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {(post.status === 'DRAFT' || post.status === 'REJECTED') && (
+                            <button disabled={busy} title="Gửi duyệt" onClick={() => handleAction(post, 'PENDING')} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg disabled:opacity-50">
+                              <Send size={16} />
+                            </button>
+                          )}
+                          {post.status === 'APPROVED' && (
+                            <button disabled={busy} title="Xuất bản" onClick={() => handleAction(post, 'PUBLISHED')} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg disabled:opacity-50">
+                              <Globe size={16} />
+                            </button>
+                          )}
+                          {post.status === 'PUBLISHED' && (
+                            <button disabled={busy} title="Ngừng xuất bản" onClick={() => handleAction(post, 'UNPUBLISHED')} className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg disabled:opacity-50">
+                              <EyeOff size={16} />
+                            </button>
+                          )}
+                          <button onClick={() => navigate(`/admin/bai-viet/sua/${post.id}`)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Chỉnh sửa">
+                            <Edit size={16} />
+                          </button>
+                          <button onClick={() => setDeletePost(post)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Xóa bài viết">
+                            <Trash2 size={16} />
+                          </button>
                         </div>
-                      )}
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${sc.className}`}>
-                        {sc.label}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {['DRAFT', 'REJECTED'].includes(post.status) && (
-                          <button disabled={busy} title="Gửi duyệt" onClick={() => handleAction(post, 'PENDING')} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg">
-                            <Send size={16} />
-                          </button>
-                        )}
-                        {post.status === 'APPROVED' && (
-                          <button disabled={busy} title="Xuất bản" onClick={() => handleAction(post, 'PUBLISHED')} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg">
-                            <Globe size={16} />
-                          </button>
-                        )}
-                        {post.status === 'PUBLISHED' && (
-                          <button disabled={busy} title="Ngừng xuất bản" onClick={() => handleAction(post, 'UNPUBLISHED')} className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg">
-                            <EyeOff size={16} />
-                          </button>
-                        )}
-                        <button onClick={() => navigate(`/admin/bai-viet/sua/${post.id}`)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Chỉnh sửa">
-                          <Edit size={16} />
-                        </button>
-                        <button onClick={() => setDeletePost(post)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Xóa bài viết">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={6} className="px-5 py-12 text-center text-slate-500">Không tìm thấy bài viết nào phù hợp</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">Không tìm thấy bài viết nào phù hợp</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-        {/* PAGINATION */}
         {!loading && total > 0 && (
-          <div className="flex items-center justify-between px-5 py-4 border-t bg-slate-50" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-t bg-slate-50" style={{ borderColor: 'var(--border)' }}>
             <div className="text-xs text-slate-500">
-              Hiển thị <span className="font-semibold text-slate-700">{Math.min((page - 1) * pageSize + 1, total)}</span> - <span className="font-semibold text-slate-700">{Math.min(page * pageSize, total)}</span> trong <span className="font-semibold text-slate-700">{total}</span> bài viết
+              Hiển thị <span className="font-semibold text-slate-700">{from}</span> - <span className="font-semibold text-slate-700">{to}</span> trong <span className="font-semibold text-slate-700">{total}</span> bài viết
             </div>
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-transparent"
-                style={{ borderColor: 'var(--border)' }}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <span className="text-xs font-medium text-slate-600 px-2">Trang {page} / {totalPages}</span>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages || totalPages === 0}
-                className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-transparent"
-                style={{ borderColor: 'var(--border)' }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
+            <Pagination current={page} total={totalPages} onChange={setPage} />
           </div>
         )}
       </div>
 
-      {/* MODAL: DELETE */}
       {deletePost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setDeletePost(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center" onClick={(event) => event.stopPropagation()}>
             <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
               <Trash2 size={24} />
             </div>
@@ -317,7 +335,7 @@ export default function Posts() {
               <button onClick={() => setDeletePost(null)} className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors w-full" style={{ borderColor: 'var(--border)' }}>
                 Hủy
               </button>
-              <button onClick={handleDelete} className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold bg-red-500 hover:bg-red-600 shadow-sm shadow-red-500/30 transition-colors w-full">
+              <button disabled={busy} onClick={handleDelete} className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold bg-red-500 hover:bg-red-600 shadow-sm transition-colors w-full disabled:opacity-50">
                 Xác nhận
               </button>
             </div>
@@ -326,4 +344,70 @@ export default function Posts() {
       )}
     </div>
   );
+}
+
+function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (page: number) => void }) {
+  if (total <= 1) return null;
+  const items = paginationItems(current, total);
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(1, current - 1))}
+        disabled={current === 1}
+        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ borderColor: 'var(--border)' }}
+        aria-label="Trang trước"
+      >
+        <ChevronLeft size={16} />
+      </button>
+
+      {items.map((item, index) =>
+        item === 'ellipsis' ? (
+          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">…</span>
+        ) : (
+          <button
+            type="button"
+            key={item}
+            onClick={() => onChange(item)}
+            className={`min-w-8 h-8 px-2 rounded-lg text-xs font-semibold border transition-colors ${
+              current === item ? 'text-white border-transparent' : 'text-slate-600 bg-white hover:text-blue-600'
+            }`}
+            style={current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }}
+            aria-current={current === item ? 'page' : undefined}
+          >
+            {item}
+          </button>
+        )
+      )}
+
+      <button
+        type="button"
+        onClick={() => onChange(Math.min(total, current + 1))}
+        disabled={current >= total}
+        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ borderColor: 'var(--border)' }}
+        aria-label="Trang sau"
+      >
+        <ChevronRight size={16} />
+      </button>
+    </div>
+  );
+}
+
+function paginationItems(current: number, total: number): Array<number | 'ellipsis'> {
+  if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+  const items: Array<number | 'ellipsis'> = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) items.push('ellipsis');
+  for (let value = start; value <= end; value += 1) items.push(value);
+  if (end < total - 1) items.push('ellipsis');
+  items.push(total);
+  return items;
+}
+
+function formatDate(value: string) {
+  return value.slice(0, 10).split('-').reverse().join('/');
 }

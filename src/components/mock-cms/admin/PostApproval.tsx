@@ -1,234 +1,171 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Eye,
-  CheckCircle,
-  XCircle,
-  Clock,
-  X,
   ArrowLeft,
-  Share2,
   Bookmark,
+  CheckCircle,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Eye,
   Globe,
   Search,
-  ChevronDown,
-  ExternalLink,
+  Share2,
+  X,
+  XCircle,
 } from 'lucide-react';
 
 import { postService } from '@/services/post.service';
-import { ResPostListDTO, ResPostDTO } from '@/types/post.type';
+import type { ResPostDTO, ResPostListDTO } from '@/types/post.type';
 
 type ModalType = 'preview' | 'reject' | null;
-type ApprovalStatus = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
+type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+const APPROVAL_STATUS_OPTIONS: Array<{ value: ApprovalStatus; label: string }> = [
+  { value: 'PENDING', label: 'Chờ duyệt' },
+  { value: 'APPROVED', label: 'Đã duyệt' },
+  { value: 'REJECTED', label: 'Bị từ chối' },
+];
+
+const statusConfig: Record<ApprovalStatus, { label: string; className: string }> = {
+  PENDING: { label: 'Chờ duyệt', className: 'bg-amber-100 text-amber-700' },
+  APPROVED: { label: 'Đã duyệt', className: 'bg-emerald-100 text-emerald-700' },
+  REJECTED: { label: 'Bị từ chối', className: 'bg-red-100 text-red-700' },
+};
 
 export default function PostApproval() {
+  const requestId = useRef(0);
+
   const [posts, setPosts] = useState<ResPostListDTO[]>([]);
-  const [activeStatus, setActiveStatus] = useState<ApprovalStatus>('ALL');
+  const [activeStatus, setActiveStatus] = useState<ApprovalStatus>('PENDING');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [modal, setModal] = useState<{
     type: ModalType;
     post: ResPostDTO | ResPostListDTO | null;
-  }>({
-    type: null,
-    post: null,
-  });
+  }>({ type: null, post: null });
 
   const [previewLoading, setPreviewLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [loading, setLoading] = useState(true);
-
-  const [toast, setToast] = useState<{
-    message: string;
-    type: 'success' | 'error';
-  } | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
-    setTimeout(() => {
-      setToast(null);
-    }, 3000);
+    window.setTimeout(() => setToast(null), 3000);
   };
 
-  // =========================
-  // REFRESH POSTS (Dùng sau khi duyệt / từ chối)
-  // =========================
-  const refreshPosts = useCallback(async (status: ApprovalStatus) => {
+  const fetchPosts = useCallback(async () => {
+    const currentRequest = ++requestId.current;
     setLoading(true);
+    setErrorMessage('');
+
     try {
-      const res = await postService.getPosts(
+      const response = await postService.getPosts(
         {
-          ...(status !== 'ALL' && { status }),
+          status: activeStatus,
+          keyword: search.trim() || undefined,
         },
-        1,
-        50
+        page,
+        pageSize
       );
-      setPosts(res.result || []);
-    } catch (err: unknown) {
-      console.error('Lỗi khi tải danh sách bài viết:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
-  // =========================
-  // GET POSTS ON STATUS CHANGE
-  // =========================
-  useEffect(() => {
-    let ignore = false;
+      if (currentRequest !== requestId.current) return;
 
-    async function loadData() {
-      try {
-        const res = await postService.getPosts(
-          {
-            ...(activeStatus !== 'ALL' && { status: activeStatus }),
-          },
-          1,
-          50
-        );
-        if (!ignore) {
-          setPosts(res.result || []);
-        }
-      } catch (err: unknown) {
-        if (!ignore) {
-          console.error('Lỗi khi tải danh sách bài viết:', err);
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
+      const pages = response.meta?.pages || 0;
+      if (pages > 0 && page > pages) {
+        setPage(pages);
+        return;
       }
+
+      setPosts(response.result || []);
+      setTotal(response.meta?.total || 0);
+      setTotalPages(pages);
+    } catch (error) {
+      if (currentRequest !== requestId.current) return;
+      setPosts([]);
+      setTotal(0);
+      setTotalPages(0);
+      setErrorMessage(error instanceof Error ? error.message : 'Không thể tải danh sách kiểm duyệt.');
+    } finally {
+      if (currentRequest === requestId.current) setLoading(false);
     }
+  }, [activeStatus, page, search]);
 
-    loadData();
+  useEffect(() => {
+    const timer = window.setTimeout(fetchPosts, 350);
+    return () => window.clearTimeout(timer);
+  }, [fetchPosts]);
 
-    return () => {
-      ignore = true;
-    };
-  }, [activeStatus]);
-
-  // =========================
-  // XỬ LÝ MỞ XEM TRƯỚC (GỌI API LẤY CHI TIẾT CONTENT)
-  // =========================
   const handleOpenPreview = async (postItem: ResPostListDTO) => {
     setModal({ type: 'preview', post: postItem });
     setPreviewLoading(true);
 
     try {
       const detailPost = await postService.getPostById(postItem.id);
-      if (detailPost && typeof detailPost === 'object' && 'id' in detailPost) {
-        setModal({ type: 'preview', post: detailPost });
-      }
-    } catch (err) {
-      console.error('Lỗi khi tải chi tiết bài viết:', err);
+      setModal({ type: 'preview', post: detailPost });
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Không thể tải chi tiết bài viết.', 'error');
     } finally {
       setPreviewLoading(false);
     }
   };
 
-  // =========================
-  // APPROVE
-  // =========================
   const approve = async (id: number) => {
     try {
       await postService.reviewPost(id, {
         action: 'APPROVED',
-        comment: 'Duyệt bài tự động',
+        comment: 'Bài viết đã được duyệt',
       });
+      setModal({ type: null, post: null });
+      showToast('Bài viết đã được duyệt.', 'success');
 
-      setModal({
-        type: null,
-        post: null,
-      });
-
-      showToast('Bài viết đã được duyệt thành công!', 'success');
-      refreshPosts(activeStatus);
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Lỗi khi duyệt';
-      showToast(errorMsg, 'error');
+      if (posts.length === 1 && page > 1) setPage((current) => current - 1);
+      else await fetchPosts();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Không thể duyệt bài viết.', 'error');
     }
   };
 
-  // =========================
-  // REJECT
-  // =========================
   const reject = async () => {
     if (!modal.post || !rejectReason.trim()) return;
 
     try {
       await postService.reviewPost(modal.post.id, {
         action: 'REJECTED',
-        comment: rejectReason,
+        comment: rejectReason.trim(),
       });
-
-      setModal({
-        type: null,
-        post: null,
-      });
-
+      setModal({ type: null, post: null });
       setRejectReason('');
-      showToast('Đã trả bài lại cho tác giả.', 'error');
-      refreshPosts(activeStatus);
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Lỗi khi từ chối';
-      showToast(errorMsg, 'error');
+      showToast('Bài viết đã bị từ chối.', 'success');
+
+      if (posts.length === 1 && page > 1) setPage((current) => current - 1);
+      else await fetchPosts();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Không thể từ chối bài viết.', 'error');
     }
-  };
-
-  // =========================
-  // SEARCH FRONTEND
-  // =========================
-  const filteredPosts = posts.filter((post) => {
-    const keyword = search.toLowerCase().trim();
-    if (!keyword) return true;
-
-    const title = post.title?.toLowerCase() || '';
-    const author = post.author?.name?.toLowerCase() || '';
-
-    return title.includes(keyword) || author.includes(keyword);
-  });
-
-  // =========================
-  // STATUS CONFIG
-  // =========================
-  const statusConfig: Record<
-    ApprovalStatus,
-    {
-      label: string;
-      className: string;
-    }
-  > = {
-    ALL: {
-      label: 'Tất cả',
-      className: 'bg-slate-100 text-slate-700',
-    },
-    PENDING: {
-      label: 'Chờ duyệt',
-      className: 'bg-amber-100 text-amber-700',
-    },
-    APPROVED: {
-      label: 'Đã duyệt',
-      className: 'bg-emerald-100 text-emerald-700',
-    },
-    REJECTED: {
-      label: 'Bị từ chối',
-      className: 'bg-red-100 text-red-700',
-    },
   };
 
   const pageTitle =
-    activeStatus === 'ALL'
-      ? 'Tất cả bài viết'
-      : activeStatus === 'PENDING'
-        ? 'Bài viết chờ duyệt'
-        : activeStatus === 'APPROVED'
-          ? 'Bài viết đã duyệt'
-          : 'Bài viết đã từ chối';
+    activeStatus === 'PENDING'
+      ? 'Bài viết chờ duyệt'
+      : activeStatus === 'APPROVED'
+        ? 'Bài viết đã duyệt'
+        : 'Bài viết bị từ chối';
+
+  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
 
   return (
     <div className="p-6 relative">
-      {/* TOAST */}
       {toast && (
         <div
           className={`fixed top-5 right-5 z-[100] flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-white text-sm font-medium ${
@@ -240,180 +177,141 @@ export default function PostApproval() {
         </div>
       )}
 
-      {/* HEADER */}
+      {errorMessage && (
+        <div role="alert" className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4">
+          <span>{errorMessage}</span>
+          <button className="underline font-medium shrink-0" onClick={fetchPosts}>Tải lại</button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-xl font-bold text-slate-900">{pageTitle}</h1>
-          <p className="text-slate-500 text-sm mt-0.5">{filteredPosts.length} bài viết</p>
+          <p className="text-slate-500 text-sm mt-0.5">{total} bài viết phù hợp bộ lọc</p>
         </div>
       </div>
 
-      {/* SEARCH + STATUS FILTER */}
-      <div
-        className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center"
-        style={{ borderColor: 'var(--border)' }}
-      >
-        <div className="flex-1 min-w-48 relative">
+      <div className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center" style={{ borderColor: 'var(--border)' }}>
+        <div className="flex-1 min-w-56 relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm kiếm bài viết..."
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Tìm theo tiêu đề, slug hoặc tóm tắt..."
             className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
             style={{ borderColor: 'var(--border)' }}
           />
         </div>
 
-        <div className="flex gap-1">
-          {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as ApprovalStatus[]).map((status) => (
+        <div className="flex flex-wrap gap-1.5">
+          {APPROVAL_STATUS_OPTIONS.map((option) => (
             <button
-              key={status}
+              key={option.value}
+              type="button"
               onClick={() => {
-                setLoading(true);
-                setActiveStatus(status);
+                setActiveStatus(option.value);
+                setPage(1);
               }}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                activeStatus === status ? 'text-white' : 'text-slate-500 hover:bg-slate-100'
+                activeStatus === option.value ? 'text-white' : 'text-slate-500 hover:bg-slate-100'
               }`}
-              style={activeStatus === status ? { background: 'var(--primary)' } : {}}
+              style={activeStatus === option.value ? { background: 'var(--primary)' } : undefined}
             >
-              {statusConfig[status].label}
+              {option.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* TABLE */}
-      <div
-        className="bg-white rounded-xl border overflow-hidden"
-        style={{ borderColor: 'var(--border)' }}
-      >
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
-                Tiêu đề
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
-                Danh mục
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
-                Tác giả
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
-                Ngày tạo
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
-                Trạng thái
-              </th>
-              <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
-                Hành động
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="px-5 py-10 text-center text-slate-500">
-                  Đang tải...
-                </td>
+      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)' }}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[900px]">
+            <thead>
+              <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Tiêu đề</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Danh mục</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Tác giả</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Ngày tạo</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Trạng thái</th>
+                <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Hành động</th>
               </tr>
-            ) : filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => {
-                const currentStatus = (post.status as ApprovalStatus) || 'PENDING';
-                const currentStatusConfig = statusConfig[currentStatus] || statusConfig.PENDING;
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                    Đang tải...
+                  </td>
+                </tr>
+              ) : posts.length > 0 ? (
+                posts.map((post) => {
+                  const currentStatus = post.status as ApprovalStatus;
+                  const currentStatusConfig = statusConfig[currentStatus];
 
-                return (
-                  <tr
-                    key={post.id}
-                    className="border-t hover:bg-slate-50"
-                    style={{ borderColor: 'var(--border)' }}
-                  >
-                    <td className="px-5 py-3.5">
-                      <div className="font-medium text-slate-800 max-w-xs truncate">
-                        {post.title}
-                      </div>
-                      <div className="text-xs text-slate-400 mt-1 max-w-xs truncate">
-                        {post.summary || 'Không có tóm tắt'}
-                      </div>
-                    </td>
+                  return (
+                    <tr key={post.id} className="border-t hover:bg-slate-50" style={{ borderColor: 'var(--border)' }}>
+                      <td className="px-5 py-3.5">
+                        <div className="font-medium text-slate-800 max-w-sm truncate">{post.title}</div>
+                        <div className="text-xs text-slate-400 mt-1 max-w-sm truncate">{post.summary || 'Không có tóm tắt'}</div>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">{post.category?.name || 'Không có'}</span>
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-600 text-xs">{post.author?.name || 'System'}</td>
+                      <td className="px-5 py-3.5 text-slate-600 text-xs">{post.createdAt ? formatDate(post.createdAt) : '---'}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${currentStatusConfig.className}`}>{currentStatusConfig.label}</span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => handleOpenPreview(post)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600" title="Xem trước">
+                            <Eye size={14} />
+                          </button>
 
-                    <td className="px-5 py-3.5">
-                      <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
-                        {post.category?.name || 'Không có'}
-                      </span>
-                    </td>
+                          {currentStatus === 'PENDING' && (
+                            <>
+                              <button onClick={() => approve(post.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600" title="Duyệt bài">
+                                <CheckCircle size={14} />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setModal({ type: 'reject', post });
+                                  setRejectReason('');
+                                }}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500"
+                                title="Từ chối"
+                              >
+                                <XCircle size={14} />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">Không có bài viết ở trạng thái này</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-                    <td className="px-5 py-3.5 text-slate-600 text-xs">
-                      {post.author?.name || 'System'}
-                    </td>
-
-                    <td className="px-5 py-3.5 text-slate-600 text-xs">
-                      {post.createdAt
-                        ? new Date(post.createdAt).toLocaleDateString('vi-VN')
-                        : '---'}
-                    </td>
-
-                    <td className="px-5 py-3.5">
-                      <span
-                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${currentStatusConfig.className}`}
-                      >
-                        {currentStatusConfig.label}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-center gap-1">
-                        <button
-                          onClick={() => handleOpenPreview(post)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"
-                          title="Xem trước"
-                        >
-                          <Eye size={14} />
-                        </button>
-
-                        {currentStatus === 'PENDING' && (
-                          <>
-                            <button
-                              onClick={() => approve(post.id)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600"
-                              title="Duyệt"
-                            >
-                              <CheckCircle size={14} />
-                            </button>
-
-                            <button
-                              onClick={() => {
-                                setModal({
-                                  type: 'reject',
-                                  post,
-                                });
-                                setRejectReason('');
-                              }}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500"
-                              title="Từ chối"
-                            >
-                              <XCircle size={14} />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={6} className="px-5 py-10 text-center text-slate-500">
-                  Không tìm thấy bài viết
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        {!loading && total > 0 && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-t bg-slate-50" style={{ borderColor: 'var(--border)' }}>
+            <div className="text-xs text-slate-500">
+              Hiển thị <span className="font-semibold text-slate-700">{from}</span> - <span className="font-semibold text-slate-700">{to}</span> trong <span className="font-semibold text-slate-700">{total}</span> bài viết
+            </div>
+            <Pagination current={page} total={totalPages} onChange={setPage} />
+          </div>
+        )}
       </div>
-
       {/* ================= MODALS ================= */}
 
       {/* MODAL 1: PREVIEW (DESKTOP VIEW) */}
@@ -557,7 +455,7 @@ export default function PostApproval() {
                           </p>
                           <p className="text-xs text-slate-500 mt-0.5">
                             {modal.post.createdAt
-                              ? new Date(modal.post.createdAt).toLocaleDateString('vi-VN')
+                              ? formatDate(modal.post.createdAt)
                               : 'Vừa xong'}
                           </p>
                         </div>
@@ -653,7 +551,7 @@ export default function PostApproval() {
                     className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
                   >
                     <CheckCircle size={16} />
-                    <span>Duyệt & Xuất bản ngay</span>
+                    <span>Duyệt bài viết</span>
                   </button>
                 </>
               )}
@@ -746,4 +644,70 @@ export default function PostApproval() {
       )}
     </div>
   );
+}
+
+function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (page: number) => void }) {
+  if (total <= 1) return null;
+  const items = paginationItems(current, total);
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(1, current - 1))}
+        disabled={current === 1}
+        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ borderColor: 'var(--border)' }}
+        aria-label="Trang trước"
+      >
+        <ChevronLeft size={16} />
+      </button>
+
+      {items.map((item, index) =>
+        item === 'ellipsis' ? (
+          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">…</span>
+        ) : (
+          <button
+            type="button"
+            key={item}
+            onClick={() => onChange(item)}
+            className={`min-w-8 h-8 px-2 rounded-lg text-xs font-semibold border transition-colors ${
+              current === item ? 'text-white border-transparent' : 'text-slate-600 bg-white hover:text-blue-600'
+            }`}
+            style={current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }}
+            aria-current={current === item ? 'page' : undefined}
+          >
+            {item}
+          </button>
+        )
+      )}
+
+      <button
+        type="button"
+        onClick={() => onChange(Math.min(total, current + 1))}
+        disabled={current >= total}
+        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ borderColor: 'var(--border)' }}
+        aria-label="Trang sau"
+      >
+        <ChevronRight size={16} />
+      </button>
+    </div>
+  );
+}
+
+function paginationItems(current: number, total: number): Array<number | 'ellipsis'> {
+  if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+  const items: Array<number | 'ellipsis'> = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) items.push('ellipsis');
+  for (let value = start; value <= end; value += 1) items.push(value);
+  if (end < total - 1) items.push('ellipsis');
+  items.push(total);
+  return items;
+}
+
+function formatDate(value: string) {
+  return value.slice(0, 10).split('-').reverse().join('/');
 }

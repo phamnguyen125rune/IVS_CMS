@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import PostDetail from '@/components/mock-cms/client/PostDetail';
 import { postService } from '@/services/post.service';
+import type { ResPostListDTO } from '@/types/post.type';
 import {
   absoluteWebUrl,
   articleSchema,
@@ -65,6 +66,14 @@ export default async function SinglePostPage({ params }: PageProps) {
     const post = await postService.getPostBySlug(slug);
     if (!post) notFound();
 
+    let recentPosts: ResPostListDTO[] = [];
+    try {
+      const recentData = await postService.getPosts({ status: 'PUBLISHED' }, 1, 6);
+      recentPosts = recentData.result || [];
+    } catch {
+      recentPosts = [];
+    }
+
     const schema = post.status === 'PUBLISHED' ? articleSchema(post, getSiteUrl()) : null;
 
     return (
@@ -75,7 +84,7 @@ export default async function SinglePostPage({ params }: PageProps) {
             dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
           />
         )}
-        <PostDetail post={post} />
+        <PostDetail post={post} recentPosts={recentPosts} />
       </>
     );
   } catch {

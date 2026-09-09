@@ -49,7 +49,7 @@ export default async function BlogPage({ params, searchParams }: PageProps) {
         categoryId,
       },
       page,
-      9
+      10
     ),
     categoryService.getAllCategories(),
   ]);

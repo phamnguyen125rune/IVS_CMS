@@ -17,8 +17,9 @@ interface Props {
 
 export default function Blog({ data, categories, keyword, categoryId, page }: Props) {
   const posts = data.result || [];
-  const featured = posts[0];
-  const rest = posts.slice(1);
+  const showFeatured = page === 1 && !keyword && !categoryId;
+  const featured = showFeatured ? posts[0] : undefined;
+  const rest = showFeatured ? posts.slice(1) : posts;
 
   const listHref = (nextPage: number, nextCategory = categoryId) => {
     const query = new URLSearchParams();
@@ -186,18 +187,44 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
         )}
 
         {data.meta.pages > 1 && (
-          <nav className="mt-10 flex items-center justify-center gap-3 text-sm" aria-label="Phân trang bài viết">
-            {page > 1 ? (
-              <Link rel="prev" href={listHref(page - 1)} className="px-4 py-2 rounded-xl border bg-white text-slate-600" style={{ borderColor: 'var(--border)' }}>
-                Trang trước
-              </Link>
-            ) : null}
-            <span className="px-3 py-2 text-slate-500">Trang {page} / {Math.max(1, data.meta.pages)}</span>
-            {page < data.meta.pages ? (
-              <Link rel="next" href={listHref(page + 1)} className="px-4 py-2 rounded-xl border bg-white text-slate-600" style={{ borderColor: 'var(--border)' }}>
-                Trang sau
-              </Link>
-            ) : null}
+          <nav className="mt-10 flex flex-wrap items-center justify-center gap-2 text-sm" aria-label="Phân trang bài viết">
+            <Link
+              rel={page > 1 ? 'prev' : undefined}
+              href={page > 1 ? listHref(page - 1) : listHref(1)}
+              aria-disabled={page === 1}
+              className={`px-3.5 py-2 rounded-xl border bg-white transition-colors ${page === 1 ? 'pointer-events-none opacity-40 text-slate-400' : 'text-slate-600 hover:text-blue-600 hover:border-blue-200'}`}
+              style={{ borderColor: 'var(--border)' }}
+            >
+              Trước
+            </Link>
+
+            {paginationItems(page, data.meta.pages).map((item, index) =>
+              item === 'ellipsis' ? (
+                <span key={`ellipsis-${index}`} className="px-1.5 text-slate-400">…</span>
+              ) : (
+                <Link
+                  key={item}
+                  href={listHref(item)}
+                  aria-current={item === page ? 'page' : undefined}
+                  className={`min-w-10 px-3 py-2 rounded-xl border text-center font-medium transition-colors ${
+                    item === page ? 'text-white border-transparent' : 'bg-white text-slate-600 hover:text-blue-600 hover:border-blue-200'
+                  }`}
+                  style={item === page ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }}
+                >
+                  {item}
+                </Link>
+              )
+            )}
+
+            <Link
+              rel={page < data.meta.pages ? 'next' : undefined}
+              href={page < data.meta.pages ? listHref(page + 1) : listHref(data.meta.pages)}
+              aria-disabled={page >= data.meta.pages}
+              className={`px-3.5 py-2 rounded-xl border bg-white transition-colors ${page >= data.meta.pages ? 'pointer-events-none opacity-40 text-slate-400' : 'text-slate-600 hover:text-blue-600 hover:border-blue-200'}`}
+              style={{ borderColor: 'var(--border)' }}
+            >
+              Sau
+            </Link>
           </nav>
         )}
       </div>
@@ -207,4 +234,19 @@ export default function Blog({ data, categories, keyword, categoryId, page }: Pr
 
 function formatDate(value: string) {
   return value.slice(0, 10).split('-').reverse().join('/');
+}
+
+
+function paginationItems(current: number, total: number): Array<number | 'ellipsis'> {
+  if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+
+  const items: Array<number | 'ellipsis'> = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+
+  if (start > 2) items.push('ellipsis');
+  for (let value = start; value <= end; value += 1) items.push(value);
+  if (end < total - 1) items.push('ellipsis');
+  items.push(total);
+  return items;
 }
