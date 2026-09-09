@@ -202,7 +202,7 @@ export default function Home() {
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white border border-white/30 hover:bg-white/10"
                 style={{
                   background: 'var(--primary)',
-                  color: 'var(--primary-foreground)',
+                  color: 'white',
                 }}
               >
                 Tư vấn miễn phí <ArrowRight size={16} />
@@ -696,8 +696,8 @@ export default function Home() {
             to="/lien-he"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold transition-colors"
             style={{
-              background: 'var(--primary-button-background)',
-              color: 'var(--primary-button-text)',
+              background: 'white',
+              color: 'black',
             }}
           >
             Liên hệ với chúng tôi <ArrowRight size={16} />

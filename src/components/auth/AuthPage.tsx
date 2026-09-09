@@ -108,7 +108,7 @@ export default function AuthPage() {
         body: JSON.stringify({ loginId, password: loginPassword }),
       });
       router.refresh();
-      router.push(`/${language}/admin-contact`);
+      router.push(`/${language}/admin/tong-quan`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập không thành công');
     } finally {

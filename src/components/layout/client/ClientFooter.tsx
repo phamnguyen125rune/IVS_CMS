@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Phone, Mail, MapPin } from 'lucide-react';
 
 import { FaFacebook, FaYoutube, FaLinkedin } from 'react-icons/fa';
-
 import { SiZalo } from 'react-icons/si';
 
 interface ClientFooterProps {
@@ -18,46 +17,109 @@ export default function ClientFooter({ language }: ClientFooterProps) {
     return `/${language}${cleanPath === '/' ? '' : cleanPath}`;
   };
 
+  const navigationLinks = [
+    ['Trang chủ', '/'],
+    ['Giới thiệu', '/gioi-thieu'],
+    ['Tuyển dụng', '/tuyen-dung'],
+    ['Dự án', '/du-an'],
+    ['Bài viết', '/bai-viet'],
+    ['Liên hệ', '/lien-he'],
+  ];
+
+  const services = [
+    'Phát triển phần mềm',
+    'Thiết kế UI/UX',
+    'Tư vấn công nghệ',
+    'Chuyển đổi số',
+    'Bảo trì hệ thống',
+  ];
+
+  const socialLinks = [FaFacebook, FaYoutube, FaLinkedin, SiZalo];
+
+  const legalLinks = ['Chính sách bảo mật', 'Điều khoản sử dụng', 'Cookie'];
+
   return (
     <footer
       style={{
-        background: '#0f172a',
+        background: 'var(--dark-background)',
+        color: 'var(--dark-text-secondary)',
       }}
-      className="text-slate-300"
     >
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      {/* =================================================
+          MAIN FOOTER
+      ================================================== */}
+
+      <div className="mx-auto max-w-7xl px-6 py-16">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* =================================================
               BRAND
           ================================================== */}
 
           <div>
-            <div className="flex items-center gap-2.5 mb-4">
+            <div className="mb-4 flex items-center gap-2.5">
               <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold"
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-xl
+                  font-bold
+                "
                 style={{
-                  background: 'var(--primary, #2563eb)',
+                  background: 'var(--primary)',
+                  color: 'var(--primary-foreground)',
                 }}
               >
                 C
               </div>
 
-              <span className="font-display font-bold text-white text-lg">CMS</span>
+              <span
+                className="font-display text-lg font-bold"
+                style={{
+                  color: 'var(--dark-text)',
+                }}
+              >
+                CMS
+              </span>
             </div>
 
-            <p className="text-sm text-slate-400 leading-relaxed mb-5">
+            <p
+              className="
+                mb-5
+                text-sm
+                leading-relaxed
+              "
+              style={{
+                color: 'var(--dark-text-secondary)',
+              }}
+            >
               Công ty giải pháp công nghệ hàng đầu Việt Nam. Chúng tôi kiến tạo những sản phẩm số
               giúp doanh nghiệp phát triển bền vững.
             </p>
 
+            {/* Social links */}
+
             <div className="flex items-center gap-3">
-              {[FaFacebook, FaYoutube, FaLinkedin, SiZalo].map((Icon, index) => (
+              {socialLinks.map((Icon, index) => (
                 <a
                   key={index}
                   href="#"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                  aria-label={`Social media ${index + 1}`}
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    items-center
+                    justify-center
+                    rounded-lg
+                    transition-colors
+                    hover:text-white
+                  "
                   style={{
-                    background: '#1e293b',
+                    background: 'var(--dark-surface)',
+                    color: 'var(--dark-text-muted)',
                   }}
                 >
                   <Icon size={15} />
@@ -71,21 +133,33 @@ export default function ClientFooter({ language }: ClientFooterProps) {
           ================================================== */}
 
           <div>
-            <h4 className="text-white font-semibold font-display mb-4 text-sm">Điều hướng</h4>
+            <h4
+              className="
+                mb-4
+                font-display
+                text-sm
+                font-semibold
+              "
+              style={{
+                color: 'var(--dark-text)',
+              }}
+            >
+              Điều hướng
+            </h4>
 
             <ul className="space-y-2.5">
-              {[
-                ['Trang chủ', '/'],
-                ['Giới thiệu', '/gioi-thieu'],
-                ['Tuyển dụng', '/tuyen-dung'],
-                ['Dự án', '/du-an'],
-                ['Bài viết', '/bai-viet'],
-                ['Liên hệ', '/lien-he'],
-              ].map(([label, path]) => (
+              {navigationLinks.map(([label, path]) => (
                 <li key={path}>
                   <Link
                     href={getLocalizedPath(path)}
-                    className="text-sm text-slate-400 hover:text-white transition-colors"
+                    className="
+                      text-sm
+                      transition-colors
+                      hover:text-[var(--primary)]
+                    "
+                    style={{
+                      color: 'var(--dark-text-muted)',
+                    }}
                   >
                     {label}
                   </Link>
@@ -99,18 +173,34 @@ export default function ClientFooter({ language }: ClientFooterProps) {
           ================================================== */}
 
           <div>
-            <h4 className="text-white font-semibold font-display mb-4 text-sm">Dịch vụ</h4>
+            <h4
+              className="
+                mb-4
+                font-display
+                text-sm
+                font-semibold
+              "
+              style={{
+                color: 'var(--dark-text)',
+              }}
+            >
+              Dịch vụ
+            </h4>
 
             <ul className="space-y-2.5">
-              {[
-                'Phát triển phần mềm',
-                'Thiết kế UI/UX',
-                'Tư vấn công nghệ',
-                'Chuyển đổi số',
-                'Bảo trì hệ thống',
-              ].map((service) => (
+              {services.map((service) => (
                 <li key={service}>
-                  <a href="#" className="text-sm text-slate-400 hover:text-white transition-colors">
+                  <a
+                    href="#"
+                    className="
+                      text-sm
+                      transition-colors
+                      hover:text-[var(--primary)]
+                    "
+                    style={{
+                      color: 'var(--dark-text-muted)',
+                    }}
+                  >
                     {service}
                   </a>
                 </li>
@@ -123,23 +213,80 @@ export default function ClientFooter({ language }: ClientFooterProps) {
           ================================================== */}
 
           <div>
-            <h4 className="text-white font-semibold font-display mb-4 text-sm">Liên hệ</h4>
+            <h4
+              className="
+                mb-4
+                font-display
+                text-sm
+                font-semibold
+              "
+              style={{
+                color: 'var(--dark-text)',
+              }}
+            >
+              Liên hệ
+            </h4>
 
             <ul className="space-y-3">
-              <li className="flex items-start gap-2.5 text-sm text-slate-400">
-                <MapPin size={14} className="mt-0.5 flex-shrink-0 text-blue-400" />
+              {/* Address */}
+
+              <li
+                className="
+                  flex
+                  items-start
+                  gap-2.5
+                  text-sm
+                "
+                style={{
+                  color: 'var(--dark-text-muted)',
+                }}
+              >
+                <MapPin
+                  size={14}
+                  className="
+                    mt-0.5
+                    shrink-0
+                    text-blue-400
+                  "
+                />
 
                 <span>Tầng 12, 141 Lê Duẩn, Q.1, TP.HCM</span>
               </li>
 
-              <li className="flex items-center gap-2.5 text-sm text-slate-400">
-                <Phone size={14} className="text-blue-400 shrink-0" />
-                +84 28 3456 7890
+              {/* Phone */}
+
+              <li
+                className="
+                  flex
+                  items-center
+                  gap-2.5
+                  text-sm
+                "
+                style={{
+                  color: 'var(--dark-text-muted)',
+                }}
+              >
+                <Phone size={14} className="shrink-0 text-blue-400" />
+
+                <span>+84 28 3456 7890</span>
               </li>
 
-              <li className="flex items-center gap-2.5 text-sm text-slate-400">
-                <Mail size={14} className="text-blue-400 shrink-0" />
-                info@CMS.vn
+              {/* Email */}
+
+              <li
+                className="
+                  flex
+                  items-center
+                  gap-2.5
+                  text-sm
+                "
+                style={{
+                  color: 'var(--dark-text-muted)',
+                }}
+              >
+                <Mail size={14} className="shrink-0 text-blue-400" />
+
+                <span>info@CMS.vn</span>
               </li>
             </ul>
           </div>
@@ -150,16 +297,47 @@ export default function ClientFooter({ language }: ClientFooterProps) {
           SUB FOOTER
       ====================================================== */}
 
-      <div className="border-t border-slate-700/50">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-500">© 2026 CMS. Bảo lưu mọi quyền.</p>
+      <div
+        style={{
+          borderTop: '1px solid var(--dark-border)',
+        }}
+      >
+        <div
+          className="
+            mx-auto
+            flex
+            max-w-7xl
+            flex-col
+            items-center
+            justify-between
+            gap-3
+            px-6
+            py-5
+            md:flex-row
+          "
+        >
+          <p
+            className="text-xs"
+            style={{
+              color: 'var(--dark-text-muted)',
+            }}
+          >
+            © 2026 CMS. Bảo lưu mọi quyền.
+          </p>
 
           <div className="flex items-center gap-5">
-            {['Chính sách bảo mật', 'Điều khoản sử dụng', 'Cookie'].map((item) => (
+            {legalLinks.map((item) => (
               <a
                 key={item}
                 href="#"
-                className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                className="
+                  text-xs
+                  transition-colors
+                  hover:text-[var(--dark-text)]
+                "
+                style={{
+                  color: 'var(--dark-text-muted)',
+                }}
               >
                 {item}
               </a>

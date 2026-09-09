@@ -660,7 +660,7 @@ export default function Contact() {
                     "
                     style={{
                       background: 'var(--primary)',
-                      color: 'var(--primary-foreground)',
+                      color: 'white',
                     }}
                   >
                     {loading ? (

@@ -1,20 +1,44 @@
 @import 'tailwindcss';
 
-/* =========================================
-   DEFAULT / LIGHT THEME
-========================================= */
-
 :root {
+  /* ========================================
+     BASE
+     ======================================== */
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  /* ========================================
+     PRIMARY / BRAND
+     ======================================== */
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --primary-soft: #dbeafe;
+  --primary-text: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --primary-button-background: #ffffff;
+  --primary-button-background-hover: #eff6ff;
+  --primary-button-text: #1d4ed8;
 
-  --background: #ffffff;
-  --surface: #f8fafc;
-  --surface-hover: #f1f5f9;
+  /* ========================================
+     TEXT
+     ======================================== */
+  --text: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-placeholder: #94a3b8;
+  --text-inverse: #ffffff;
 
-  --text: #0f172a;
-  --text-secondary: #64748b;
+  /* ========================================
+     SURFACE
+     ======================================== */
+  --surface: #ffffff;
+  --surface-secondary: #f8fafc;
+  --surface-tertiary: #f1f5f9;
 
+  /* ========================================
+     BORDER
+     ======================================== */
   --border: #e2e8f0;
   --border-light: #f1f5f9;
   --border-strong: #cbd5e1;
@@ -64,34 +88,95 @@
   --rating: #f59e0b;
 }
 
-/* =========================================
-   DARK THEME
-========================================= */
-
-[data-theme='dark'] {
-  --primary: #3b82f6;
-  --primary-hover: #60a5fa;
-
+.dark {
+  /* ========================================
+     BASE
+     ======================================== */
   --background: #0f172a;
-  --surface: #1e293b;
-  --surface-hover: #334155;
+  --foreground: #f8fafc;
 
+  /* ========================================
+     PRIMARY / BRAND
+     ======================================== */
+  --primary: #2563eb;
+  --primary-hover: #3b82f6;
+  --primary-light: #1e3a8a;
+  --primary-soft: #1e40af;
+  --primary-text: #93c5fd;
+  --primary-foreground: #0f172a;
+  --primary-button-background: #0f172a;
+  --primary-button-background-hover: #1e293b;
+  --primary-button-text: #93c5fd;
+
+  /* ========================================
+     TEXT
+     ======================================== */
   --text: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-placeholder: #64748b;
+  --text-inverse: #0f172a;
 
+  /* ========================================
+     SURFACE
+     ======================================== */
+  --surface: #1e293b;
+  --surface-secondary: #0f172a;
+  --surface-tertiary: #334155;
+
+  /* ========================================
+     BORDER
+     ======================================== */
   --border: #334155;
-}
+  --border-light: #1e293b;
+  --border-strong: #475569;
 
-/* =========================================
-   GLOBAL
-========================================= */
+  /* ========================================
+     INTERACTIVE
+     ======================================== */
+  --hover: #334155;
+  --active: #1e3a8a;
 
-html,
-body {
-  min-height: 100%;
+  /* ========================================
+     DARK / HERO
+     ======================================== */
+  --dark-background: #020617;
+  --dark-surface: #0f172a;
+  --dark-border: #334155;
+
+  --dark-text: #f8fafc;
+  --dark-text-secondary: #cbd5e1;
+  --dark-text-muted: #94a3b8;
+
+  /* ========================================
+     HERO
+     ======================================== */
+  --hero-start: #020617;
+  --hero-middle: #172554;
+  --hero-end: #1e40af;
+
+  /* ========================================
+     STATUS
+     ======================================== */
+  --success: #34d399;
+  --success-light: #064e3b;
+
+  --warning: #fbbf24;
+  --warning-light: #78350f;
+
+  --error: #f87171;
+  --error-light: #7f1d1d;
+
+  --info: #22d3ee;
+  --info-light: #164e63;
+
+  /* ========================================
+     SPECIAL
+     ======================================== */
+  --rating: #fbbf24;
 }
 
 body {
   background: var(--background);
-  color: var(--text);
+  color: var(--foreground);
 }

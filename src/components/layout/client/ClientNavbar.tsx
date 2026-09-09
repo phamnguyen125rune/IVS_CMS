@@ -3,20 +3,28 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+
 import { Search, ChevronDown, Globe, Share2, ExternalLink, Menu, X } from 'lucide-react';
 
 import ThemeToggle from '@/components/theme/ThemeToggle';
 
 const navLinks = [
-  { label: 'Trang chủ', path: '' },
-
-  { label: 'Giới thiệu', path: '/gioi-thieu' },
-
+  {
+    label: 'Trang chủ',
+    path: '',
+  },
+  {
+    label: 'Giới thiệu',
+    path: '/gioi-thieu',
+  },
   {
     label: 'Bài viết',
     path: '/bai-viet',
     children: [
-      { label: 'Tất cả bài viết', path: '/bai-viet' },
+      {
+        label: 'Tất cả bài viết',
+        path: '/bai-viet',
+      },
       {
         label: 'Tin tức công ty',
         path: '/bai-viet?danh-muc=tin-tuc',
@@ -27,12 +35,14 @@ const navLinks = [
       },
     ],
   },
-
   {
     label: 'Dự án',
     path: '/du-an',
     children: [
-      { label: 'Tất cả dự án', path: '/du-an' },
+      {
+        label: 'Tất cả dự án',
+        path: '/du-an',
+      },
       {
         label: 'Dự án nổi bật',
         path: '/du-an?loai=noi-bat',
@@ -43,12 +53,18 @@ const navLinks = [
       },
     ],
   },
-
-  { label: 'Khách hàng', path: '/khach-hang' },
-
-  { label: 'Tuyển dụng', path: '/tuyen-dung' },
-
-  { label: 'Liên hệ', path: '/lien-he' },
+  {
+    label: 'Khách hàng',
+    path: '/khach-hang',
+  },
+  {
+    label: 'Tuyển dụng',
+    path: '/tuyen-dung',
+  },
+  {
+    label: 'Liên hệ',
+    path: '/lien-he',
+  },
 ];
 
 const languages = [
@@ -97,11 +113,8 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
   /*
    * Tạo URL có prefix language
    *
-   * Ví dụ:
    * /gioi-thieu
-   *
    * =>
-   *
    * /vi/gioi-thieu
    */
   const getLocalizedPath = (path: string) => {
@@ -114,9 +127,7 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
    * Đổi ngôn ngữ nhưng giữ nguyên trang hiện tại
    *
    * /vi/gioi-thieu
-   *
    * =>
-   *
    * /en/gioi-thieu
    */
   const handleLanguageChange = (newLangCode: string) => {
@@ -133,7 +144,12 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b"
+      className="
+        sticky
+        top-0
+        z-50
+        border-b
+      "
       style={{
         backgroundColor: 'var(--background)',
         borderColor: 'var(--border)',
@@ -144,18 +160,50 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
       ====================================================== */}
 
       <div
-        className="hidden md:flex items-center justify-end px-6 py-1.5 text-xs text-slate-500 border-b"
+        className="
+          hidden
+          items-center
+          justify-end
+          border-b
+          px-6
+          py-1.5
+          text-xs
+          md:flex
+        "
         style={{
-          background: '#0f172a',
-          borderColor: '#1e293b',
+          background: 'var(--dark-background)',
+          borderColor: 'var(--dark-border)',
         }}
       >
-        <div className="flex items-center gap-3 text-slate-400">
-          <a href="#" className="hover:text-white transition-colors">
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+          "
+          style={{
+            color: 'var(--dark-text-secondary)',
+          }}
+        >
+          <a
+            href="#"
+            className="
+              transition-colors
+              hover:text-[var(--primary)]
+            "
+            aria-label="Chia sẻ"
+          >
             <Share2 size={12} />
           </a>
 
-          <a href="#" className="hover:text-white transition-colors">
+          <a
+            href="#"
+            className="
+              transition-colors
+              hover:text-[var(--primary)]
+            "
+            aria-label="Liên kết bên ngoài"
+          >
             <ExternalLink size={12} />
           </a>
         </div>
@@ -165,20 +213,56 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
           MAIN NAVBAR
       ====================================================== */}
 
-      <div className="flex items-center justify-between px-6 py-3">
-        {/* Logo */}
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          px-6
+          py-3
+        "
+      >
+        {/* =================================================
+            LOGO
+        ================================================== */}
 
-        <Link href={getLocalizedPath('/')} className="flex items-center gap-2.5">
+        <Link
+          href={getLocalizedPath('/')}
+          className="
+            flex
+            items-center
+            gap-2.5
+          "
+        >
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
+            className="
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-xl
+              text-base
+              font-bold
+            "
             style={{
-              background: 'var(--primary, #2563eb)',
+              background: 'var(--primary)',
+              color: 'var(--primary-foreground)',
             }}
           >
             C
           </div>
 
-          <span className="font-display font-bold text-lg" style={{ color: 'var(--text)' }}>
+          <span
+            className="
+              font-display
+              text-lg
+              font-bold
+            "
+            style={{
+              color: 'var(--text)',
+            }}
+          >
             CMS
           </span>
         </Link>
@@ -187,7 +271,14 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             DESKTOP NAVIGATION
         ================================================== */}
 
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav
+          className="
+            hidden
+            items-center
+            gap-1
+            lg:flex
+          "
+        >
           {navLinks.map((link) => {
             const fullPath = getLocalizedPath(link.path);
 
@@ -215,24 +306,58 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
               >
                 <Link
                   href={fullPath}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-blue-600 font-semibold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                  }`}
+                  className="
+                    flex
+                    items-center
+                    gap-1
+                    rounded-lg
+                    px-3
+                    py-2
+                    text-sm
+                    font-medium
+                    transition-colors
+                    hover:bg-[var(--hover)]
+                    hover:text-[var(--primary)]
+                  "
+                  style={{
+                    color: isActive ? 'var(--primary-text)' : 'var(--text)',
+                    background: isActive ? 'var(--active)' : undefined,
+                    fontWeight: isActive ? 600 : undefined,
+                  }}
                 >
                   {link.label}
 
-                  {link.children && <ChevronDown size={13} className="text-slate-400" />}
+                  {link.children && (
+                    <ChevronDown
+                      size={13}
+                      style={{
+                        color: isActive ? 'var(--primary-text)' : 'var(--text-secondary)',
+                      }}
+                    />
+                  )}
                 </Link>
 
-                {/* Dropdown */}
+                {/* =================================================
+                    DESKTOP DROPDOWN
+                ================================================== */}
 
                 {link.children && openDropdown === link.label && (
                   <div
-                    className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border py-1.5 w-52 z-50"
+                    className="
+                        absolute
+                        left-0
+                        top-full
+                        z-50
+                        mt-1
+                        w-52
+                        rounded-xl
+                        border
+                        py-1.5
+                        shadow-xl
+                      "
                     style={{
-                      borderColor: 'var(--border, #e2e8f0)',
+                      background: 'var(--surface)',
+                      borderColor: 'var(--border)',
                     }}
                   >
                     {link.children.map((child) => (
@@ -240,7 +365,18 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
                         key={child.path}
                         href={getLocalizedPath(child.path)}
                         onClick={() => setOpenDropdown(null)}
-                        className="block px-4 py-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                        className="
+                            block
+                            px-4
+                            py-2
+                            text-sm
+                            transition-colors
+                            hover:bg-[var(--hover)]
+                            hover:text-[var(--primary)]
+                          "
+                        style={{
+                          color: 'var(--text-secondary)',
+                        }}
                       >
                         {child.label}
                       </Link>
@@ -256,80 +392,185 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             RIGHT SIDE
         ================================================== */}
 
-        <div className="flex items-center gap-2">
-          {/* Theme */}
+        <div
+          className="
+            flex
+            items-center
+            gap-2
+          "
+        >
+          {/* =================================================
+              THEME
+          ================================================== */}
 
           <ThemeToggle />
 
-          {/* Language */}
+          {/* =================================================
+              LANGUAGE
+          ================================================== */}
 
           <div className="relative">
             <button
+              type="button"
               onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 border transition-colors"
+              className="
+                flex
+                items-center
+                gap-1.5
+                rounded-lg
+                border
+                px-3
+                py-2
+                text-sm
+                font-medium
+                transition-colors
+                hover:bg-[var(--hover)]
+                hover:text-[var(--primary)]
+              "
               style={{
-                borderColor: 'var(--border, #e2e8f0)',
+                color: 'var(--text)',
+                borderColor: 'var(--border)',
+                background: langOpen ? 'var(--active)' : 'transparent',
               }}
+              aria-label="Chọn ngôn ngữ"
+              aria-expanded={langOpen}
             >
               <Globe size={14} />
 
               <span>{activeLang.flag}</span>
 
-              <ChevronDown size={12} />
+              <ChevronDown
+                size={12}
+                style={{
+                  color: langOpen ? 'var(--primary)' : 'var(--text-secondary)',
+                }}
+              />
             </button>
+
+            {/* Language dropdown */}
 
             {langOpen && (
               <div
-                className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border py-1.5 w-44 z-50"
+                className="
+                  absolute
+                  right-0
+                  top-full
+                  z-50
+                  mt-1
+                  w-44
+                  rounded-xl
+                  border
+                  py-1.5
+                  shadow-xl
+                "
                 style={{
-                  borderColor: 'var(--border, #e2e8f0)',
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
                 }}
               >
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => handleLanguageChange(lang.code)}
-                    className={`flex items-center gap-3 px-4 py-2 w-full text-sm transition-colors ${
-                      activeLang.code === lang.code
-                        ? 'text-blue-600 bg-blue-50 font-medium'
-                        : 'text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{lang.flag}</span>
+                {languages.map((lang) => {
+                  const isActive = activeLang.code === lang.code;
 
-                    {lang.label}
-                  </button>
-                ))}
+                  return (
+                    <button
+                      key={lang.code}
+                      type="button"
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className="
+                        flex
+                        w-full
+                        items-center
+                        gap-3
+                        px-4
+                        py-2
+                        text-sm
+                        transition-colors
+                        hover:bg-[var(--hover)]
+                        hover:text-[var(--primary)]
+                      "
+                      style={{
+                        color: isActive ? 'var(--primary-text)' : 'var(--text-secondary)',
+                        background: isActive ? 'var(--active)' : undefined,
+                        fontWeight: isActive ? 500 : undefined,
+                      }}
+                    >
+                      <span>{lang.flag}</span>
+
+                      <span>{lang.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* Search */}
+          {/* =================================================
+              SEARCH
+          ================================================== */}
 
           <button
+            type="button"
             onClick={() => setSearchOpen(!searchOpen)}
-            className="p-2 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors"
+            className="
+              rounded-lg
+              p-2
+              transition-colors
+              hover:bg-[var(--hover)]
+              hover:text-[var(--primary)]
+            "
+            style={{
+              color: 'var(--text)',
+            }}
+            aria-label="Tìm kiếm"
           >
             <Search size={18} />
           </button>
 
-          {/* CTA */}
+          {/* =================================================
+              CTA
+          ================================================== */}
 
           <Link
             href={getLocalizedPath('/lien-he')}
-            className="hidden md:flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="
+              hidden
+              items-center
+              rounded-lg
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              transition-colors
+              hover:bg-[var(--primary-hover)]
+              md:flex
+            "
             style={{
-              background: 'var(--primary, #2563eb)',
+              background: 'var(--primary)',
+              color: 'white',
             }}
           >
             Liên hệ ngay
           </Link>
 
-          {/* Mobile */}
+          {/* =================================================
+              MOBILE
+          ================================================== */}
 
           <button
-            className="lg:hidden p-2 rounded-lg text-slate-500"
+            type="button"
+            className="
+              rounded-lg
+              p-2
+              transition-colors
+              hover:bg-[var(--hover)]
+              hover:text-[var(--primary)]
+              lg:hidden
+            "
+            style={{
+              color: 'var(--text)',
+            }}
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu'}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -342,18 +583,45 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
       {searchOpen && (
         <div
-          className="border-t px-6 py-3 bg-slate-50/50"
+          className="
+            border-t
+            px-6
+            py-3
+          "
           style={{
-            borderColor: 'var(--border, #e2e8f0)',
+            background: 'var(--surface-secondary)',
+            borderColor: 'var(--border)',
           }}
         >
-          <div className="flex items-center gap-3 max-w-xl mx-auto">
-            <Search size={18} className="text-slate-400" />
+          <div
+            className="
+              mx-auto
+              flex
+              max-w-xl
+              items-center
+              gap-3
+            "
+          >
+            <Search
+              size={18}
+              style={{
+                color: 'var(--text-muted)',
+              }}
+            />
 
             <input
               autoFocus
               placeholder="Tìm kiếm bài viết, dự án..."
-              className="flex-1 text-sm bg-transparent outline-none text-slate-700 placeholder:text-slate-400"
+              className="
+                flex-1
+                bg-transparent
+                text-sm
+                outline-none
+                placeholder:text-[var(--text-placeholder)]
+              "
+              style={{
+                color: 'var(--text)',
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   setSearchOpen(false);
@@ -362,8 +630,19 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
             />
 
             <button
+              type="button"
               onClick={() => setSearchOpen(false)}
-              className="text-slate-400 hover:text-slate-700 p-1"
+              className="
+                rounded-lg
+                p-1
+                transition-colors
+                hover:bg-[var(--hover)]
+                hover:text-[var(--primary)]
+              "
+              style={{
+                color: 'var(--text-muted)',
+              }}
+              aria-label="Đóng tìm kiếm"
             >
               <X size={16} />
             </button>
@@ -377,39 +656,82 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
 
       {mobileOpen && (
         <div
-          className="lg:hidden border-t px-4 py-3 bg-white space-y-1"
+          className="
+            space-y-1
+            border-t
+            px-4
+            py-3
+            lg:hidden
+          "
           style={{
-            borderColor: 'var(--border, #e2e8f0)',
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
           }}
         >
           {navLinks.map((link) => {
             const fullPath = getLocalizedPath(link.path);
 
             const isActive =
-              link.path === '' ? pathname === `/${language}` : pathname.startsWith(fullPath);
+              link.path === ''
+                ? pathname === `/${language}` || pathname === `/${language}/`
+                : pathname.startsWith(fullPath);
 
             return (
               <div key={link.path}>
                 <Link
                   href={fullPath}
-                  className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
-                    isActive
-                      ? 'text-blue-600 bg-blue-50 font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
+                  className="
+                    block
+                    rounded-lg
+                    px-3
+                    py-2.5
+                    text-sm
+                    font-medium
+                    transition-colors
+                    hover:bg-[var(--hover)]
+                    hover:text-[var(--primary)]
+                  "
+                  style={{
+                    color: isActive ? 'var(--primary-text)' : 'var(--text)',
+                    background: isActive ? 'var(--active)' : undefined,
+                    fontWeight: isActive ? 600 : undefined,
+                  }}
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
                 </Link>
 
                 {link.children && (
-                  <div className="pl-4 space-y-1 my-1 border-l-2 border-slate-100 ml-3">
+                  <div
+                    className="
+                      my-1
+                      ml-3
+                      space-y-1
+                      border-l-2
+                      pl-4
+                    "
+                    style={{
+                      borderColor: 'var(--border)',
+                    }}
+                  >
                     {link.children.map((child) => (
                       <Link
                         key={child.path}
                         href={getLocalizedPath(child.path)}
                         onClick={() => setMobileOpen(false)}
-                        className="block px-3 py-1.5 rounded-md text-xs text-slate-500 hover:text-blue-600 hover:bg-slate-50"
+                        className="
+                          block
+                          rounded-md
+                          px-3
+                          py-1.5
+                          text-xs
+                          transition-colors
+                          hover:bg-[var(--hover)]
+                          hover:text-[var(--primary)]
+                        "
+                        style={{
+                          color: 'var(--text-secondary)',
+                        }}
                       >
                         {child.label}
                       </Link>

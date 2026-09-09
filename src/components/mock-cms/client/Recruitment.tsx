@@ -229,7 +229,7 @@ export default function Recruitment() {
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                 style={{
                   background: 'var(--primary)',
-                  color: 'var(--primary-foreground)',
+                  color: 'white',
                 }}
               >
                 Kỹ thuật (Engineering)

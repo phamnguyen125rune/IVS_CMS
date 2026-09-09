@@ -12,39 +12,36 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') {
-      return 'light';
-    }
+  const [theme, setTheme] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
     const savedTheme = window.localStorage.getItem('theme');
 
     if (savedTheme === 'dark' || savedTheme === 'light') {
-      return savedTheme;
+      // setTheme(savedTheme);
     }
 
-    return 'light';
-  });
+    // setMounted(true);
+  }, []);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    if (!mounted) {
+      return;
+    }
+
+    const root = document.documentElement;
+
+    root.classList.toggle('dark', theme === 'dark');
+
     window.localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'));
   };
 
-  return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        toggleTheme,
-      }}
-    >
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
