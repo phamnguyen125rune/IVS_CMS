@@ -71,7 +71,31 @@ export interface ResUserDTO {
   createdBy?: string;
   updatedAt?: string;
   updatedBy?: string;
+} // ----------------------------
+// Role (Nhóm người dùng)
+// ----------------------------
+export interface RoleUser2 {
+  userId: number;
+  roleId: number;
+  employeeCode: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  gender: string;
+  dateOfBirth: string;
+  isActive: boolean;
 }
+
+export interface CreateRolePayload {
+  roleName: string;
+  roleDescription: string;
+}
+
+export interface UpdateRolePayload {
+  roleName: string;
+  roleDescription: string;
+}
+
 // ----------------------------
 // Permission (Phân quyền)
 // ----------------------------
@@ -84,11 +108,7 @@ export interface Api {
   apiId: number;
   apiLink: string;
   apiDescription: string;
-}
-
-export interface UpdatePermissionByIdPayload {
-  apiId: number;
-  actionId: number;
+  actions: Action[];
 }
 
 export interface PermissionIdPayload {
@@ -120,6 +140,7 @@ export interface RolePermissions {
   roleDescription: string;
   isActive: boolean;
   isSystem: boolean;
+  memmberCount: number;
   permissions: PermissionLink[];
 }
 
@@ -157,7 +178,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  parentId?: string; // hỗ trợ danh mục lồng nhau
+  parentId?: string;
   locale: string;
 }
 

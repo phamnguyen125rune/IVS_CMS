@@ -14,74 +14,25 @@ export default function PermissionPage() {
     selectedRole,
     setSelectedRole,
     rolePermissions,
-    handleTogglePermission,
     hasPermission,
+    isActionSupported,
+    handleTogglePermission,
     handleSave,
     isLoading,
   } = usePermissions();
 
-  const API_ACTIONS: Record<string, string[]> = {
-    user: ['VIEW', 'CREATE', 'UPDATE', 'DELETE'],
-
-    role: ['VIEW', 'CREATE', 'UPDATE', 'DELETE'],
-
-    permission: ['VIEW', 'UPDATE'],
-
-    post: ['VIEW', 'CREATE', 'UPDATE', 'DELETE'],
-
-    category: ['VIEW', 'CREATE', 'UPDATE', 'DELETE'],
-
-    media: ['VIEW', 'CREATE', 'UPDATE', 'DELETE'],
-
-    contact: ['VIEW', 'CREATE', 'UPDATE', 'DELETE'],
-
-    global: ['VIEW', 'UPDATE'],
-
-    logs: ['VIEW'],
-  };
-
   const selectedRoleData = roles.find((role) => role.roleId === selectedRole);
 
-  const getActionClass = (actionName: string) => {
-    const normalized = actionName.toUpperCase();
-
-    if (normalized === 'VIEW') {
-      return `${styles.actionBadge} ${styles.actionView}`;
-    }
-
-    if (normalized === 'CREATE') {
-      return `${styles.actionBadge} ${styles.actionCreate}`;
-    }
-
-    if (normalized === 'UPDATE') {
-      return `${styles.actionBadge} ${styles.actionUpdate}`;
-    }
-
-    if (normalized === 'DELETE') {
-      return `${styles.actionBadge} ${styles.actionDelete}`;
-    }
-
-    return styles.actionBadge;
-  };
-
-  const totalPermissions = apis.reduce((total, api) => {
-    const supportedActions = API_ACTIONS[api.apiLink] ?? [];
-
-    return total + supportedActions.length;
-  }, 0);
+  const totalPermissions = apis.reduce((total, api) => total + (api.actions?.length ?? 0), 0);
 
   const enabledPermissions = rolePermissions.filter((permission) => {
     const [apiLink, actionName] = permission.split(':');
 
-    return API_ACTIONS[apiLink]?.includes(actionName) ?? false;
+    return isActionSupported(apiLink, actionName);
   }).length;
 
   return (
     <div className={styles.container}>
-      {/* =====================================================
-          Header
-      ====================================================== */}
-
       <section className={styles.headerSection}>
         <div className={styles.headerInner}>
           <div className={styles.headerContent}>
@@ -109,15 +60,7 @@ export default function PermissionPage() {
         </div>
       </section>
 
-      {/* =====================================================
-          Main
-      ====================================================== */}
-
       <main className={styles.main}>
-        {/* ===================================================
-            Selected Role
-        ==================================================== */}
-
         <div className={styles.permissionHeaderGrid}>
           <div className={styles.permissionHeaderCard}>
             <div className={styles.permissionHeaderContent}>
@@ -147,13 +90,7 @@ export default function PermissionPage() {
           </div>
         </div>
 
-        {/* ===================================================
-            Permission Matrix
-        ==================================================== */}
-
         <div className={styles.matrix}>
-          {/* Matrix Header */}
-
           <div className={styles.matrixHeader}>
             <div className={styles.matrixHeaderContent}>
               <div>
@@ -189,10 +126,6 @@ export default function PermissionPage() {
             </div>
           </div>
 
-          {/* =================================================
-              Table
-          ================================================== */}
-
           {isLoading ? (
             <div className={styles.loading}>Đang tải dữ liệu phân quyền...</div>
           ) : (
@@ -209,69 +142,52 @@ export default function PermissionPage() {
                 </thead>
 
                 <tbody>
-                  {apis.map((api) => {
-                    const supportedActions = API_ACTIONS[api.apiLink] ?? [];
+                  {apis.map((api) => (
+                    <tr key={api.apiId}>
+                      <td>
+                        <div className={styles.apiName}>{api.apiDescription}</div>
+                      </td>
 
-                    return (
-                      <tr key={api.apiId}>
-                        <td>
-                          <div className={styles.apiName}>{api.apiDescription}</div>
-                        </td>
+                      {actions.map((action) => {
+                        const actionName = action.actionName.toUpperCase();
 
-                        {actions.map((action) => {
-                          const actionName = action.actionName.toUpperCase();
+                        const supported = isActionSupported(api.apiLink, actionName);
 
-                          const isSupported = supportedActions.includes(actionName);
-
-                          /**
-                           * API khﾃｴng h盻・tr盻｣ action nﾃy
-                           */
-                          if (!isSupported) {
-                            return (
-                              <td key={action.actionId} className={styles.permissionCell}>
-                                <span
-                                  style={{
-                                    opacity: 0.4,
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  -
-                                </span>
-                              </td>
-                            );
-                          }
-
-                          /**
-                           * API cﾃｳ h盻・tr盻｣ action
-                           */
-                          const checked = hasPermission(api.apiLink, actionName);
-
+                        if (!supported) {
                           return (
                             <td key={action.actionId} className={styles.permissionCell}>
-                              <label className={styles.switch}>
-                                <input
-                                  type="checkbox"
-                                  checked={checked}
-                                  onChange={() => handleTogglePermission(api.apiLink, actionName)}
-                                />
-
-                                <span className={styles.slider} />
-                              </label>
+                              <span className={styles.notSupported}>-</span>
                             </td>
                           );
-                        })}
-                      </tr>
-                    );
-                  })}
+                        }
+
+                        const checked = hasPermission(api.apiLink, actionName);
+
+                        return (
+                          <td key={action.actionId} className={styles.permissionCell}>
+                            <label className={styles.switch}>
+                              <input
+                                type="checkbox"
+
+                                checked={checked}
+
+                                disabled={isLoading}
+
+                                onChange={() => handleTogglePermission(api.apiLink, actionName)}
+                              />
+
+                              <span className={styles.slider} />
+                            </label>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           )}
         </div>
-
-        {/* ===================================================
-            Permission Detail
-        ==================================================== */}
 
         <div className={styles.note}>
           <div className={styles.noteIcon}>

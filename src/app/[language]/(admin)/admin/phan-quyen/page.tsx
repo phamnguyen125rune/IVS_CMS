@@ -1,5 +1,5 @@
-import Roles from '@/components/mock-cms/admin/phan-quyen/Permission';
+import Permission from '@/components/mock-cms/admin/phan-quyen/Permission';
 
-export default function RolesPage() {
-  return <Roles />;
+export default function PermissionPage() {
+  return <Permission />;
 }

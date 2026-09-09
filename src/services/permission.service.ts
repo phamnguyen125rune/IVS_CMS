@@ -1,10 +1,8 @@
 import { apiFetch } from '@/utils/api-client';
-import { Action, Api, UpdatePermissionByIdPayload, UpdatePermissionByLinkPayload } from '@/types';
+import { Api, UpdatePermissionByIdPayload, UpdatePermissionByLinkPayload } from '@/types';
 
 export interface IPermissionService {
-  getAllActions(): Promise<Action[]>;
-
-  getAllApis(): Promise<Api[]>;
+  getAllApiActions(): Promise<Api[]>;
 
   updateRolePermissionsById(roleId: number, payload: UpdatePermissionByIdPayload): Promise<string>;
 
@@ -15,14 +13,8 @@ export interface IPermissionService {
 }
 
 export class PermissionService implements IPermissionService {
-  async getAllActions(): Promise<Action[]> {
-    return apiFetch<Action[]>('/api/v1/permissions/action', {
-      method: 'GET',
-    });
-  }
-
-  async getAllApis(): Promise<Api[]> {
-    return apiFetch<Api[]>('/api/v1/permissions/api', {
+  async getAllApiActions(): Promise<Api[]> {
+    return apiFetch<Api[]>('/api/v1/permissions/apiAction', {
       method: 'GET',
     });
   }

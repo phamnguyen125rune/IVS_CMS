@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { roleService } from '@/services/role.service';
+
 import { permissionService } from '@/services/permission.service';
 
 import { RolePermissions, Api, Action } from '@/types';
@@ -8,62 +9,50 @@ import { RolePermissions, Api, Action } from '@/types';
 export const usePermissions = () => {
   const [roles, setRoles] = useState<RolePermissions[]>([]);
   const [apis, setApis] = useState<Api[]>([]);
-  const [actions, setActions] = useState<Action[]>([]);
 
   const [selectedRole, setSelectedRole] = useState<number | null>(null);
-
-  /**
-   * Format:
-   * apiLink:ACTION
-   *
-   * Ví dụ:
-   * user:VIEW
-   * role:CREATE
-   */
   const [rolePermissions, setRolePermissions] = useState<string[]>([]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  /**
-   * Load roles
-   */
+  const actions = useMemo<Action[]>(() => {
+    const actionMap = new Map<number, Action>();
+
+    apis.forEach((api) => {
+      api.actions?.forEach((action) => {
+        actionMap.set(action.actionId, action);
+      });
+    });
+
+    return Array.from(actionMap.values()).sort((a, b) => a.actionId - b.actionId);
+  }, [apis]);
+
   const fetchRoles = async () => {
     const data = await roleService.getAllRoles();
 
     setRoles(data);
 
-    if (data.length > 0) {
-      setSelectedRole((prev) => (prev === null ? data[0].roleId : prev));
-    }
+    setSelectedRole((previous) => {
+      if (previous !== null && data.some((role) => role.roleId === previous)) {
+        return previous;
+      }
+
+      return data.length > 0 ? data[0].roleId : null;
+    });
   };
 
-  /**
-   * Load APIs
-   */
-  const fetchApis = async () => {
-    const data = await permissionService.getAllApis();
+  const fetchApiActions = async () => {
+    const data = await permissionService.getAllApiActions();
 
     setApis(data);
   };
 
-  /**
-   * Load Actions
-   */
-  const fetchActions = async () => {
-    const data = await permissionService.getAllActions();
-
-    setActions(data);
-  };
-
-  /**
-   * Load toàn bộ dữ liệu
-   */
   useEffect(() => {
     const initialize = async () => {
       try {
         setIsLoading(true);
 
-        await Promise.all([fetchRoles(), fetchApis(), fetchActions()]);
+        await Promise.all([fetchRoles(), fetchApiActions()]);
       } catch (error) {
         console.error('Không thể tải dữ liệu permission:', error);
       } finally {
@@ -74,26 +63,18 @@ export const usePermissions = () => {
     initialize();
   }, []);
 
-  /**
-   * Khi thay đổi Role
-   *
-   * Convert permission backend trả về
-   * thành format thống nhất:
-   *
-   * apiLink:ACTION
-   *
-   * Ví dụ:
-   * user:VIEW
-   */
   useEffect(() => {
     if (selectedRole === null) {
+      setRolePermissions([]);
+
       return;
     }
 
-    const role = roles.find((role) => role.roleId === selectedRole);
+    const role = roles.find((item) => item.roleId === selectedRole);
 
     if (!role) {
       setRolePermissions([]);
+
       return;
     }
 
@@ -104,33 +85,40 @@ export const usePermissions = () => {
     setRolePermissions(permissionKeys);
   }, [selectedRole, roles]);
 
-  /**
-   * Toggle permission
-   */
-  const handleTogglePermission = (apiLink: string, actionName: string) => {
-    const key = `${apiLink}:${actionName.toUpperCase()}`;
+  const isActionSupported = (apiLink: string, actionName: string) => {
+    const api = apis.find((item) => item.apiLink === apiLink);
 
-    setRolePermissions((prev) => {
-      if (prev.includes(key)) {
-        return prev.filter((permission) => permission !== key);
-      }
+    if (!api) {
+      return false;
+    }
 
-      return [...prev, key];
-    });
+    return api.actions.some(
+      (action) => action.actionName.toUpperCase() === actionName.toUpperCase()
+    );
   };
 
-  /**
-   * Kiểm tra role có permission không
-   */
   const hasPermission = (apiLink: string, actionName: string) => {
     const key = `${apiLink}:${actionName.toUpperCase()}`;
 
     return rolePermissions.includes(key);
   };
 
-  /**
-   * Save permission
-   */
+  const handleTogglePermission = (apiLink: string, actionName: string) => {
+    if (!isActionSupported(apiLink, actionName)) {
+      return;
+    }
+
+    const key = `${apiLink}:${actionName.toUpperCase()}`;
+
+    setRolePermissions((previous) => {
+      if (previous.includes(key)) {
+        return previous.filter((permission) => permission !== key);
+      }
+
+      return [...previous, key];
+    });
+  };
+
   const buildPermissionPayload = () => {
     return rolePermissions.map((permission) => {
       const [apiLink, actionName] = permission.split(':');
@@ -141,9 +129,11 @@ export const usePermissions = () => {
       };
     });
   };
+
   const handleSave = async () => {
     if (selectedRole === null) {
       alert('Vui lòng chọn role!');
+
       return;
     }
 
@@ -152,21 +142,17 @@ export const usePermissions = () => {
 
       const permissions = buildPermissionPayload();
 
-      console.log('Role ID:', selectedRole);
-      console.log('Permissions gửi lên:', permissions);
+      console.log('Permission payload:', {
+        roleId: selectedRole,
+        permissions,
+      });
 
       const response = await permissionService.updateRolePermissionsByApiLink(selectedRole, {
         permissions,
       });
 
-      console.log('Update permission response:', response);
-
-      /**
-       * Cập nhật lại dữ liệu role local
-       * để sau khi save UI vẫn giữ trạng thái mới
-       */
-      setRoles((prevRoles) =>
-        prevRoles.map((role) => {
+      setRoles((previousRoles) =>
+        previousRoles.map((role) => {
           if (role.roleId !== selectedRole) {
             return role;
           }
@@ -178,7 +164,7 @@ export const usePermissions = () => {
         })
       );
 
-      alert('Cập nhật phân quyền thành công!');
+      alert(response || 'Cập nhật phân quyền thành công!');
     } catch (error) {
       console.error('Không thể cập nhật permission:', error);
 
@@ -190,16 +176,22 @@ export const usePermissions = () => {
 
   return {
     roles,
+
     apis,
+
     actions,
 
     rolePermissions,
 
     selectedRole,
+
     setSelectedRole,
 
-    handleTogglePermission,
     hasPermission,
+
+    isActionSupported,
+
+    handleTogglePermission,
 
     handleSave,
 

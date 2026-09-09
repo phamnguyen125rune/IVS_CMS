@@ -5,6 +5,7 @@ import { usePathname, useParams, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
+  GroupIcon,
   ShieldCheck,
   FileText,
   CheckSquare,
@@ -32,6 +33,11 @@ const navItems = [
     label: 'Quản lý Nhân sự',
     icon: Users,
     path: '/admin/nhan-su',
+  },
+  {
+    label: 'Quản lý Nhóm nhân sự',
+    icon: GroupIcon,
+    path: '/admin/nhom-nhan-su',
   },
   {
     label: 'Quản lý Phân quyền',
