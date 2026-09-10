@@ -10,26 +10,8 @@
 // ============================================================
 
 // ----------------------------
-// Auth / User
+// Auth
 // ----------------------------
-
-export interface User {
-  id: number;
-  fullname: string;
-  email: string;
-  role: Role;
-  employeeCode?: string;
-  avatarUrl?: string;
-  createdAt: string;
-}
-
-export interface Role {
-  id: number;
-  name: string; // VD: 'ADMIN', 'EDITOR', 'VIEWER'
-  description?: string;
-  active?: boolean;
-  permissions: string[]; // VD: ['post:create', 'post:publish']
-}
 
 export interface RoleLogin {
   id: number;
@@ -49,45 +31,6 @@ export interface UserLogin {
 export interface AuthResponse {
   access_token: string;
   user: UserLogin;
-}
-
-export interface RoleUser {
-  id: number;
-  name: string;
-}
-
-export interface ResUserDTO {
-  id: number;
-  fullname: string;
-  email: string;
-  avatarUrl?: string | null;
-  phone?: string | null;
-  age?: number;
-  address?: string | null;
-  gender?: string | null;
-  employeeCode?: string | null;
-  dateOfBirth?: string | null;
-  status: string;
-  role?: RoleUser | null;
-  deleted?: boolean;
-  createdAt?: string;
-  createdBy?: string;
-  updatedAt?: string;
-  updatedBy?: string;
-  deletedAt?: string;
-  deletedBy?: string;
-}
-
-export interface UserCreatePayload {
-  fullname?: string;
-  email: string;
-  phone?: string;
-  age?: number;
-  address?: string;
-  gender?: string;
-  dateOfBirth?: string;
-  avatarUrl?: string;
-  roleId?: number;
 }
 
 // ----------------------------

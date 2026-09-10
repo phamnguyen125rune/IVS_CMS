@@ -3,7 +3,7 @@ import { authService } from '@/services/auth.service';
 import { cookies } from 'next/headers';
 import { ApiError } from '@/utils/api-client';
 
-const DEFAULT_STAFF_PASSWORD = '123456';
+const DEFAULT_USER_PASSWORD = '123456';
 
 export async function POST(request: Request) {
   let loginId = '';
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       maxAge: 8640000,
     });
 
-    const mustChangePassword = password === DEFAULT_STAFF_PASSWORD;
+    const mustChangePassword = password === DEFAULT_USER_PASSWORD;
     if (mustChangePassword) {
       cookieStore.set('must_change_password', 'true', {
         httpOnly: true,
