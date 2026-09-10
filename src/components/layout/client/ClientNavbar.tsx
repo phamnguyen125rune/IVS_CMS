@@ -225,11 +225,13 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-6 py-3"
-      style={{
-              background: 'var(--background)',
-              color: 'var(--text)',
-            }}>
+      <div
+        className="flex items-center justify-between px-6 py-3"
+        style={{
+          background: 'var(--background)',
+          color: 'var(--text)',
+        }}
+      >
         <Link href={getLocalizedPath('/')} className="flex items-center gap-2.5">
           <div
             className="

@@ -1,5 +1,5 @@
-// import Categories from '@/components/mock-cms/admin/Categories';
+import Categories from '@/components/mock-cms/admin/Categories';
 
 export default function CategoriesPage() {
-  // return <Categories />;
+  return <Categories />;
 }
