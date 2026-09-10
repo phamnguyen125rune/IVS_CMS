@@ -49,6 +49,15 @@ export class RoleService implements IRoleService {
     return response.message;
   }
 
+  async setUsersToDefaultRole(userIds: number[]): Promise<string> {
+    const response = await apiFetch<{ message: string }>(`/api/v1/roles/default/users`, {
+      method: 'PUT',
+      body: JSON.stringify(userIds),
+    });
+
+    return response.message;
+  }
+
   async createRole(payload: CreateRolePayload): Promise<RolePermissions> {
     return apiFetch<RolePermissions>('/api/v1/roles', {
       method: 'POST',

@@ -1,4 +1,4 @@
-import { ResUserDTO, ResultPaginationDTO, Role, UserCreatePayload } from '@/types';
+import { ResUserDTO, Role, UserCreatePayload } from '@/types';
 import { apiFetch } from '@/utils/api-client';
 
 export class UserService {
@@ -20,9 +20,9 @@ export class UserService {
     });
   }
 
-  async getUsers(page = 1, size = 10): Promise<ResultPaginationDTO<ResUserDTO>> {
-    return apiFetch<ResultPaginationDTO<ResUserDTO>>(`/api/v1/users?page=${page}&size=${size}`);
-  }
+  // async getUsers(page = 1, size = 10): Promise<ResultPaginationDTO<ResUserDTO>> {
+  //   return apiFetch<ResultPaginationDTO<ResUserDTO>>(`/api/v1/users?page=${page}&size=${size}`);
+  // }
 
   async createUser(payload: UserCreatePayload): Promise<ResUserDTO> {
     return apiFetch<ResUserDTO>('/api/v1/users', {

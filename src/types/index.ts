@@ -57,7 +57,7 @@ export interface RoleUser {
 }
 
 export interface ResUserDTO {
-  id: number;
+  userId: number;
   fullname: string;
   email: string;
   avatarUrl?: string | null;

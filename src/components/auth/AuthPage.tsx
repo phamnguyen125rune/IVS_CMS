@@ -43,8 +43,8 @@ export default function AuthPage() {
   const callbackUrl = searchParams.get('callbackUrl');
   const lockedReason = searchParams.get('reason') === 'locked';
 
-  const [loginId, setLoginId] = useState('admin@cms.local');
-  const [loginPassword, setLoginPassword] = useState('Admin@123456');
+  const [loginId, setLoginId] = useState('cms@gmail.com');
+  const [loginPassword, setLoginPassword] = useState('123456');
   const [forgotEmail, setForgotEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -263,7 +263,7 @@ export default function AuthPage() {
                 value={loginId}
                 onChange={(event) => setLoginId(event.target.value)}
                 className={inputClass}
-                placeholder="admin@cms.local hoặc EMP0001"
+                placeholder="cms@gmail.com hoặc EMP0001"
                 required
               />
             </Field>
@@ -290,8 +290,8 @@ export default function AuthPage() {
             </div>
             <PrimaryButton loading={isLoading}>Đăng nhập</PrimaryButton>
             <p className="text-center text-xs text-slate-400">
-              Tài khoản demo: <span className="font-semibold text-slate-600">admin@cms.local</span>{' '}
-              / <span className="font-semibold text-slate-600">Admin@123456</span>
+              Tài khoản demo: <span className="font-semibold text-slate-600">cms@gmail.com</span>{' '}
+              / <span className="font-semibold text-slate-600">123456</span>
             </p>
             <p className="text-center text-sm text-slate-500">
               Khách hàng?{' '}
@@ -343,7 +343,7 @@ export default function AuthPage() {
                     value={forgotEmail}
                     onChange={(event) => setForgotEmail(event.target.value)}
                     className={inputClass}
-                    placeholder="admin@cms.local"
+                    placeholder="cms@gmail.com"
                     required
                   />
                 </Field>
