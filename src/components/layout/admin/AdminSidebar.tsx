@@ -16,6 +16,7 @@ import {
   Mail,
   Settings,
   LogOut,
+  Handshake,
 } from 'lucide-react';
 
 import { localizePath } from '@/components/navigation/LocalizedLink';
@@ -70,6 +71,11 @@ const navItems = [
     label: 'Quản lý Menu',
     icon: MenuIcon,
     path: '/admin/menu',
+  },
+  {
+    label: 'Quản lý Đối tác',
+    icon: Handshake,
+    path: '/admin/doi-tac',
   },
   {
     label: 'Quản lý Biểu mẫu',
