@@ -8,6 +8,7 @@ import {
   GroupIcon,
   ShieldCheck,
   FileText,
+  CircleUserRound,
   CheckSquare,
   MenuIcon,
   FolderTree,
@@ -79,6 +80,11 @@ const navItems = [
     label: 'Cài đặt',
     icon: Settings,
     path: '/admin/cai-dat',
+  },
+  {
+    label: 'Hồ sơ',
+    icon: CircleUserRound,
+    path: '/admin/ho-so',
   },
 ];
 
