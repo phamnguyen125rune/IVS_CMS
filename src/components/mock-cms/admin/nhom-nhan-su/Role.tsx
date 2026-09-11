@@ -62,62 +62,118 @@ export default function RoleManagement() {
     setRoleName,
     setRoleDescription,
   } = useRoleManagement();
+
   console.log('Role.tsx currentUserId:', currentUserId);
+
   return (
-    <div className={styles.container}>
-      <section className={styles.headerSection}>
-        <div className={styles.headerInner}>
-          <div className={styles.headerContent}>
-            <div>
-              <div className={styles.headerLabel}>User Management</div>
+    <div
+      className="relative p-6"
+      style={{
+        color: 'var(--text)',
+      }}
+    >
+      {/* =================================================
+          HEADER
+      ================================================== */}
 
-              <h1 className={styles.headerTitle}>Quản lý nhóm nhân sự</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1
+            className="
+              font-display text-xl
+              font-bold
+            "
+            style={{
+              color: 'var(--text)',
+            }}
+          >
+            Quản lý nhóm nhân sự
+          </h1>
 
-              <p className={styles.headerDescription}>
-                Quản lý role và danh sách thành viên thuộc từng nhóm người dùng trong hệ thống.
-              </p>
-            </div>
-
-            <button type="button" onClick={openCreateModal} className={styles.createRoleBtn}>
-              Thêm role
-            </button>
-          </div>
+          <p
+            className="mt-0.5 text-sm"
+            style={{
+              color: 'var(--text-secondary)',
+            }}
+          >
+            Quản lý role và danh sách thành viên thuộc từng nhóm người dùng trong hệ thống.
+          </p>
         </div>
-      </section>
 
-      <main className={styles.main}>
-        {error && <div className={styles.errorBox}>{error}</div>}
+        <button
+          type="button"
+          onClick={openCreateModal}
+          className="
+            rounded-lg px-4 py-2
+            text-sm font-semibold
+            transition-colors
+          "
+          style={{
+            background: 'var(--primary)',
+            color: 'var(--primary-foreground)',
+          }}
+        >
+          Thêm role
+        </button>
+      </div>
 
-        <RoleList
-          roles={roles}
-          selectedRole={selectedRole}
-          onSelectRole={handleSelectRole}
-          onEdit={openEditModal}
-          onDelete={setDeleteTarget}
+      {/* =================================================
+          ERROR
+      ================================================== */}
+
+      {error && <div className={styles.errorBox}>{error}</div>}
+
+      {/* =================================================
+          ROLE LIST
+      ================================================== */}
+
+      <RoleList
+        roles={roles}
+        selectedRole={selectedRole}
+        onSelectRole={handleSelectRole}
+        onEdit={openEditModal}
+        onDelete={setDeleteTarget}
+      />
+
+      {/* =================================================
+          MEMBER PANEL
+      ================================================== */}
+
+      {selectedRole ? (
+        <MemberPanel
+          currentUserId={currentUserId}
+          role={selectedRole}
+          members={members}
+          saving={saving}
+          hasChanged={hasChanged}
+          onAddMember={openAddMemberModal}
+          onSave={handleSaveMembers}
+          onReset={handleReset}
+          onRemoveMember={handleRemoveMember}
         />
+      ) : (
+        <div className={styles.selectRoleEmpty}>
+          <h3>Chọn một role</h3>
 
-        {selectedRole ? (
-          <MemberPanel
-            currentUserId={currentUserId}
-            role={selectedRole}
-            members={members}
-            saving={saving}
-            hasChanged={hasChanged}
-            onAddMember={openAddMemberModal}
-            onSave={handleSaveMembers}
-            onReset={handleReset}
-            onRemoveMember={handleRemoveMember}
-          />
-        ) : (
-          <div className={styles.selectRoleEmpty}>
-            <h3>Chọn một role</h3>
+          <p>
+            Nhấn vào role phía trên để xem và quản lý danh sách thành viên.
+          </p>
+        </div>
+      )}
 
-            <p>Nhấn vào role phía trên để xem và quản lý danh sách thành viên.</p>
-          </div>
-        )}
+      {/* =================================================
+          LOADING
+      ================================================== */}
 
-        {loading && <div className={styles.loading}>Đang tải dữ liệu...</div>}
-      </main>
+      {loading && (
+        <div className={styles.loading}>
+          Đang tải dữ liệu...
+        </div>
+      )}
+
+      {/* =================================================
+          ADD MEMBER MODAL
+      ================================================== */}
 
       {selectedRole && (
         <AddMemberModal
@@ -139,6 +195,10 @@ export default function RoleManagement() {
         />
       )}
 
+      {/* =================================================
+          ROLE FORM MODAL
+      ================================================== */}
+
       <RoleFormModal
         open={showRoleModal}
         editingRole={editingRole}
@@ -149,6 +209,10 @@ export default function RoleManagement() {
         onClose={closeRoleModal}
         onSubmit={handleSubmitRole}
       />
+
+      {/* =================================================
+          DELETE ROLE MODAL
+      ================================================== */}
 
       <DeleteRoleModal
         role={deleteTarget}

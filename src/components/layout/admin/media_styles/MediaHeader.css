@@ -4,9 +4,7 @@
 
 .media-header__title {
   margin: 0;
-
-  color: #08142f;
-
+  color: var(--text);
   font-size: 1.875rem;
   font-weight: 700;
   line-height: 2.25rem;
@@ -14,9 +12,7 @@
 
 .media-header__count {
   margin: 0.5rem 0 0;
-
-  color: #6b7280;
-
+  color: var(--text-muted);
   font-size: 0.875rem;
   line-height: 1.25rem;
 }

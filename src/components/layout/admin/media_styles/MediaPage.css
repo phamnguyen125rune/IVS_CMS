@@ -1,17 +1,16 @@
 .media-page {
   min-height: 100vh;
-  background: #f7f9fc;
+  background: var(--background);
   padding: 32px;
 }
 
 .media-page__status {
   width: 100%;
   padding: 48px;
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 16px;
-
   text-align: center;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 15px;
 }
 

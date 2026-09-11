@@ -1,95 +1,14 @@
+/* =========================================================
+   CONTAINER
+========================================================= */
+
 .container {
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--background);
 }
 
 /* =========================================================
-   Header
-========================================================= */
-
-.headerSection {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-  padding: 48px 24px;
-}
-
-.headerInner {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-.headerContent {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.headerLabel {
-  margin-bottom: 12px;
-  color: #60a5fa;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-}
-
-.headerTitle {
-  margin: 0 0 12px;
-  color: #fff;
-  font-size: 36px;
-  line-height: 1.2;
-  font-weight: 700;
-}
-
-.headerDescription {
-  max-width: 768px;
-  margin: 0;
-  color: #bfdbfe;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.roleIndicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  width: fit-content;
-  padding: 12px 16px;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-}
-
-.roleIndicatorIcon {
-  color: #93c5fd;
-}
-
-.roleIndicatorLabel {
-  color: #bfdbfe;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.roleIndicatorValue {
-  margin-top: 2px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* =========================================================
-   Main
-========================================================= */
-
-.main {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 40px 24px;
-}
-
-/* =========================================================
-   Role Section
+   ROLE SECTION
 ========================================================= */
 
 .roleSection {
@@ -102,9 +21,9 @@
 .roleCard {
   padding: 20px;
   text-align: left;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
   cursor: pointer;
   transition:
@@ -119,9 +38,9 @@
 }
 
 .roleCardActive {
-  border-color: #60a5fa;
+  border-color: var(--primary);
   box-shadow:
-    0 0 0 2px #dbeafe,
+    0 0 0 2px var(--primary-soft),
     0 6px 18px rgba(15, 23, 42, 0.08);
 }
 
@@ -139,29 +58,29 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 .selectedBadge {
   padding: 4px 10px;
   border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--primary-light);
+  color: var(--primary-text);
   font-size: 12px;
   font-weight: 600;
 }
 
 .roleName {
   margin: 16px 0 0;
-  color: #0f172a;
+  color: var(--text);
   font-size: 20px;
   font-weight: 700;
 }
 
 .roleType {
   margin-top: 4px;
-  color: #94a3b8;
+  color: var(--text-placeholder);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -170,13 +89,13 @@
 
 .roleDescription {
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 
 /* =========================================================
-   Permission Header
+   PERMISSION HEADER
 ========================================================= */
 
 .permissionHeaderGrid {
@@ -187,9 +106,9 @@
 
 .permissionHeaderCard {
   padding: 24px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
 }
 
@@ -202,7 +121,7 @@
 
 .permissionLabel {
   margin-bottom: 4px;
-  color: #2563eb;
+  color: var(--primary);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -211,19 +130,19 @@
 
 .permissionTitle {
   margin: 0;
-  color: #0f172a;
+  color: var(--text);
   font-size: 24px;
   font-weight: 700;
 }
 
 .permissionDescription {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 /* =========================================================
-   Select
+   SELECT
 ========================================================= */
 
 .roleSelectWrapper {
@@ -233,10 +152,10 @@
 .roleSelect {
   min-width: 190px;
   padding: 10px 36px 10px 16px;
-  color: #334155;
-  border: 1px solid #e2e8f0;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   font-size: 14px;
   font-weight: 600;
   outline: none;
@@ -247,16 +166,16 @@
 }
 
 .roleSelect:hover {
-  border-color: #93c5fd;
+  border-color: var(--border-strong);
 }
 
 .roleSelect:focus {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 3px #dbeafe;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 /* =========================================================
-   Summary
+   SUMMARY
 ========================================================= */
 
 .summaryGrid {
@@ -267,9 +186,9 @@
 
 .summaryCard {
   padding: 20px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
 }
 
@@ -286,43 +205,43 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 .summaryIconEdit {
-  background: #ecfdf5;
-  color: #059669;
+  background: var(--success-light);
+  color: var(--success);
 }
 
 .summaryLabel {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
 }
 
 .summaryValue {
   margin-top: 2px;
-  color: #0f172a;
+  color: var(--text);
   font-size: 20px;
   font-weight: 700;
 }
 
 /* =========================================================
-   Matrix
+   MATRIX
 ========================================================= */
 
 .matrix {
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
 }
 
 .matrixHeader {
   padding: 20px 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
 }
 
 .matrixHeaderContent {
@@ -334,19 +253,19 @@
 
 .matrixTitle {
   margin: 0;
-  color: #0f172a;
+  color: var(--text);
   font-size: 20px;
   font-weight: 700;
 }
 
 .matrixDescription {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 /* =========================================================
-   Buttons
+   BUTTONS
 ========================================================= */
 
 .actions {
@@ -372,24 +291,24 @@
 }
 
 .resetBtn {
-  color: #334155;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--surface);
 }
 
 .resetBtn:hover {
-  background: #f8fafc;
+  background: var(--hover);
 }
 
 .saveBtn {
-  color: #fff;
-  border: 1px solid #2563eb;
-  background: #2563eb;
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  background: var(--primary);
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.2);
 }
 
 .saveBtn:hover {
-  background: #1d4ed8;
+  background: var(--primary-hover);
 }
 
 .saveBtn:disabled,
@@ -399,7 +318,7 @@
 }
 
 /* =========================================================
-   Table
+   TABLE
 ========================================================= */
 
 .tableWrapper {
@@ -412,12 +331,12 @@
 }
 
 .table thead tr {
-  background: #f8fafc;
+  background: var(--surface-secondary);
 }
 
 .table th {
   padding: 16px 24px;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
   text-align: left;
@@ -432,7 +351,7 @@
 
 .table td {
   padding: 20px 24px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   vertical-align: middle;
 }
 
@@ -441,18 +360,18 @@
 }
 
 .table tbody tr:hover {
-  background: rgba(248, 250, 252, 0.7);
+  background: var(--hover);
 }
 
 .apiName {
-  color: #0f172a;
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
 }
 
 .apiId {
   margin-top: 4px;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -461,7 +380,7 @@
 }
 
 /* =========================================================
-   Toggle
+   TOGGLE
 ========================================================= */
 
 .switch {
@@ -483,25 +402,25 @@
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  background: #cbd5e1;
+  background: var(--border-strong);
   transition: background 0.2s ease;
 }
 
 .slider::before {
   content: '';
   position: absolute;
-  left: 2px;
   top: 2px;
+  left: 2px;
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
   transition: transform 0.2s ease;
 }
 
 .switch input:checked + .slider {
-  background: #2563eb;
+  background: var(--primary);
 }
 
 .switch input:checked + .slider::before {
@@ -509,7 +428,7 @@
 }
 
 .switch input:focus-visible + .slider {
-  box-shadow: 0 0 0 3px #dbeafe;
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 .switch input:disabled + .slider {
@@ -518,16 +437,16 @@
 }
 
 /* =========================================================
-   Empty cell
+   EMPTY CELL
 ========================================================= */
 
 .emptyCell {
-  color: #cbd5e1;
+  color: var(--text-placeholder);
   font-size: 14px;
 }
 
 /* =========================================================
-   Action Badge
+   ACTION BADGE
 ========================================================= */
 
 .actionBadge {
@@ -545,6 +464,11 @@
   justify-content: center;
   gap: 8px;
 }
+
+/*
+ * Các màu Action là màu phân biệt trực quan
+ * nên giữ nguyên, không chuyển sang semantic variable.
+ */
 
 .actionView {
   color: #1d4ed8;
@@ -567,18 +491,18 @@
 }
 
 /* =========================================================
-   Loading
+   LOADING
 ========================================================= */
 
 .loading {
   padding: 48px 24px;
-  color: #64748b;
+  color: var(--text-muted);
   text-align: center;
   font-size: 14px;
 }
 
 /* =========================================================
-   Note
+   NOTE
 ========================================================= */
 
 .note {
@@ -604,7 +528,7 @@
   background: #fef3c7;
 }
 
-.noteTitle {
+.black {
   color: #0f172a;
   font-size: 14px;
   font-weight: 600;
@@ -618,16 +542,8 @@
 }
 
 /* =========================================================
-   Responsive
+   RESPONSIVE
 ========================================================= */
-
-@media (min-width: 1024px) {
-  .headerContent {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-  }
-}
 
 @media (max-width: 900px) {
   .roleSection {
@@ -640,18 +556,6 @@
 }
 
 @media (max-width: 768px) {
-  .headerSection {
-    padding: 36px 20px;
-  }
-
-  .main {
-    padding: 32px 20px;
-  }
-
-  .headerTitle {
-    font-size: 30px;
-  }
-
   .permissionHeaderContent,
   .matrixHeaderContent {
     flex-direction: column;
@@ -677,18 +581,6 @@
 }
 
 @media (max-width: 560px) {
-  .headerTitle {
-    font-size: 26px;
-  }
-
-  .headerDescription {
-    font-size: 14px;
-  }
-
-  .roleIndicator {
-    width: 100%;
-  }
-
   .permissionHeaderCard {
     padding: 20px;
   }
@@ -709,6 +601,7 @@
   .table {
     min-width: 650px;
   }
+
   .apiLink {
     margin-top: 4px;
     font-size: 12px;
@@ -720,12 +613,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     width: 28px;
     height: 28px;
-
     opacity: 0.35;
-
     font-size: 18px;
     font-weight: 600;
   }

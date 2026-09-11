@@ -1,209 +1,152 @@
 .media-toolbar {
   display: flex;
-
   align-items: center;
-
   gap: 1rem;
-
   margin-bottom: 1.25rem;
 }
 
 .media-toolbar__search {
   position: relative;
-
   flex: 1;
 }
 
 .media-toolbar__input {
   width: 100%;
   height: 3rem;
-
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
-
-  background-color: #fff;
-
+  background-color: var(--surface);
   padding: 0 3rem;
-
-  color: #111827;
+  color: var(--text);
   font-size: 0.875rem;
-
   outline: none;
-
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
 
 .media-toolbar__input::placeholder {
-  color: #9ca3af;
+  color: var(--text-placeholder);
 }
 
 .media-toolbar__input:focus {
-  border-color: #3b82f6;
-
-  box-shadow: 0 0 0 3px rgb(219 234 254 / 1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 .media-toolbar__search-button {
   position: absolute;
-
   top: 0;
   left: 0;
-
   display: flex;
-
   width: 3rem;
   height: 3rem;
-
   align-items: center;
   justify-content: center;
-
   border: none;
   border-radius: 0.75rem 0 0 0.75rem;
-
   background: transparent;
-
-  color: #9ca3af;
-
+  color: var(--text-placeholder);
   cursor: pointer;
-
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
 }
 
 .media-toolbar__search-button:hover {
-  background-color: #f9fafb;
-
-  color: #2563eb;
+  background-color: var(--hover);
+  color: var(--primary);
 }
 
 .media-toolbar__clear-button {
   position: absolute;
-
   top: 50%;
   right: 0.5rem;
-
   display: flex;
-
   width: 2rem;
   height: 2rem;
-
   align-items: center;
   justify-content: center;
-
   transform: translateY(-50%);
-
   border: none;
   border-radius: 0.5rem;
-
   background: transparent;
-
-  color: #9ca3af;
-
+  color: var(--text-placeholder);
   cursor: pointer;
-
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
 }
 
 .media-toolbar__clear-button:hover {
-  background-color: #f3f4f6;
-
-  color: #374151;
+  background-color: var(--surface-tertiary);
+  color: var(--text-secondary);
 }
 
 .media-toolbar__view-mode {
   display: flex;
-
   padding: 0.25rem;
-
   border-radius: 0.75rem;
-
-  background-color: #fff;
-
+  background-color: var(--surface);
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
 }
 
 .media-toolbar__view-button {
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   padding: 0.75rem;
-
   border: none;
   border-radius: 0.5rem;
-
   background: transparent;
-
-  color: #9ca3af;
-
+  color: var(--text-placeholder);
   cursor: pointer;
-
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
 }
 
 .media-toolbar__view-button:hover {
-  background-color: #f9fafb;
-
-  color: #374151;
+  background-color: var(--hover);
+  color: var(--text-secondary);
 }
 
 .media-toolbar__view-button--active {
-  background-color: #f3f4f6;
-
-  color: #2563eb;
+  background-color: var(--surface-tertiary);
+  color: var(--primary);
 }
 
 .media-toolbar__view-button--active:hover {
-  background-color: #f3f4f6;
-
-  color: #2563eb;
+  background-color: var(--surface-tertiary);
+  color: var(--primary);
 }
 
 .media-toolbar__search-button:focus-visible,
 .media-toolbar__clear-button:focus-visible,
 .media-toolbar__view-button:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
 .media-toolbar__left {
   display: flex;
-
   align-items: center;
-
   gap: 0.75rem;
-
   flex: 1;
-
   min-width: 0;
 }
 
 .media-toolbar__filter {
   width: 180px;
   height: 3rem;
-
   padding: 0 2.25rem 0 0.875rem;
-
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
-
-  background-color: #fff;
-
-  color: #374151;
+  background-color: var(--surface);
+  color: var(--text-secondary);
   font-size: 0.875rem;
-
   outline: none;
-
   cursor: pointer;
-
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease,
@@ -211,15 +154,12 @@
 }
 
 .media-toolbar__filter:hover {
-  border-color: #d1d5db;
-
-  background-color: #f9fafb;
+  border-color: var(--border-strong);
+  background-color: var(--hover);
 }
 
 .media-toolbar__filter:focus {
-  border-color: #3b82f6;
-
-  box-shadow: 0 0 0 3px rgb(219 234 254 / 1);
-
-  background-color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+  background-color: var(--surface);
 }

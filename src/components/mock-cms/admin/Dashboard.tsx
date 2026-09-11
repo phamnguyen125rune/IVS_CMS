@@ -6,14 +6,14 @@ import {
   Eye,
   TrendingUp,
   TrendingDown,
-  Clock, // Đổi MessageSquare thành Clock cho phù hợp với "chờ duyệt"
+  Clock,
   MoreHorizontal,
 } from 'lucide-react';
 
 export default function Dashboard() {
   const metrics = [
     {
-      label: 'Tổng số nhân viên', // Đổi từ "Tổng người dùng"
+      label: 'Tổng số nhân viên',
       value: '124',
       change: '+12.5%',
       up: true,
@@ -22,7 +22,7 @@ export default function Dashboard() {
       bg: 'bg-blue-50',
     },
     {
-      label: 'Tổng số bài viết', // Đổi từ "Bài viết đã đăng"
+      label: 'Tổng số bài viết',
       value: '842',
       change: '+5.2%',
       up: true,
@@ -31,7 +31,7 @@ export default function Dashboard() {
       bg: 'bg-emerald-50',
     },
     {
-      label: 'Số lượt xem', // Đổi từ "Lượt truy cập (30 ngày)"
+      label: 'Số lượt xem',
       value: '145.2K',
       change: '-2.4%',
       up: false,
@@ -40,8 +40,8 @@ export default function Dashboard() {
       bg: 'bg-violet-50',
     },
     {
-      label: 'Số bài chờ duyệt', // Đổi từ "Bình luận mới"
-      value: '28', // Cập nhật số liệu cho hợp lý với số bài chờ duyệt
+      label: 'Số bài chờ duyệt',
+      value: '28',
       change: '+4.1%',
       up: true,
       icon: Clock,
@@ -99,95 +99,170 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto font-['Plus_Jakarta_Sans'] pb-20">
+    <div className="mx-auto max-w-7xl space-y-6 pb-20 font-['Plus_Jakarta_Sans']">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Tổng quan hệ thống</h1>
-        <p className="text-slate-500 mt-1">
+        <h1
+          className="text-2xl font-bold"
+          style={{ color: 'var(--text)' }}
+        >
+          Tổng quan hệ thống
+        </h1>
+
+        <p
+          className="mt-1"
+          style={{ color: 'var(--text-muted)' }}
+        >
           Theo dõi các chỉ số quan trọng và hoạt động gần đây của nền tảng.
         </p>
       </div>
 
       {/* 4 Top Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric, i) => (
-          <div key={i} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+          <div
+            key={i}
+            className="rounded-2xl border p-6 shadow-sm"
+            style={{
+              background: 'var(--surface)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-start justify-between">
-              <div className={`p-3 rounded-xl ${metric.bg} ${metric.color}`}>
+              <div className={`rounded-xl p-3 ${metric.bg} ${metric.color}`}>
                 <metric.icon size={24} />
               </div>
+
               <div
-                className={`flex items-center gap-1 text-sm font-semibold ${metric.up ? 'text-emerald-600' : 'text-rose-500'}`}
+                className={`flex items-center gap-1 text-sm font-semibold ${
+                  metric.up ? 'text-emerald-600' : 'text-rose-500'
+                }`}
               >
                 {metric.change}
-                {metric.up ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+
+                {metric.up ? (
+                  <TrendingUp size={16} />
+                ) : (
+                  <TrendingDown size={16} />
+                )}
               </div>
             </div>
+
             <div className="mt-4">
-              <h3 className="text-3xl font-bold text-slate-900">{metric.value}</h3>
-              <p className="text-slate-500 text-sm mt-1">{metric.label}</p>
+              <h3
+                className="text-3xl font-bold"
+                style={{ color: 'var(--text)' }}
+              >
+                {metric.value}
+              </h3>
+
+              <p
+                className="mt-1 text-sm"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                {metric.label}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Middle Bar Chart Section */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <div className="flex flex-col md:flex-row md:items-start justify-between mb-8 gap-4">
+      <div
+        className="rounded-2xl border p-6 shadow-sm"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
+      >
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Lưu lượng truy cập tuần qua</h2>
-            <p className="text-sm text-slate-500 mt-1">
+            <h2
+              className="text-lg font-bold"
+              style={{ color: 'var(--text)' }}
+            >
+              Lưu lượng truy cập tuần qua
+            </h2>
+
+            <p
+              className="mt-1 text-sm"
+              style={{ color: 'var(--text-muted)' }}
+            >
               Số lượt truy cập website phân bổ theo các ngày trong tuần.
             </p>
 
-            {/* Chú thích màu sắc (Legend) */}
-            <div className="flex items-center gap-6 mt-4">
+            {/* Legend */}
+            <div className="mt-4 flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-blue-100"></span>
-                <span className="text-sm text-slate-600">Tổng lượt truy cập</span>
+                <span className="h-3 w-3 rounded-full bg-blue-100" />
+                <span
+                  className="text-sm"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Tổng lượt truy cập
+                </span>
               </div>
+
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-blue-600"></span>
-                <span className="text-sm text-slate-600">Người dùng mới</span>
+                <span className="h-3 w-3 rounded-full bg-blue-600" />
+                <span
+                  className="text-sm"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Người dùng mới
+                </span>
               </div>
             </div>
           </div>
 
-          <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors whitespace-nowrap">
+          <button
+            type="button"
+            className="whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-100"
+            style={{
+              background: 'var(--surface-secondary)',
+              color: 'var(--text-secondary)',
+            }}
+          >
             Xuất báo cáo
           </button>
         </div>
 
-        {/* CSS-based Bar Chart Representation for Demo */}
-        <div className="h-64 flex items-end justify-between gap-2 mt-4 px-2">
+        {/* CSS-based Bar Chart */}
+        <div className="mt-4 flex h-64 items-end justify-between gap-2 px-2">
           {chartData.map((d, i) => (
-            <div key={i} className="flex flex-col items-center w-full group">
-              <div className="relative w-full flex justify-center h-52">
+            <div
+              key={i}
+              className="group flex w-full flex-col items-center"
+            >
+              <div className="relative flex h-52 w-full justify-center">
                 <div
-                  className="w-full max-w-[4rem] bg-blue-100 group-hover:bg-blue-200 rounded-t-xl transition-all duration-500 relative cursor-pointer"
+                  className="relative w-full max-w-[4rem] cursor-pointer rounded-t-xl bg-blue-100 transition-all duration-500 group-hover:bg-blue-200"
                   style={{
                     height: `${d.value}%`,
                     bottom: 0,
                     position: 'absolute',
                   }}
                 >
-                  {/* Tooltip chi tiết */}
-                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white py-2 px-3 rounded-lg shadow-xl z-10 pointer-events-none flex flex-col items-center gap-0.5 min-w-max">
+                  {/* Tooltip */}
+                  <div className="pointer-events-none absolute -top-14 left-1/2 z-10 flex min-w-max -translate-x-1/2 flex-col items-center gap-0.5 rounded-lg bg-slate-800 px-3 py-2 text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                     <span className="text-xs font-medium">
                       Tổng: <strong className="text-sm">{d.value}k</strong> lượt
                     </span>
+
                     <span className="text-[10px] text-slate-300">
                       Mới: {Math.round(d.value * 0.7)}k lượt
                     </span>
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
                   </div>
 
                   <div
-                    className="absolute bottom-0 left-0 right-0 bg-blue-600 rounded-t-xl transition-all"
+                    className="absolute bottom-0 left-0 right-0 rounded-t-xl bg-blue-600 transition-all"
                     style={{ height: `${d.value * 0.7}%` }}
                   />
                 </div>
               </div>
-              <div className="mt-4 text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">
+
+              <div className="mt-4 text-sm font-medium text-slate-500 transition-colors group-hover:text-blue-600">
                 {d.name}
               </div>
             </div>
@@ -196,66 +271,131 @@ export default function Dashboard() {
       </div>
 
       {/* Bottom Recent Activity Data Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-900">Hoạt động gần đây</h2>
-          <button className="text-blue-600 text-sm font-medium hover:text-blue-700">
+      <div
+        className="overflow-hidden rounded-2xl border shadow-sm"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
+      >
+        <div
+          className="flex items-center justify-between border-b p-6"
+          style={{ borderColor: 'var(--border)' }}
+        >
+          <h2
+            className="text-lg font-bold"
+            style={{ color: 'var(--text)' }}
+          >
+            Hoạt động gần đây
+          </h2>
+
+          <button
+            type="button"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
             Xem tất cả
           </button>
         </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="bg-slate-50/50">
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <tr style={{ background: 'var(--surface-secondary)' }}>
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}>
                   Người thực hiện
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}>
                   Hành động
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}>
                   Đối tượng
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}>
                   Thời gian
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}>
                   Trạng thái
                 </th>
-                <th className="px-6 py-4"></th>
+
+                <th className="px-6 py-4" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+
+            <tbody>
               {activities.map((act, i) => (
-                <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                <tr
+                  key={i}
+                  className="border-b transition-colors hover:bg-slate-50/50"
+                  style={{ borderColor: 'var(--border-light)' }}
+                >
+                  <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">
                         {act.user.charAt(0)}
                       </div>
-                      <span className="text-sm font-semibold text-slate-900">{act.user}</span>
+
+                      <span
+                        className="text-sm font-semibold"
+                        style={{ color: 'var(--text)' }}
+                      >
+                        {act.user}
+                      </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+
+                  <td
+                    className="whitespace-nowrap px-6 py-4 text-sm"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
                     {act.action}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700">
+
+                  <td
+                    className="whitespace-nowrap px-6 py-4 text-sm font-medium"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
                     {act.target}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{act.time}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+
+                  <td
+                    className="whitespace-nowrap px-6 py-4 text-sm"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    {act.time}
+                  </td>
+
+                  <td className="whitespace-nowrap px-6 py-4">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        act.status === 'Hoàn tất'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-amber-100 text-amber-700'
-                      }`}
+                      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                      style={{
+                        background:
+                          act.status === 'Hoàn tất'
+                            ? 'var(--success-light)'
+                            : 'var(--warning-light)',
+                        color:
+                          act.status === 'Hoàn tất'
+                            ? 'var(--success)'
+                            : 'var(--warning)',
+                      }}
                     >
                       {act.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <button className="text-slate-400 hover:text-slate-600">
+
+                  <td className="whitespace-nowrap px-6 py-4 text-right">
+                    <button
+                      type="button"
+                      className="text-slate-400 hover:text-slate-600"
+                    >
                       <MoreHorizontal size={20} />
                     </button>
                   </td>

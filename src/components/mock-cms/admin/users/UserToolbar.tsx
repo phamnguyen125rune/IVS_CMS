@@ -33,15 +33,21 @@ export default function UserToolbar({
 }: UserToolbarProps) {
   return (
     <div
-      className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-white p-4"
-      style={{ borderColor: 'var(--border)' }}
+      className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4"
+      style={{
+        borderColor: 'var(--border)',
+        background: 'var(--surface)',
+      }}
     >
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={onToggleDeleted}
-          className="flex min-h-10 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-          style={{ borderColor: 'var(--border)' }}
+          className="flex min-h-10 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-slate-50"
+          style={{
+            borderColor: 'var(--border)',
+            color: 'var(--text-secondary)',
+          }}
         >
           {showDeleted ? <FileUser size={15} /> : <Trash2 size={15} />}
           {showDeleted ? 'Danh sách người dùng' : `Đã xóa (${deletedCount})`}
@@ -64,19 +70,29 @@ export default function UserToolbar({
         className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2"
       >
         <div className="relative min-w-64 flex-1 lg:max-w-3xl">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search
+            size={15}
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+            style={{ color: 'var(--text-placeholder)' }}
+          />
+
           <input
             value={searchInput}
             onChange={(event) => onSearchInputChange(event.target.value)}
             placeholder="Tên, email, mã nhân viên, số điện thoại..."
-            className="h-10 w-full rounded-lg border py-2 pl-9 pr-10 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-            style={{ borderColor: 'var(--border)' }}
+            className="h-10 w-full rounded-lg border bg-transparent py-2 pl-9 pr-10 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            style={{
+              borderColor: 'var(--border)',
+              color: 'var(--text)',
+            }}
           />
+
           {(searchInput || searchKeyword) && (
             <button
               type="button"
               onClick={onClearSearch}
-              className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full transition hover:bg-slate-100 hover:text-slate-700"
+              style={{ color: 'var(--text-muted)' }}
               title="Xóa tìm kiếm"
               aria-label="Xóa tìm kiếm"
             >
@@ -87,7 +103,11 @@ export default function UserToolbar({
 
         <button
           type="submit"
-          className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+          className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors"
+          style={{
+            background: 'var(--dark-background)',
+            color: 'var(--dark-text)',
+          }}
         >
           <Search size={15} />
           Tìm
@@ -96,10 +116,15 @@ export default function UserToolbar({
         <select
           value={roleFilter}
           onChange={(event) => onRoleFilterChange(event.target.value)}
-          className="h-10 shrink-0 rounded-lg border bg-white px-3 text-sm text-slate-600 outline-none"
-          style={{ borderColor: 'var(--border)' }}
+          className="h-10 shrink-0 rounded-lg border px-3 text-sm outline-none"
+          style={{
+            borderColor: 'var(--border)',
+            background: 'var(--surface)',
+            color: 'var(--text-secondary)',
+          }}
         >
           <option value="ALL">Tất cả vai trò</option>
+
           {roles.map((role) => (
             <option key={role.roleId} value={role.roleId}>
               {formatRoleName(role.roleName)}

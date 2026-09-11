@@ -115,11 +115,16 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
 
   const removeCategory = async (item: PostCategory) => {
     if (!confirm(`Xóa danh mục “${item.categoryName}”?`)) return;
+
     try {
       setBusy(true);
       setError('');
       await categoryService.deleteCategory(item.categoryId);
-      if (editingCategory?.categoryId === item.categoryId) resetForm();
+
+      if (editingCategory?.categoryId === item.categoryId) {
+        resetForm();
+      }
+
       await load();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Không thể xóa danh mục.');
@@ -130,6 +135,7 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
 
   const removeTag = async (item: Tag) => {
     if (!confirm(`Xóa thẻ “${item.tagName}”?`)) return;
+
     try {
       setBusy(true);
       setError('');
@@ -154,18 +160,39 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Danh mục</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Quản lý danh mục và thẻ từ khóa bài viết</p>
+          <h1
+            className="font-display text-xl font-bold"
+            style={{ color: 'var(--text)' }}
+          >
+            Quản lý Danh mục
+          </h1>
+
+          <p
+            className="text-sm mt-0.5"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Quản lý danh mục và thẻ từ khóa bài viết
+          </p>
         </div>
       </div>
 
       {error && (
-        <div className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div
+          className="mb-5 rounded-xl border px-4 py-3 text-sm"
+          style={{
+            borderColor: 'var(--error-light)',
+            background: 'var(--error-light)',
+            color: 'var(--error)',
+          }}
+        >
           {error}
         </div>
       )}
 
-      <div className="flex gap-1 mb-5 p-1 bg-slate-100 rounded-xl w-fit">
+      <div
+        className="flex gap-1 mb-5 p-1 rounded-xl w-fit"
+        style={{ background: 'var(--surface-tertiary)' }}
+      >
         {[
           { key: 'categories' as const, label: 'Danh mục' },
           { key: 'tags' as const, label: 'Thẻ từ khóa' },
@@ -180,9 +207,19 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === key
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
+                ? 'shadow-sm'
+                : 'hover:opacity-80'
             }`}
+            style={
+              activeTab === key
+                ? {
+                    background: 'var(--surface)',
+                    color: 'var(--text)',
+                  }
+                : {
+                    color: 'var(--text-muted)',
+                  }
+            }
           >
             {label}
           </button>
@@ -191,33 +228,64 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
         <div
-          className="lg:col-span-3 bg-white rounded-xl border overflow-hidden"
-          style={{ borderColor: 'var(--border)' }}
+          className="lg:col-span-3 rounded-xl border overflow-hidden"
+          style={{
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
+          }}
         >
-          <div className="px-4 py-3 border-b bg-slate-50" style={{ borderColor: 'var(--border)' }}>
-            <h3 className="text-sm font-semibold text-slate-700">
+          <div
+            className="px-4 py-3 border-b"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: 'var(--text-secondary)' }}
+            >
               {activeTab === 'categories' ? 'Danh sách danh mục' : 'Danh sách thẻ'}
             </h3>
           </div>
 
           <div className="p-2 min-h-40">
             {loading ? (
-              <div className="p-8 text-center text-sm text-slate-400">Đang tải dữ liệu...</div>
+              <div
+                className="p-8 text-center text-sm"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Đang tải dữ liệu...
+              </div>
             ) : activeTab === 'categories' ? (
               categories.length ? (
                 categories.map((item) => (
                   <div
                     key={item.categoryId}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-slate-50 group"
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl group"
+                    style={{ color: 'var(--text)' }}
                   >
                     <span className="w-5 shrink-0" />
-                    <Folder size={15} className="text-amber-500 shrink-0" />
-                    <span className="flex-1 text-sm text-slate-700 font-medium">
+
+                    <Folder
+                      size={15}
+                      className="text-amber-500 shrink-0"
+                    />
+
+                    <span
+                      className="flex-1 text-sm font-medium"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
                       {item.categoryName}
                     </span>
-                    <span className="text-xs text-slate-300 font-mono hidden sm:inline">
+
+                    <span
+                      className="text-xs font-mono hidden sm:inline"
+                      style={{ color: 'var(--text-placeholder)' }}
+                    >
                       {item.slug || '-'}
                     </span>
+
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                       <button
                         type="button"
@@ -226,16 +294,19 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                           setName(item.categoryName);
                           setSlug(item.slug || '');
                         }}
-                        className="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                        className="p-1 rounded transition-colors"
+                        style={{ color: 'var(--text-muted)' }}
                         title="Đổi tên"
                       >
                         <Edit size={12} />
                       </button>
+
                       <button
                         type="button"
                         disabled={busy}
                         onClick={() => removeCategory(item)}
-                        className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-40"
+                        className="p-1 rounded transition-colors disabled:opacity-40"
+                        style={{ color: 'var(--text-muted)' }}
                         title="Xóa"
                       >
                         <Trash2 size={12} />
@@ -244,25 +315,50 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                   </div>
                 ))
               ) : (
-                <div className="p-8 text-center text-sm text-slate-400">Chưa có danh mục.</div>
+                <div
+                  className="p-8 text-center text-sm"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  Chưa có danh mục.
+                </div>
               )
             ) : tags.length ? (
               <div className="flex flex-wrap gap-2 p-2">
                 {tags.map((item) => (
                   <div
                     key={item.tagId}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-transparent hover:border-slate-200 group"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl border border-transparent group"
+                    style={{
+                      background: 'var(--surface-secondary)',
+                    }}
                   >
-                    <TagIcon size={12} className="text-slate-400" />
-                    <span className="text-sm text-slate-700">{item.tagName}</span>
+                    <TagIcon
+                      size={12}
+                      style={{ color: 'var(--text-muted)' }}
+                    />
+
+                    <span
+                      className="text-sm"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      {item.tagName}
+                    </span>
+
                     {item.slug && (
-                      <span className="text-[11px] text-slate-400 font-mono">{item.slug}</span>
+                      <span
+                        className="text-[11px] font-mono"
+                        style={{ color: 'var(--text-muted)' }}
+                      >
+                        {item.slug}
+                      </span>
                     )}
+
                     <button
                       type="button"
                       disabled={busy}
                       onClick={() => removeTag(item)}
-                      className="p-0.5 rounded text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 disabled:opacity-40"
+                      className="p-0.5 rounded opacity-0 group-hover:opacity-100 disabled:opacity-40"
+                      style={{ color: 'var(--text-placeholder)' }}
                       title="Xóa thẻ"
                     >
                       <Trash2 size={11} />
@@ -271,14 +367,28 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center text-sm text-slate-400">Chưa có thẻ.</div>
+              <div
+                className="p-8 text-center text-sm"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Chưa có thẻ.
+              </div>
             )}
           </div>
         </div>
 
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-xl border p-5" style={{ borderColor: 'var(--border)' }}>
-            <h3 className="text-sm font-semibold text-slate-800 mb-4">
+          <div
+            className="rounded-xl border p-5"
+            style={{
+              background: 'var(--surface)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <h3
+              className="text-sm font-semibold mb-4"
+              style={{ color: 'var(--text)' }}
+            >
               {activeTab === 'categories'
                 ? editingCategory
                   ? 'Đổi tên danh mục'
@@ -288,32 +398,52 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                <label
+                  className="block text-xs font-medium mb-1.5"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
                   Tên {activeTab === 'categories' ? 'danh mục' : 'thẻ'}
                 </label>
+
                 <input
                   value={name}
                   onChange={(event) => handleNameChange(event.target.value)}
                   placeholder="Nhập tên..."
-                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500"
-                  style={{ borderColor: 'var(--border)' }}
+                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none"
+                  style={{
+                    borderColor: 'var(--border)',
+                    background: 'var(--surface)',
+                    color: 'var(--text)',
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                <label
+                  className="block text-xs font-medium mb-1.5"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
                   Đường dẫn (slug)
                 </label>
+
                 <input
                   value={slug}
                   disabled={Boolean(editingCategory)}
                   onChange={(event) => setSlug(event.target.value)}
                   placeholder="ten-danh-muc"
-                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-blue-500 font-mono disabled:bg-slate-50 disabled:text-slate-400"
-                  style={{ borderColor: 'var(--border)' }}
+                  className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none font-mono disabled:opacity-60"
+                  style={{
+                    borderColor: 'var(--border)',
+                    background: 'var(--surface)',
+                    color: 'var(--text)',
+                  }}
                 />
+
                 {editingCategory && (
-                  <p className="text-[11px] text-slate-400 mt-1.5">
+                  <p
+                    className="text-[11px] mt-1.5"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
                     Backend hiện chỉ hỗ trợ đổi tên, không đổi slug.
                   </p>
                 )}
@@ -325,18 +455,26 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 py-2.5 rounded-xl border text-slate-600 text-sm font-semibold hover:bg-slate-50"
-                  style={{ borderColor: 'var(--border)' }}
+                  className="flex-1 py-2.5 rounded-xl border text-sm font-semibold"
+                  style={{
+                    borderColor: 'var(--border)',
+                    color: 'var(--text-secondary)',
+                    background: 'var(--surface)',
+                  }}
                 >
                   Hủy
                 </button>
               )}
+
               <button
                 type="button"
                 disabled={busy}
                 onClick={submit}
-                className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-50"
-                style={{ background: 'var(--primary)' }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50"
+                style={{
+                  background: 'var(--primary)',
+                  color: 'var(--primary-foreground)',
+                }}
               >
                 {busy
                   ? 'Đang lưu...'
@@ -349,13 +487,39 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border p-5" style={{ borderColor: 'var(--border)' }}>
-            <h3 className="text-sm font-semibold text-slate-800 mb-3">Thống kê</h3>
+          <div
+            className="rounded-xl border p-5"
+            style={{
+              background: 'var(--surface)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <h3
+              className="text-sm font-semibold mb-3"
+              style={{ color: 'var(--text)' }}
+            >
+              Thống kê
+            </h3>
+
             <div className="space-y-2.5">
               {stats.map((stat) => (
-                <div key={stat.label} className="flex justify-between items-center">
-                  <span className="text-sm text-slate-600">{stat.label}</span>
-                  <span className="text-sm font-bold font-mono text-slate-900">{stat.value}</span>
+                <div
+                  key={stat.label}
+                  className="flex justify-between items-center"
+                >
+                  <span
+                    className="text-sm"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {stat.label}
+                  </span>
+
+                  <span
+                    className="text-sm font-bold font-mono"
+                    style={{ color: 'var(--text)' }}
+                  >
+                    {stat.value}
+                  </span>
                 </div>
               ))}
             </div>

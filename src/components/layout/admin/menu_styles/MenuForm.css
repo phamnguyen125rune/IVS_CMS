@@ -4,8 +4,8 @@
 
 .menu-card {
   width: 100%;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
   overflow: hidden;
@@ -16,15 +16,15 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
 }
 
 .menu-card-header h3 {
   margin: 0;
   font-size: 17px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
 }
 
 .menu-cancel-btn {
@@ -37,14 +37,14 @@
   border: 0;
   border-radius: 7px;
   background: transparent;
-  color: #6b7280;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .menu-cancel-btn:hover {
-  background: #f3f4f6;
-  color: #ef4444;
+  background: var(--hover);
+  color: var(--error);
 }
 
 .menu-form-fields {
@@ -63,7 +63,7 @@
 .menu-field label {
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-secondary);
 }
 
 .menu-field input,
@@ -71,11 +71,11 @@
   width: 100%;
   height: 40px;
   padding: 0 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 7px;
   outline: none;
-  background: #ffffff;
-  color: #111827;
+  background: var(--surface);
+  color: var(--text);
   font-family: inherit;
   font-size: 14px;
   transition:
@@ -85,23 +85,23 @@
 }
 
 .menu-field input::placeholder {
-  color: #9ca3af;
+  color: var(--text-placeholder);
 }
 
 .menu-field input:hover,
 .menu-field select:hover {
-  border-color: #9ca3af;
+  border-color: var(--border-strong);
 }
 
 .menu-field input:focus,
 .menu-field select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .menu-url-input {
   font-family: monospace !important;
-  color: #374151 !important;
+  color: var(--text-secondary) !important;
 }
 
 .menu-level-display {
@@ -109,10 +109,10 @@
   align-items: center;
   height: 40px;
   padding: 0 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 7px;
-  background: #f9fafb;
-  color: #374151;
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
   box-sizing: border-box;
@@ -120,7 +120,7 @@
 
 .menu-field p {
   margin: 0;
-  color: #9ca3af;
+  color: var(--text-placeholder);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -137,13 +137,13 @@
   width: 16px;
   height: 16px;
   margin: 0;
-  accent-color: #2563eb;
+  accent-color: var(--primary);
   cursor: pointer;
 }
 
 .menu-checkbox span {
   font-size: 14px;
-  color: #374151;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -158,8 +158,8 @@
   padding: 0 16px;
   border: 0;
   border-radius: 7px;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--primary-foreground);
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -170,12 +170,12 @@
 }
 
 .menu-submit-btn:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: var(--primary-hover);
   box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
 }
 
 .menu-submit-btn:active:not(:disabled) {
-  background: #1e40af;
+  background: var(--primary-hover);
 }
 
 .menu-submit-btn:disabled {

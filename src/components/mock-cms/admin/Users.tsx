@@ -6,7 +6,11 @@ import UserDetailModal from './users/UserDetailModal';
 import UserFormModal from './users/UserFormModal';
 import UserTable from './users/UserTable';
 import UserToolbar from './users/UserToolbar';
-import { DEFAULT_USER_PASSWORD, UserConfirmAction, useUsers } from './users/hooks/useUsers';
+import {
+  DEFAULT_USER_PASSWORD,
+  UserConfirmAction,
+  useUsers,
+} from './users/hooks/useUsers';
 
 export default function Users() {
   const user = useUsers();
@@ -16,10 +20,17 @@ export default function Users() {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">
+          <h1
+            className="text-xl font-bold"
+            style={{ color: 'var(--text)' }}
+          >
             {user.showDeleted ? 'Người dùng đã xóa' : 'Quản lý Nhân sự'}
           </h1>
-          <p className="mt-0.5 text-sm text-slate-500">
+
+          <p
+            className="mt-0.5 text-sm"
+            style={{ color: 'var(--text-muted)' }}
+          >
             {user.filteredUsers.length} người dùng được tìm thấy
           </p>
         </div>
@@ -27,17 +38,31 @@ export default function Users() {
 
       {(user.message || user.error) && (
         <div
-          className={`mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm ${
+          className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm"
+          style={
             user.error
-              ? 'border-red-200 bg-red-50 text-red-600'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          }`}
+              ? {
+                  borderColor: 'var(--error-light)',
+                  background: 'var(--error-light)',
+                  color: 'var(--error)',
+                }
+              : {
+                  borderColor: 'var(--success-light)',
+                  background: 'var(--success-light)',
+                  color: 'var(--success)',
+                }
+          }
         >
           <span>{user.error || user.message}</span>
+
           {user.error && isAuthError(user.error) && (
             <Link
               href="/vi/login"
-              className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
+              className="rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors"
+              style={{
+                background: 'var(--error)',
+                color: 'var(--primary-foreground)',
+              }}
             >
               Đăng nhập lại
             </Link>
@@ -174,7 +199,10 @@ function getConfirmContent(action: UserConfirmAction | null) {
 
 function isAuthError(message: string) {
   const normalized = message.toLowerCase();
+
   return (
-    normalized.includes('token') || normalized.includes('đăng nhập') || normalized.includes('jwt')
+    normalized.includes('token') ||
+    normalized.includes('đăng nhập') ||
+    normalized.includes('jwt')
   );
 }

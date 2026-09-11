@@ -21,10 +21,10 @@ export default function UserConfirmModal({
 }: UserConfirmModalProps) {
   const toneClass =
     tone === 'danger'
-      ? 'bg-red-500 hover:bg-red-600'
+      ? 'bg-[var(--error)] hover:bg-[var(--error)]'
       : tone === 'success'
-        ? 'bg-emerald-500 hover:bg-emerald-600'
-        : 'bg-blue-600 hover:bg-blue-700';
+        ? 'bg-[var(--success)] hover:bg-[var(--success)]'
+        : 'bg-[var(--primary)] hover:bg-[var(--primary-hover)]';
 
   return (
     <div
@@ -32,20 +32,38 @@ export default function UserConfirmModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-lg bg-white p-6 shadow-2xl"
+        className="w-full max-w-sm rounded-lg p-6 shadow-2xl"
+        style={{ background: 'var(--surface)' }}
         onClick={(event) => event.stopPropagation()}
       >
-        <h3 className="mb-2 text-lg font-bold text-slate-900">{title}</h3>
-        <p className="mb-6 text-sm leading-relaxed text-slate-600">{description}</p>
+        <h3
+          className="mb-2 text-lg font-bold"
+          style={{ color: 'var(--text)' }}
+        >
+          {title}
+        </h3>
+
+        <p
+          className="mb-6 text-sm leading-relaxed"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          {description}
+        </p>
+
         <div className="flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-slate-50 disabled:opacity-60"
+            style={{
+              borderColor: 'var(--border)',
+              color: 'var(--text-secondary)',
+            }}
           >
             Hủy
           </button>
+
           <button
             type="button"
             onClick={onConfirm}

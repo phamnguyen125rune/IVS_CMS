@@ -38,20 +38,32 @@ export default function UserFormModal({
     >
       <form
         onSubmit={onSubmit}
-        className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl"
+        className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl shadow-2xl"
+        style={{ background: 'var(--surface)' }}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+        <div
+          className="flex items-center justify-between border-b px-6 py-4"
+          style={{ borderColor: 'var(--border)' }}
+        >
           <div>
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2
+              className="text-lg font-bold"
+              style={{ color: 'var(--text)' }}
+            >
               {isEditing ? 'Chỉnh sửa người dùng' : 'Thêm người dùng'}
             </h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+
+            <p
+              className="mt-0.5 text-xs"
+              style={{ color: 'var(--text-muted)' }}
+            >
               {isEditing
                 ? `Mã nhân viên: ${editingUser?.employeeCode || '-'}`
                 : 'Tài khoản mới dùng mật khẩu mặc định 123456'}
             </p>
           </div>
+
           <button
             type="button"
             onClick={onClose}
@@ -64,7 +76,13 @@ export default function UserFormModal({
 
         <div className="overflow-y-auto px-6 py-5">
           {isEditing && (
-            <div className="mb-5 flex flex-wrap items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <div
+              className="mb-5 flex flex-wrap items-center gap-4 rounded-lg border p-4"
+              style={{
+                borderColor: 'var(--border)',
+                background: 'var(--surface-secondary)',
+              }}
+            >
               {form.avatarUrl ? (
                 <img
                   src={resolveAssetUrl(form.avatarUrl)}
@@ -76,17 +94,32 @@ export default function UserFormModal({
                   {getUserInitial(form.fullName)}
                 </div>
               )}
+
               <div className="min-w-52 flex-1">
-                <div className="text-sm font-semibold text-slate-800">Ảnh đại diện</div>
-                <p className="mt-1 text-xs text-slate-500">JPEG, PNG, GIF hoặc WebP; tối đa 5MB.</p>
+                <div
+                  className="text-sm font-semibold"
+                  style={{ color: 'var(--text)' }}
+                >
+                  Ảnh đại diện
+                </div>
+
+                <p
+                  className="mt-1 text-xs"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  JPEG, PNG, GIF hoặc WebP; tối đa 5MB.
+                </p>
               </div>
+
               <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700">
                 {uploadingAvatar ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
                   <ImagePlus size={16} />
                 )}
+
                 Chọn ảnh
+
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/gif,image/webp"
@@ -102,7 +135,9 @@ export default function UserFormModal({
             <Field label="Họ và tên" required>
               <input
                 value={form.fullName}
-                onChange={(event) => onChange({ fullName: event.target.value })}
+                onChange={(event) =>
+                  onChange({ fullName: event.target.value })
+                }
                 className={inputClass}
                 placeholder="Nhập họ và tên"
                 required
@@ -113,7 +148,9 @@ export default function UserFormModal({
               <input
                 type="email"
                 value={form.email}
-                onChange={(event) => onChange({ email: event.target.value })}
+                onChange={(event) =>
+                  onChange({ email: event.target.value })
+                }
                 className={inputClass}
                 placeholder="name@company.com"
                 required
@@ -123,7 +160,9 @@ export default function UserFormModal({
             <Field label="Số điện thoại">
               <input
                 value={form.phoneNumber}
-                onChange={(event) => onChange({ phoneNumber: event.target.value })}
+                onChange={(event) =>
+                  onChange({ phoneNumber: event.target.value })
+                }
                 className={inputClass}
                 placeholder="0900000000"
               />
@@ -133,7 +172,9 @@ export default function UserFormModal({
               <select
                 value={form.gender}
                 onChange={(event) =>
-                  onChange({ gender: event.target.value as UserFormValues['gender'] })
+                  onChange({
+                    gender: event.target.value as UserFormValues['gender'],
+                  })
                 }
                 className={inputClass}
               >
@@ -147,7 +188,9 @@ export default function UserFormModal({
               <input
                 type="date"
                 value={form.dateOfBirth}
-                onChange={(event) => onChange({ dateOfBirth: event.target.value })}
+                onChange={(event) =>
+                  onChange({ dateOfBirth: event.target.value })
+                }
                 className={inputClass}
               />
             </Field>
@@ -155,7 +198,12 @@ export default function UserFormModal({
             <Field label="Vai trò">
               <div
                 aria-disabled="true"
-                className={`${inputClass} pointer-events-none flex items-center !border-slate-300 !bg-slate-200 !text-slate-500 opacity-60`}
+                className={`${inputClass} pointer-events-none flex items-center opacity-60`}
+                style={{
+                  borderColor: 'var(--border-strong)',
+                  background: 'var(--surface-tertiary)',
+                  color: 'var(--text-muted)',
+                }}
               >
                 {defaultRole?.roleName || 'Đang tải...'}
               </div>
@@ -165,7 +213,9 @@ export default function UserFormModal({
               <Field label="Địa chỉ">
                 <input
                   value={form.address}
-                  onChange={(event) => onChange({ address: event.target.value })}
+                  onChange={(event) =>
+                    onChange({ address: event.target.value })
+                  }
                   className={inputClass}
                   placeholder="Nhập địa chỉ"
                 />
@@ -174,20 +224,33 @@ export default function UserFormModal({
           </div>
         </div>
 
-        <div className="flex shrink-0 justify-end gap-3 border-t border-slate-200 px-6 py-4">
+        <div
+          className="flex shrink-0 justify-end gap-3 border-t px-6 py-4"
+          style={{ borderColor: 'var(--border)' }}
+        >
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-slate-50"
+            style={{
+              borderColor: 'var(--border)',
+              color: 'var(--text-secondary)',
+            }}
           >
             Hủy
           </button>
+
           <button
             type="submit"
             disabled={saving}
             className="flex min-w-32 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+            {saving ? (
+              <Loader2 size={15} className="animate-spin" />
+            ) : (
+              <Save size={15} />
+            )}
+
             {isEditing ? 'Lưu thay đổi' : 'Thêm mới'}
           </button>
         </div>
@@ -207,14 +270,26 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-600">
+      <span
+        className="mb-1.5 block text-sm font-medium"
+        style={{ color: 'var(--text-secondary)' }}
+      >
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+
+        {required && (
+          <span
+            className="ml-1"
+            style={{ color: 'var(--error)' }}
+          >
+            *
+          </span>
+        )}
       </span>
+
       {children}
     </label>
   );
 }
 
 const inputClass =
-  'h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-500';
+  'h-11 w-full rounded-lg border bg-transparent px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-500';

@@ -34,16 +34,30 @@ export default function UserDetailModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl rounded-xl bg-white shadow-2xl"
+        className="w-full max-w-2xl rounded-xl shadow-2xl"
+        style={{ background: 'var(--surface)' }}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+        <div
+          className="flex items-center justify-between border-b px-6 py-4"
+          style={{ borderColor: 'var(--border)' }}
+        >
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Chi tiết người dùng</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <h2
+              className="text-lg font-bold"
+              style={{ color: 'var(--text)' }}
+            >
+              Chi tiết người dùng
+            </h2>
+
+            <p
+              className="mt-0.5 text-xs"
+              style={{ color: 'var(--text-muted)' }}
+            >
               Dữ liệu lấy trực tiếp từ API chi tiết User.
             </p>
           </div>
+
           <button
             type="button"
             onClick={onClose}
@@ -55,13 +69,19 @@ export default function UserDetailModal({
         </div>
 
         {loading ? (
-          <div className="p-10 text-center text-sm text-slate-500">
+          <div
+            className="p-10 text-center text-sm"
+            style={{ color: 'var(--text-muted)' }}
+          >
             <Loader2 className="mx-auto mb-2 animate-spin" size={20} />
             Đang tải chi tiết...
           </div>
         ) : user ? (
           <div className="p-6">
-            <div className="mb-6 flex items-center gap-4 rounded-lg bg-slate-50 p-4">
+            <div
+              className="mb-6 flex items-center gap-4 rounded-lg p-4"
+              style={{ background: 'var(--surface-secondary)' }}
+            >
               {user.avatarUrl ? (
                 <img
                   src={resolveAssetUrl(user.avatarUrl)}
@@ -73,32 +93,83 @@ export default function UserDetailModal({
                   {getUserInitial(user.fullName)}
                 </div>
               )}
+
               <div>
-                <div className="text-lg font-bold text-slate-900">{user.fullName}</div>
-                <div className="text-sm text-slate-500">{user.email}</div>
+                <div
+                  className="text-lg font-bold"
+                  style={{ color: 'var(--text)' }}
+                >
+                  {user.fullName}
+                </div>
+
+                <div
+                  className="text-sm"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  {user.email}
+                </div>
+
                 <div className="mt-1 text-xs font-medium text-blue-600">
-                  {user.employeeCode || 'Chưa có mã nhân viên'} · {getRoleLabel(user.role)}
+                  {user.employeeCode || 'Chưa có mã nhân viên'} ·{' '}
+                  {getRoleLabel(user.role)}
                 </div>
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <Info label="Số điện thoại" value={user.phoneNumber || 'Chưa cập nhật'} />
-              <Info label="Giới tính" value={getGenderLabel(user.gender)} />
-              <Info label="Ngày sinh" value={formatDate(user.dateOfBirth)} />
-              <Info label="Trạng thái" value={user.isActive ? 'Hoạt động' : 'Bị khóa'} />
-              <Info label="Tài khoản hệ thống" value={user.isSystem ? 'Có' : 'Không'} />
-              <Info label="Nhóm người dùng" value={getRoleLabel(user.role)} />
+              <Info
+                label="Số điện thoại"
+                value={user.phoneNumber || 'Chưa cập nhật'}
+              />
+
+              <Info
+                label="Giới tính"
+                value={getGenderLabel(user.gender)}
+              />
+
+              <Info
+                label="Ngày sinh"
+                value={formatDate(user.dateOfBirth)}
+              />
+
+              <Info
+                label="Trạng thái"
+                value={user.isActive ? 'Hoạt động' : 'Bị khóa'}
+              />
+
+              <Info
+                label="Tài khoản hệ thống"
+                value={user.isSystem ? 'Có' : 'Không'}
+              />
+
+              <Info
+                label="Nhóm người dùng"
+                value={getRoleLabel(user.role)}
+              />
+
               <div className="sm:col-span-2">
-                <Info label="Địa chỉ" value={user.address || 'Chưa cập nhật'} />
+                <Info
+                  label="Địa chỉ"
+                  value={user.address || 'Chưa cập nhật'}
+                />
               </div>
+
               <Info
                 label="Tạo"
-                value={`${user.createdBy ? userNames.get(user.createdBy) || 'Không xác định' : '-'} · ${formatDateTime(user.createdAt)}`}
+                value={`${
+                  user.createdBy
+                    ? userNames.get(user.createdBy) || 'Không xác định'
+                    : '-'
+                } · ${formatDateTime(user.createdAt)}`}
               />
+
               <Info
                 label="Cập nhật"
-                value={`${user.updatedBy ? userNames.get(user.updatedBy) || 'Không xác định' : '-'} · ${formatDateTime(user.updatedAt)}`}
+                value={`${
+                  user.updatedBy
+                    ? userNames.get(user.updatedBy) || 'Không xác định'
+                    : '-'
+                } · ${formatDateTime(user.updatedAt)}`}
               />
             </div>
           </div>
@@ -108,11 +179,31 @@ export default function UserDetailModal({
   );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function Info({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
   return (
-    <div className="rounded-lg border border-slate-200 p-3">
-      <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</div>
-      <div className="mt-1 break-words text-sm font-medium text-slate-800">{value}</div>
+    <div
+      className="rounded-lg border p-3"
+      style={{ borderColor: 'var(--border)' }}
+    >
+      <div
+        className="text-xs font-semibold uppercase tracking-wide"
+        style={{ color: 'var(--text-muted)' }}
+      >
+        {label}
+      </div>
+
+      <div
+        className="mt-1 break-words text-sm font-medium"
+        style={{ color: 'var(--text)' }}
+      >
+        {value}
+      </div>
     </div>
   );
 }

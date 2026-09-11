@@ -57,14 +57,22 @@ export default function UserTable({
 
   return (
     <>
-      <div className="mb-3 flex items-center justify-end gap-6 text-sm text-slate-600">
+      <div
+        className="mb-3 flex items-center justify-end gap-6 text-sm"
+        style={{ color: 'var(--text-secondary)' }}
+      >
         <label className="flex items-center gap-2">
           <span>Số dòng/trang:</span>
+
           <select
             value={rowsPerPage}
             onChange={(event) => onRowsPerPageChange(Number(event.target.value))}
             className="rounded-lg border bg-white px-2 py-1.5 outline-none"
-            style={{ borderColor: 'var(--border)' }}
+            style={{
+              borderColor: 'var(--border)',
+              background: 'var(--surface)',
+              color: 'var(--text)',
+            }}
           >
             {[5, 10, 15, 20].map((value) => (
               <option key={value} value={value}>
@@ -78,6 +86,7 @@ export default function UserTable({
           <span>
             {rangeStart} - {rangeEnd} của {total}
           </span>
+
           <div className="flex items-center gap-1">
             <IconButton
               label="Trang trước"
@@ -86,6 +95,7 @@ export default function UserTable({
             >
               <ChevronLeft size={16} />
             </IconButton>
+
             <IconButton
               label="Trang sau"
               disabled={currentPage >= totalPages}
@@ -98,12 +108,21 @@ export default function UserTable({
       </div>
 
       <div
-        className="w-full overflow-x-auto rounded-lg border bg-white"
-        style={{ borderColor: 'var(--border)' }}
+        className="w-full overflow-x-auto rounded-lg border"
+        style={{
+          borderColor: 'var(--border)',
+          background: 'var(--surface)',
+        }}
       >
         <table className="w-full min-w-[1120px] text-sm">
           <thead>
-            <tr className="border-b bg-slate-50" style={{ borderColor: 'var(--border)' }}>
+            <tr
+              className="border-b"
+              style={{
+                borderColor: 'var(--border)',
+                background: 'var(--surface-secondary)',
+              }}
+            >
               <HeaderCell>Người dùng</HeaderCell>
               <HeaderCell>Mã NV</HeaderCell>
               <HeaderCell>Vai trò</HeaderCell>
@@ -114,17 +133,26 @@ export default function UserTable({
               <HeaderCell align="right">Hành động</HeaderCell>
             </tr>
           </thead>
+
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-5 py-10 text-center text-slate-500">
+                <td
+                  colSpan={8}
+                  className="px-5 py-10 text-center"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   <Loader2 className="mx-auto mb-2 animate-spin" size={20} />
                   Đang tải danh sách người dùng...
                 </td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-5 py-12 text-center text-slate-500">
+                <td
+                  colSpan={8}
+                  className="px-5 py-12 text-center"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   {showDeleted
                     ? 'Chưa có tài khoản nào trong danh sách đã xóa.'
                     : 'Chưa tìm thấy người dùng nào.'}
@@ -133,6 +161,7 @@ export default function UserTable({
             ) : (
               users.map((user) => {
                 const securityDisabled = isSecurityActionDisabled(user);
+
                 return (
                   <tr
                     key={user.userId}
@@ -152,64 +181,117 @@ export default function UserTable({
                             {getUserInitial(user.fullName)}
                           </div>
                         )}
+
                         <div>
-                          <div className="font-medium text-slate-800">{user.fullName}</div>
-                          <div className="text-xs text-slate-400">{user.email}</div>
+                          <div
+                            className="font-medium"
+                            style={{ color: 'var(--text)' }}
+                          >
+                            {user.fullName}
+                          </div>
+
+                          <div
+                            className="text-xs"
+                            style={{ color: 'var(--text-muted)' }}
+                          >
+                            {user.email}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 font-mono text-xs text-slate-500">
+
+                    <td
+                      className="px-5 py-3.5 font-mono text-xs"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
                       {user.employeeCode || '-'}
                     </td>
+
                     <td className="px-5 py-3.5">
-                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                      <span
+                        className="rounded-full px-2.5 py-1 text-xs font-medium"
+                        style={{
+                          background: 'var(--surface-tertiary)',
+                          color: 'var(--text-secondary)',
+                        }}
+                      >
                         {getRoleLabel(user.role)}
                       </span>
                     </td>
+
                     <td className="px-5 py-3.5">
                       <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
-                          isProfileComplete(user)
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-amber-50 text-amber-700'
-                        }`}
+                        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
+                        style={{
+                          background: isProfileComplete(user)
+                            ? 'var(--success-light)'
+                            : 'var(--warning-light)',
+                          color: isProfileComplete(user)
+                            ? 'var(--success)'
+                            : 'var(--warning)',
+                        }}
                       >
                         <FileUser size={13} />
-                        {isProfileComplete(user) ? 'Đã cập nhật' : 'Chưa đầy đủ'}
+
+                        {isProfileComplete(user)
+                          ? 'Đã cập nhật'
+                          : 'Chưa đầy đủ'}
                       </span>
                     </td>
+
                     <td className="px-5 py-3.5">
                       <span
-                        className={`flex w-fit items-center gap-1.5 text-xs font-medium ${
-                          showDeleted
-                            ? 'text-red-500'
+                        className="flex w-fit items-center gap-1.5 text-xs font-medium"
+                        style={{
+                          color: showDeleted
+                            ? 'var(--error)'
                             : user.isActive
-                              ? 'text-emerald-600'
-                              : 'text-amber-600'
-                        }`}
+                              ? 'var(--success)'
+                              : 'var(--warning)',
+                        }}
                       >
                         <span
-                          className={`h-1.5 w-1.5 rounded-full ${
-                            showDeleted
-                              ? 'bg-red-400'
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{
+                            background: showDeleted
+                              ? 'var(--error)'
                               : user.isActive
-                                ? 'bg-emerald-500'
-                                : 'bg-amber-500'
-                          }`}
+                                ? 'var(--success)'
+                                : 'var(--warning)',
+                          }}
                         />
-                        {showDeleted ? 'Đã xóa' : user.isActive ? 'Hoạt động' : 'Bị khóa'}
+
+                        {showDeleted
+                          ? 'Đã xóa'
+                          : user.isActive
+                            ? 'Hoạt động'
+                            : 'Bị khóa'}
                       </span>
                     </td>
+
                     <td className="px-5 py-3.5">
-                      <AuditInfo by={user.createdBy} at={user.createdAt} userNames={userNames} />
+                      <AuditInfo
+                        by={user.createdBy}
+                        at={user.createdAt}
+                        userNames={userNames}
+                      />
                     </td>
+
                     <td className="px-5 py-3.5">
-                      <AuditInfo by={user.updatedBy} at={user.updatedAt} userNames={userNames} />
+                      <AuditInfo
+                        by={user.updatedBy}
+                        at={user.updatedAt}
+                        userNames={userNames}
+                      />
                     </td>
+
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
                         {!showDeleted && (
-                          <IconButton label="Xem chi tiết" onClick={() => onDetail(user)}>
+                          <IconButton
+                            label="Xem chi tiết"
+                            onClick={() => onDetail(user)}
+                          >
                             <Eye size={14} />
                           </IconButton>
                         )}
@@ -218,41 +300,81 @@ export default function UserTable({
                           <>
                             <IconButton
                               label="Khôi phục tài khoản"
-                              onClick={() => onConfirm({ type: 'restore', user })}
+                              onClick={() =>
+                                onConfirm({
+                                  type: 'restore',
+                                  user,
+                                })
+                              }
                             >
                               <RotateCcw size={14} />
                             </IconButton>
+
                             <IconButton
                               label="Xóa vĩnh viễn"
                               disabled={securityDisabled}
-                              onClick={() => onConfirm({ type: 'hard-delete', user })}
+                              onClick={() =>
+                                onConfirm({
+                                  type: 'hard-delete',
+                                  user,
+                                })
+                              }
                             >
                               <Trash2 size={14} />
                             </IconButton>
                           </>
                         ) : (
                           <>
-                            <IconButton label="Chỉnh sửa" onClick={() => onEdit(user)}>
+                            <IconButton
+                              label="Chỉnh sửa"
+                              onClick={() => onEdit(user)}
+                            >
                               <Edit size={14} />
                             </IconButton>
+
                             <IconButton
-                              label={user.isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
+                              label={
+                                user.isActive
+                                  ? 'Khóa tài khoản'
+                                  : 'Mở khóa tài khoản'
+                              }
                               disabled={securityDisabled}
-                              onClick={() => onConfirm({ type: 'status', user })}
+                              onClick={() =>
+                                onConfirm({
+                                  type: 'status',
+                                  user,
+                                })
+                              }
                             >
-                              {user.isActive ? <Lock size={14} /> : <Unlock size={14} />}
+                              {user.isActive ? (
+                                <Lock size={14} />
+                              ) : (
+                                <Unlock size={14} />
+                              )}
                             </IconButton>
+
                             <IconButton
                               label="Reset mật khẩu"
                               disabled={securityDisabled}
-                              onClick={() => onConfirm({ type: 'reset-password', user })}
+                              onClick={() =>
+                                onConfirm({
+                                  type: 'reset-password',
+                                  user,
+                                })
+                              }
                             >
                               <KeyRound size={14} />
                             </IconButton>
+
                             <IconButton
                               label="Xóa mềm"
                               disabled={securityDisabled}
-                              onClick={() => onConfirm({ type: 'soft-delete', user })}
+                              onClick={() =>
+                                onConfirm({
+                                  type: 'soft-delete',
+                                  user,
+                                })
+                              }
                             >
                               <Trash2 size={14} />
                             </IconButton>
@@ -280,9 +402,10 @@ function HeaderCell({
 }) {
   return (
     <th
-      className={`px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+      className={`px-5 py-3 text-xs font-semibold uppercase tracking-wide ${
         align === 'right' ? 'text-right' : 'text-left'
       }`}
+      style={{ color: 'var(--text-muted)' }}
     >
       {children}
     </th>
@@ -308,7 +431,10 @@ function IconButton({
       title={label}
       aria-label={label}
       className="rounded-lg border p-1.5 text-slate-400 transition-colors hover:bg-slate-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-      style={{ borderColor: 'var(--border)' }}
+      style={{
+        borderColor: 'var(--border)',
+        color: 'var(--text-muted)',
+      }}
     >
       {children}
     </button>
@@ -326,10 +452,19 @@ function AuditInfo({
 }) {
   return (
     <div className="min-w-28">
-      <div className="text-xs font-semibold text-slate-700">
+      <div
+        className="text-xs font-semibold"
+        style={{ color: 'var(--text-secondary)' }}
+      >
         {by ? userNames.get(by) || 'Không xác định' : '-'}
       </div>
-      <div className="mt-1 whitespace-nowrap text-xs text-slate-400">{formatDateTime(at)}</div>
+
+      <div
+        className="mt-1 whitespace-nowrap text-xs"
+        style={{ color: 'var(--text-muted)' }}
+      >
+        {formatDateTime(at)}
+      </div>
     </div>
   );
 }
