@@ -94,15 +94,17 @@ export default function Recruitment() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Hero Section */}
-      <section className="border-b" 
-      style={{ 
-        borderColor: 'var(--border)',
-        background: `linear-gradient(
+      <section
+        className="border-b"
+        style={{
+          borderColor: 'var(--border)',
+          background: `linear-gradient(
             135deg,
             var(--hero-start) 0%,
             var(--hero-middle) 100%
-          )`}}
-        >
+          )`,
+        }}
+      >
         <div className="max-w-7xl mx-auto px-6 py-20 lg:py-24 flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-medium mb-6">
             <Award size={16} />

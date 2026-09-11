@@ -34,35 +34,31 @@ export default function MemberPanel({
 
   console.log('MemberPanel currentUserId:', currentUserId);
 
-const filteredMembers = useMemo(() => {
-  const keyword = appliedSearch.trim().toLowerCase();
+  const filteredMembers = useMemo(() => {
+    const keyword = appliedSearch.trim().toLowerCase();
 
-  if (!keyword) {
-    return members;
-  }
-  
-  return members.filter((member) => {
-    return (
-      String(member.userId ?? '').includes(keyword) ||
-      member.employeeCode?.toLowerCase().includes(keyword) ||
-      member.fullName?.toLowerCase().includes(keyword) ||
-      member.email?.toLowerCase().includes(keyword)
-    );
-  });
-}, [members, appliedSearch]);
+    if (!keyword) {
+      return members;
+    }
+
+    return members.filter((member) => {
+      return (
+        String(member.userId ?? '').includes(keyword) ||
+        member.employeeCode?.toLowerCase().includes(keyword) ||
+        member.fullName?.toLowerCase().includes(keyword) ||
+        member.email?.toLowerCase().includes(keyword)
+      );
+    });
+  }, [members, appliedSearch]);
 
   return (
     <section className={styles.memberPanel}>
       {/* HEADER */}
       <div className={styles.memberPanelHeader}>
         <div>
-          <div className={styles.memberLabel}>
-            Thành viên của nhóm
-          </div>
+          <div className={styles.memberLabel}>Thành viên của nhóm</div>
 
-          <h2 className={styles.memberTitle}>
-            {role.roleName}
-          </h2>
+          <h2 className={styles.memberTitle}>{role.roleName}</h2>
 
           <p className={styles.memberDescription}>
             Hiện có {members.length} thành viên trong nhóm.
@@ -70,31 +66,17 @@ const filteredMembers = useMemo(() => {
         </div>
 
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.addMemberHeaderBtn}
-            onClick={onAddMember}
-          >
+          <button type="button" className={styles.addMemberHeaderBtn} onClick={onAddMember}>
             <UserPlus size={16} />
             Thêm thành viên
           </button>
 
-          <button
-            type="button"
-            onClick={onReset}
-            disabled={saving}
-            className={styles.resetBtn}
-          >
+          <button type="button" onClick={onReset} disabled={saving} className={styles.resetBtn}>
             <RefreshCw size={16} />
             Hoàn tác
           </button>
 
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={saving}
-            className={styles.saveBtn}
-          >
+          <button type="button" onClick={onSave} disabled={saving} className={styles.saveBtn}>
             <Save size={16} />
 
             {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
@@ -103,14 +85,9 @@ const filteredMembers = useMemo(() => {
       </div>
 
       {/* SEARCH */}
-      <form
-        className={styles.searchSection}
-      >
+      <form className={styles.searchSection}>
         <div className={styles.searchInputWrapper}>
-          <Search
-            size={18}
-            className={styles.searchIcon}
-          />
+          <Search size={18} className={styles.searchIcon} />
 
           <input
             type="text"
@@ -153,35 +130,28 @@ const filteredMembers = useMemo(() => {
                   <td>{user.employeeCode}</td>
 
                   <td>
-                    <div className={styles.userName}>
-                      {user.fullName}
-                    </div>
+                    <div className={styles.userName}>{user.fullName}</div>
                   </td>
 
                   <td>{user.email}</td>
 
                   <td>
                     {user.userId !== currentUserId && (
-                    <button
-                      type="button"
-                      className={styles.removeMemberBtn}
-                      onClick={() =>
-                        onRemoveMember(user.userId)
-                      }
-                    >
-                      <Trash2 size={15} />
-                      Bỏ khỏi nhóm
-                    </button>
+                      <button
+                        type="button"
+                        className={styles.removeMemberBtn}
+                        onClick={() => onRemoveMember(user.userId)}
+                      >
+                        <Trash2 size={15} />
+                        Bỏ khỏi nhóm
+                      </button>
                     )}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={5}
-                  className={styles.emptyCell}
-                >
+                <td colSpan={5} className={styles.emptyCell}>
                   không tồn tại nhân viên.
                 </td>
               </tr>

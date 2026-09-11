@@ -16,19 +16,12 @@ import type { GeneralInfo } from '@/types/setting.type';
 interface GeneralSettingsProps {
   info: GeneralInfo;
 
-  onChange: (
-    key: keyof GeneralInfo,
-    value: string
-  ) => void;
+  onChange: (key: keyof GeneralInfo, value: string) => void;
 }
 
-export default function GeneralSettings({
-  info,
-  onChange,
-}: GeneralSettingsProps) {
+export default function GeneralSettings({ info, onChange }: GeneralSettingsProps) {
   return (
     <div className="space-y-6">
-
       {/* =====================================================
           THÔNG TIN WEBSITE
       ====================================================== */}
@@ -38,12 +31,8 @@ export default function GeneralSettings({
         description="Thông tin nhận diện và giới thiệu chung của website."
       >
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
           {/* Logo */}
-          <Field
-            label="Logo website"
-            hint="Đường dẫn hoặc URL của logo."
-          >
+          <Field label="Logo website" hint="Đường dẫn hoặc URL của logo.">
             <div className="relative">
               <ImageIcon
                 size={16}
@@ -59,12 +48,7 @@ export default function GeneralSettings({
 
               <input
                 value={info.logo || ''}
-                onChange={(e) =>
-                  onChange(
-                    'logo',
-                    e.target.value
-                  )
-                }
+                onChange={(e) => onChange('logo', e.target.value)}
                 className={`${inputClass} pl-9`}
                 placeholder="logo.png hoặc https://..."
               />
@@ -72,36 +56,20 @@ export default function GeneralSettings({
           </Field>
 
           {/* Company name */}
-          <Field
-            label="Tên công ty"
-            hint="Tên doanh nghiệp hiển thị trên website."
-          >
+          <Field label="Tên công ty" hint="Tên doanh nghiệp hiển thị trên website.">
             <input
               value={info.companyName || ''}
-              onChange={(e) =>
-                onChange(
-                  'companyName',
-                  e.target.value
-                )
-              }
+              onChange={(e) => onChange('companyName', e.target.value)}
               className={inputClass}
               placeholder="CMS Technology"
             />
           </Field>
 
           {/* Website name */}
-          <Field
-            label="Tên website"
-            hint="Tên thương hiệu hoặc tên website."
-          >
+          <Field label="Tên website" hint="Tên thương hiệu hoặc tên website.">
             <input
               value={info.websiteName || ''}
-              onChange={(e) =>
-                onChange(
-                  'websiteName',
-                  e.target.value
-                )
-              }
+              onChange={(e) => onChange('websiteName', e.target.value)}
               className={inputClass}
               placeholder="CMS Portal"
             />
@@ -115,15 +83,8 @@ export default function GeneralSettings({
           >
             <textarea
               rows={4}
-              value={
-                info.websiteDescription || ''
-              }
-              onChange={(e) =>
-                onChange(
-                  'websiteDescription',
-                  e.target.value
-                )
-              }
+              value={info.websiteDescription || ''}
+              onChange={(e) => onChange('websiteDescription', e.target.value)}
               className={`${inputClass} resize-none`}
               placeholder="Công ty giải pháp công nghệ hàng đầu Việt Nam..."
             />
@@ -140,12 +101,8 @@ export default function GeneralSettings({
         description="Thông tin liên hệ được sử dụng trên các trang công khai."
       >
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
           {/* Email */}
-          <Field
-            label="Email liên hệ"
-            hint="Email chính của công ty."
-          >
+          <Field label="Email liên hệ" hint="Email chính của công ty.">
             <div className="relative">
               <Mail
                 size={16}
@@ -162,12 +119,7 @@ export default function GeneralSettings({
               <input
                 type="email"
                 value={info.email || ''}
-                onChange={(e) =>
-                  onChange(
-                    'email',
-                    e.target.value
-                  )
-                }
+                onChange={(e) => onChange('email', e.target.value)}
                 className={`${inputClass} pl-9`}
                 placeholder="info@cms.vn"
               />
@@ -175,10 +127,7 @@ export default function GeneralSettings({
           </Field>
 
           {/* Phone */}
-          <Field
-            label="Số điện thoại công ty"
-            hint="Số điện thoại liên hệ chính."
-          >
+          <Field label="Số điện thoại công ty" hint="Số điện thoại liên hệ chính.">
             <div className="relative">
               <Phone
                 size={16}
@@ -193,15 +142,8 @@ export default function GeneralSettings({
               />
 
               <input
-                value={
-                  info.companyPhoneNumber || ''
-                }
-                onChange={(e) =>
-                  onChange(
-                    'companyPhoneNumber',
-                    e.target.value
-                  )
-                }
+                value={info.companyPhoneNumber || ''}
+                onChange={(e) => onChange('companyPhoneNumber', e.target.value)}
                 className={`${inputClass} pl-9`}
                 placeholder="+84 28 3456 7890"
               />
@@ -229,12 +171,7 @@ export default function GeneralSettings({
               <textarea
                 rows={2}
                 value={info.address || ''}
-                onChange={(e) =>
-                  onChange(
-                    'address',
-                    e.target.value
-                  )
-                }
+                onChange={(e) => onChange('address', e.target.value)}
                 className={`${inputClass} resize-none pl-9`}
                 placeholder="Tầng 12, 141 Lê Duẩn, Quận 1, TP. Hồ Chí Minh"
               />
@@ -242,11 +179,7 @@ export default function GeneralSettings({
           </Field>
 
           {/* Working hours */}
-          <Field
-            label="Giờ làm việc"
-            hint="Có thể nhập nhiều dòng."
-            className="md:col-span-2"
-          >
+          <Field label="Giờ làm việc" hint="Có thể nhập nhiều dòng." className="md:col-span-2">
             <div className="relative">
               <Clock3
                 size={16}
@@ -262,12 +195,7 @@ export default function GeneralSettings({
               <textarea
                 rows={2}
                 value={info.workingHours || ''}
-                onChange={(e) =>
-                  onChange(
-                    'workingHours',
-                    e.target.value
-                  )
-                }
+                onChange={(e) => onChange('workingHours', e.target.value)}
                 className={`${inputClass} resize-none pl-9`}
                 placeholder={`Thứ 2 - Thứ 6: 08:00 - 17:30
 Thứ 7: 08:00 - 12:00`}
@@ -287,12 +215,8 @@ Thứ 7: 08:00 - 12:00`}
         description="Khu vực này sẽ được sử dụng để cấu hình vị trí công ty. Chức năng tìm vị trí sẽ được hoàn thiện sau."
       >
         <div className="space-y-5">
-
           {/* Address preview */}
-          <Field
-            label="Địa chỉ vị trí"
-            hint="Hiện tại sử dụng trực tiếp địa chỉ ở trên."
-          >
+          <Field label="Địa chỉ vị trí" hint="Hiện tại sử dụng trực tiếp địa chỉ ở trên.">
             <div className="flex flex-col gap-3 sm:flex-row">
               <input
                 value={info.address || ''}
@@ -370,8 +294,7 @@ Thứ 7: 08:00 - 12:00`}
               "
               style={{
                 background: 'var(--surface)',
-                border:
-                  '1px solid var(--border)',
+                border: '1px solid var(--border)',
               }}
             />
 
@@ -385,8 +308,7 @@ Thứ 7: 08:00 - 12:00`}
               "
               style={{
                 background: 'var(--surface)',
-                border:
-                  '1px solid var(--border)',
+                border: '1px solid var(--border)',
               }}
             />
 
@@ -398,8 +320,7 @@ Thứ 7: 08:00 - 12:00`}
                 -rotate-6
               "
               style={{
-                background:
-                  'var(--surface)',
+                background: 'var(--surface)',
               }}
             />
 
@@ -410,8 +331,7 @@ Thứ 7: 08:00 - 12:00`}
                 rotate-12
               "
               style={{
-                background:
-                  'var(--surface)',
+                background: 'var(--surface)',
               }}
             />
 
@@ -431,10 +351,8 @@ Thứ 7: 08:00 - 12:00`}
                   rounded-full shadow-lg
                 "
                 style={{
-                  background:
-                    'var(--primary)',
-                  color:
-                    'var(--primary-foreground)',
+                  background: 'var(--primary)',
+                  color: 'var(--primary-foreground)',
                 }}
               >
                 <MapPin size={22} />
@@ -448,12 +366,9 @@ Thứ 7: 08:00 - 12:00`}
                   shadow-sm
                 "
                 style={{
-                  background:
-                    'var(--surface)',
-                  borderColor:
-                    'var(--border)',
-                  color:
-                    'var(--text)',
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--text)',
                 }}
               >
                 Vị trí công ty
@@ -469,12 +384,9 @@ Thứ 7: 08:00 - 12:00`}
                 shadow-sm
               "
               style={{
-                background:
-                  'var(--surface)',
-                borderColor:
-                  'var(--border)',
-                color:
-                  'var(--text-muted)',
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+                color: 'var(--text-muted)',
               }}
             >
               Bản đồ xem trước
@@ -488,12 +400,9 @@ Thứ 7: 08:00 - 12:00`}
               text-xs
             "
             style={{
-              background:
-                'var(--info-light)',
-              borderColor:
-                'var(--info)',
-              color:
-                'var(--text-secondary)',
+              background: 'var(--info-light)',
+              borderColor: 'var(--info)',
+              color: 'var(--text-secondary)',
             }}
           >
             <MapPin
@@ -505,18 +414,13 @@ Thứ 7: 08:00 - 12:00`}
             />
 
             <span>
-              Đây hiện chỉ là giao diện mẫu.
-              Chức năng tự động tìm vị trí từ
-              địa chỉ sẽ được triển khai ở bước
-              tiếp theo.
+              Đây hiện chỉ là giao diện mẫu. Chức năng tự động tìm vị trí từ địa chỉ sẽ được triển
+              khai ở bước tiếp theo.
             </span>
           </div>
 
           {/* Existing map embed URL */}
-          <Field
-            label="Google Maps Embed URL"
-            hint="Giữ nguyên field hiện tại trong database."
-          >
+          <Field label="Google Maps Embed URL" hint="Giữ nguyên field hiện tại trong database.">
             <div className="relative">
               <ExternalLink
                 size={16}
@@ -533,12 +437,7 @@ Thứ 7: 08:00 - 12:00`}
               <input
                 type="url"
                 value={info.mapEmbedUrl || ''}
-                onChange={(e) =>
-                  onChange(
-                    'mapEmbedUrl',
-                    e.target.value
-                  )
-                }
+                onChange={(e) => onChange('mapEmbedUrl', e.target.value)}
                 className={`${inputClass} pl-9`}
                 placeholder="https://www.google.com/maps/embed?pb=..."
               />
@@ -556,77 +455,46 @@ Thứ 7: 08:00 - 12:00`}
         description="Các liên kết mạng xã hội được sử dụng trên Navbar và Footer."
       >
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
           <SocialField
             label="Facebook"
             value={info.facebookLink}
             placeholder="https://facebook.com/..."
-            onChange={(value) =>
-              onChange(
-                'facebookLink',
-                value
-              )
-            }
+            onChange={(value) => onChange('facebookLink', value)}
           />
 
           <SocialField
             label="Twitter / X"
             value={info.twitterLink}
             placeholder="https://twitter.com/..."
-            onChange={(value) =>
-              onChange(
-                'twitterLink',
-                value
-              )
-            }
+            onChange={(value) => onChange('twitterLink', value)}
           />
 
           <SocialField
             label="Instagram"
             value={info.instagramLink}
             placeholder="https://instagram.com/..."
-            onChange={(value) =>
-              onChange(
-                'instagramLink',
-                value
-              )
-            }
+            onChange={(value) => onChange('instagramLink', value)}
           />
 
           <SocialField
             label="LinkedIn"
             value={info.linkedinLink}
             placeholder="https://linkedin.com/..."
-            onChange={(value) =>
-              onChange(
-                'linkedinLink',
-                value
-              )
-            }
+            onChange={(value) => onChange('linkedinLink', value)}
           />
 
           <SocialField
             label="YouTube"
             value={info.youtubeLink}
             placeholder="https://youtube.com/..."
-            onChange={(value) =>
-              onChange(
-                'youtubeLink',
-                value
-              )
-            }
+            onChange={(value) => onChange('youtubeLink', value)}
           />
 
           <SocialField
             label="Zalo"
             value={info.zaloLink}
             placeholder="https://zalo.me/..."
-            onChange={(value) =>
-              onChange(
-                'zaloLink',
-                value
-              )
-            }
+            onChange={(value) => onChange('zaloLink', value)}
           />
         </div>
       </SettingsSection>
@@ -639,19 +507,11 @@ Thứ 7: 08:00 - 12:00`}
         title="Liên kết Footer"
         description="Các liên kết phụ hiển thị ở khu vực cuối trang."
       >
-        <Field
-          label="Liên kết phụ Footer"
-          hint="Nhập các tên liên kết, ngăn cách bằng dấu phẩy."
-        >
+        <Field label="Liên kết phụ Footer" hint="Nhập các tên liên kết, ngăn cách bằng dấu phẩy.">
           <textarea
             rows={3}
             value={info.footerLinks || ''}
-            onChange={(e) =>
-              onChange(
-                'footerLinks',
-                e.target.value
-              )
-            }
+            onChange={(e) => onChange('footerLinks', e.target.value)}
             className={`${inputClass} resize-none`}
             placeholder="Chính sách bảo mật, Điều khoản sử dụng, Cookie"
           />
@@ -672,10 +532,8 @@ Thứ 7: 08:00 - 12:00`}
               color: 'var(--text-muted)',
             }}
           >
-            Hiện tại database chỉ lưu danh
-            sách dưới dạng text. Việc cấu hình
-            URL riêng cho từng linker có thể
-            được mở rộng sau.
+            Hiện tại database chỉ lưu danh sách dưới dạng text. Việc cấu hình URL riêng cho từng
+            linker có thể được mở rộng sau.
           </p>
         </div>
       </SettingsSection>
@@ -717,8 +575,7 @@ function SettingsSection({
         "
         style={{
           borderColor: 'var(--border)',
-          background:
-            'var(--surface-secondary)',
+          background: 'var(--surface-secondary)',
         }}
       >
         <div
@@ -728,10 +585,8 @@ function SettingsSection({
             justify-center rounded-xl
           "
           style={{
-            background:
-              'var(--primary-light)',
-            color:
-              'var(--primary-text)',
+            background: 'var(--primary-light)',
+            color: 'var(--primary-text)',
           }}
         >
           <Icon size={18} />
@@ -753,8 +608,7 @@ function SettingsSection({
           <p
             className="mt-0.5 text-sm"
             style={{
-              color:
-                'var(--text-secondary)',
+              color: 'var(--text-secondary)',
             }}
           >
             {description}
@@ -763,9 +617,7 @@ function SettingsSection({
       </div>
 
       {/* Section body */}
-      <div className="p-6">
-        {children}
-      </div>
+      <div className="p-6">{children}</div>
     </section>
   );
 }
@@ -793,8 +645,7 @@ function Field({
           text-xs font-semibold
         "
         style={{
-          color:
-            'var(--text-secondary)',
+          color: 'var(--text-secondary)',
         }}
       >
         {label}
@@ -806,8 +657,7 @@ function Field({
         <p
           className="mt-1 text-[11px]"
           style={{
-            color:
-              'var(--text-muted)',
+            color: 'var(--text-muted)',
           }}
         >
           {hint}
@@ -837,9 +687,7 @@ function SocialField({
       <input
         type="url"
         value={value || ''}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
+        onChange={(e) => onChange(e.target.value)}
         className={inputClass}
         placeholder={placeholder}
       />

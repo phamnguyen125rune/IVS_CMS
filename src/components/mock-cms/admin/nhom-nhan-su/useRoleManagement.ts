@@ -33,8 +33,7 @@ export function useRoleManagement() {
 
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
-  const [selectedRole, setSelectedRole] =
-    useState<RolePermissions | null>(null);
+  const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null);
 
   const [members, setMembers] = useState<RoleUser2[]>([]);
 
@@ -48,15 +47,13 @@ export function useRoleManagement() {
 
   const [availableMembers, setAvailableMembers] = useState<RoleUser2[]>([]);
 
-  const [selectedNewMembers, setSelectedNewMembers] =
-    useState<RoleUser2[]>([]);
+  const [selectedNewMembers, setSelectedNewMembers] = useState<RoleUser2[]>([]);
 
   const [memberSearchKeyword, setMemberSearchKeyword] = useState('');
 
   const [searchingMembers, setSearchingMembers] = useState(false);
 
-  const [addMemberError, setAddMemberError] =
-    useState<string | null>(null);
+  const [addMemberError, setAddMemberError] = useState<string | null>(null);
 
   // =========================================================
   // ROLE FORM MODAL
@@ -64,8 +61,7 @@ export function useRoleManagement() {
 
   const [showRoleModal, setShowRoleModal] = useState(false);
 
-  const [editingRole, setEditingRole] =
-    useState<RolePermissions | null>(null);
+  const [editingRole, setEditingRole] = useState<RolePermissions | null>(null);
 
   const [roleName, setRoleName] = useState('');
 
@@ -75,56 +71,50 @@ export function useRoleManagement() {
   // DELETE ROLE
   // =========================================================
 
-  const [deleteTarget, setDeleteTarget] =
-    useState<RolePermissions | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<RolePermissions | null>(null);
 
   // =========================================================
   // SELECT ROLE
   // =========================================================
 
-const handleSelectRole = async (role: RolePermissions) => {
-  setSelectedRole(role);
-  setRemovedUserIds([]);
+  const handleSelectRole = async (role: RolePermissions) => {
+    setSelectedRole(role);
+    setRemovedUserIds([]);
 
-  const users = await fetchRoleMembers(role.roleId);
-  setMembers(users);
-  setHasChanged(false);
-};
+    const users = await fetchRoleMembers(role.roleId);
+    setMembers(users);
+    setHasChanged(false);
+  };
 
   // =========================================================
   // MEMBER
   // =========================================================
-  
+
   useEffect(() => {
     const loadCurrentUser = async () => {
-        try {
+      try {
         const profile = await userService.getMyProfile();
 
         console.log('PROFILE:', profile);
         console.log('CURRENT USER ID FROM API:', profile.userId);
 
         setCurrentUserId(profile.userId);
-        } catch (error) {
-        console.error(
-            'Không thể lấy thông tin user hiện tại:',
-            error
-        );
-        }
+      } catch (error) {
+        console.error('Không thể lấy thông tin user hiện tại:', error);
+      }
     };
 
     loadCurrentUser();
-    }, []);
+  }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     console.log('CURRENT USER ID STATE:', currentUserId);
-    }, [currentUserId]);
+  }, [currentUserId]);
 
   const [removedUserIds, setRemovedUserIds] = useState<number[]>([]);
 
   const handleRemoveMember = (userId: number) => {
-    setMembers((prev) =>
-      prev.filter((user) => user.userId !== userId),
-    );
+    setMembers((prev) => prev.filter((user) => user.userId !== userId));
 
     setHasChanged(true);
   };
@@ -175,23 +165,13 @@ const handleSelectRole = async (role: RolePermissions) => {
     try {
       setSearchingMembers(true);
 
-      const data = await searchUsersNotInRole(
-        selectedRole.roleId,
-        '',
-      );
+      const data = await searchUsersNotInRole(selectedRole.roleId, '');
 
       setAvailableMembers(data);
     } catch (err) {
-      console.error(
-        'Failed to load available members:',
-        err,
-      );
+      console.error('Failed to load available members:', err);
 
-      setAddMemberError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể tải danh sách thành viên',
-      );
+      setAddMemberError(err instanceof Error ? err.message : 'Không thể tải danh sách thành viên');
     } finally {
       setSearchingMembers(false);
     }
@@ -217,20 +197,13 @@ const handleSelectRole = async (role: RolePermissions) => {
       setSearchingMembers(true);
       setAddMemberError(null);
 
-      const data = await searchUsersNotInRole(
-        selectedRole.roleId,
-        memberSearchKeyword.trim(),
-      );
+      const data = await searchUsersNotInRole(selectedRole.roleId, memberSearchKeyword.trim());
 
       setAvailableMembers(data);
     } catch (err) {
       console.error('Failed to search members:', err);
 
-      setAddMemberError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể tìm kiếm thành viên',
-      );
+      setAddMemberError(err instanceof Error ? err.message : 'Không thể tìm kiếm thành viên');
 
       setAvailableMembers([]);
     } finally {
@@ -240,9 +213,7 @@ const handleSelectRole = async (role: RolePermissions) => {
 
   const handleSelectMember = (user: RoleUser2) => {
     setSelectedNewMembers((prev) => {
-      const alreadySelected = prev.some(
-        (item) => item.userId === user.userId,
-      );
+      const alreadySelected = prev.some((item) => item.userId === user.userId);
 
       if (alreadySelected) {
         return prev;
@@ -251,15 +222,11 @@ const handleSelectRole = async (role: RolePermissions) => {
       return [...prev, user];
     });
 
-    setAvailableMembers((prev) =>
-      prev.filter((item) => item.userId !== user.userId),
-    );
+    setAvailableMembers((prev) => prev.filter((item) => item.userId !== user.userId));
   };
 
   const handleCancelAddMember = (user: RoleUser2) => {
-    setSelectedNewMembers((prev) =>
-      prev.filter((item) => item.userId !== user.userId),
-    );
+    setSelectedNewMembers((prev) => prev.filter((item) => item.userId !== user.userId));
 
     setAvailableMembers((prev) => [...prev, user]);
   };
@@ -276,15 +243,9 @@ const handleSelectRole = async (role: RolePermissions) => {
     try {
       setAddMemberError(null);
 
-      await saveRoleMembers(
-        selectedRole.roleId,
-        [...members, ...selectedNewMembers],
-      );
+      await saveRoleMembers(selectedRole.roleId, [...members, ...selectedNewMembers]);
 
-      setMembers((prev) => [
-        ...prev,
-        ...selectedNewMembers,
-      ]);
+      setMembers((prev) => [...prev, ...selectedNewMembers]);
 
       setIsAddMemberModalOpen(false);
       setSelectedNewMembers([]);
@@ -293,11 +254,7 @@ const handleSelectRole = async (role: RolePermissions) => {
     } catch (err) {
       console.error('Failed to add members:', err);
 
-      setAddMemberError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể thêm thành viên',
-      );
+      setAddMemberError(err instanceof Error ? err.message : 'Không thể thêm thành viên');
     }
   };
 
@@ -356,11 +313,7 @@ const handleSelectRole = async (role: RolePermissions) => {
     } catch (error) {
       console.error('Lỗi lưu role:', error);
 
-      alert(
-        editingRole
-          ? 'Cập nhật role thất bại'
-          : 'Tạo role thất bại',
-      );
+      alert(editingRole ? 'Cập nhật role thất bại' : 'Tạo role thất bại');
     }
   };
 

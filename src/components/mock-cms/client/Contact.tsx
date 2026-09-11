@@ -2,22 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
-import {
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Loader2,
-  Mail,
-  MapPin,
-  Phone,
-  Send,
-} from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, Loader2, Mail, MapPin, Phone, Send } from 'lucide-react';
 
-import type {
-  FormCategory,
-  FormDetailFormData,
-  FormDetailFormErrors,
-} from '@/types/contact.type';
+import type { FormCategory, FormDetailFormData, FormDetailFormErrors } from '@/types/contact.type';
 
 import { FormDetailService } from '@/services/contact.service';
 import { settingService } from '@/services/setting.service';
@@ -194,10 +181,7 @@ export default function Contact() {
   // Form field helper
   // ================================
 
-  const setField = <K extends keyof FormDetailFormData>(
-    key: K,
-    value: FormDetailFormData[K],
-  ) => {
+  const setField = <K extends keyof FormDetailFormData>(key: K, value: FormDetailFormData[K]) => {
     setForm((prev) => ({
       ...prev,
       [key]: value,
@@ -317,10 +301,7 @@ export default function Contact() {
             Hãy kết nối với chúng tôi
           </h1>
 
-          <p
-            className="text-base max-w-xl"
-            style={{ color: 'var(--dark-text-secondary)' }}
-          >
+          <p className="text-base max-w-xl" style={{ color: 'var(--dark-text-secondary)' }}>
             {generalInfo?.websiteDescription ||
               `Đội ngũ chuyên gia của ${
                 generalInfo?.companyName || 'CMS'
@@ -341,42 +322,37 @@ export default function Contact() {
 
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <h2
-                className="font-display text-2xl font-bold mb-5"
-                style={{ color: 'var(--text)' }}
-              >
+              <h2 className="font-display text-2xl font-bold mb-5" style={{ color: 'var(--text)' }}>
                 Thông tin liên hệ
               </h2>
 
               <div className="space-y-4">
-                {contactInformation.map(
-                  ({ icon: Icon, label, value, color }) => (
-                    <div key={label} className="flex items-start gap-4">
-                      {/* Decorative icon color - giữ nguyên */}
+                {contactInformation.map(({ icon: Icon, label, value, color }) => (
+                  <div key={label} className="flex items-start gap-4">
+                    {/* Decorative icon color - giữ nguyên */}
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}
+                    >
+                      <Icon size={18} />
+                    </div>
+
+                    <div>
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}
+                        className="text-xs font-semibold uppercase tracking-wide mb-1"
+                        style={{ color: 'var(--text-muted)' }}
                       >
-                        <Icon size={18} />
+                        {label}
                       </div>
 
-                      <div>
-                        <div
-                          className="text-xs font-semibold uppercase tracking-wide mb-1"
-                          style={{ color: 'var(--text-muted)' }}
-                        >
-                          {label}
-                        </div>
-
-                        <div
-                          className="text-sm whitespace-pre-line leading-relaxed"
-                          style={{ color: 'var(--text-secondary)' }}
-                        >
-                          {generalInfoLoading ? 'Đang tải...' : value}
-                        </div>
+                      <div
+                        className="text-sm whitespace-pre-line leading-relaxed"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        {generalInfoLoading ? 'Đang tải...' : value}
                       </div>
                     </div>
-                  ),
-                )}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -393,9 +369,7 @@ export default function Contact() {
             >
               {generalInfo?.mapEmbedUrl ? (
                 <iframe
-                  title={`Bản đồ vị trí ${
-                    generalInfo.companyName || 'công ty'
-                  }`}
+                  title={`Bản đồ vị trí ${generalInfo.companyName || 'công ty'}`}
                   src={generalInfo.mapEmbedUrl}
                   width="100%"
                   height="100%"
@@ -434,10 +408,7 @@ export default function Contact() {
                   }}
                 >
                   <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle
-                      size={32}
-                      className="text-emerald-600"
-                    />
+                    <CheckCircle size={32} className="text-emerald-600" />
                   </div>
 
                   <h3
@@ -451,9 +422,8 @@ export default function Contact() {
                     className="mb-6 max-w-md mx-auto text-sm"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    Cảm ơn bạn đã liên hệ. Đội ngũ{' '}
-                    {generalInfo?.companyName || 'CMS'} đã nhận được thông tin
-                    và sẽ phản hồi trong vòng 24 giờ làm việc.
+                    Cảm ơn bạn đã liên hệ. Đội ngũ {generalInfo?.companyName || 'CMS'} đã nhận được
+                    thông tin và sẽ phản hồi trong vòng 24 giờ làm việc.
                   </p>
 
                   <button
@@ -488,12 +458,8 @@ export default function Contact() {
                   Gửi yêu cầu tư vấn
                 </h2>
 
-                <p
-                  className="text-sm mb-6"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  Điền thông tin bên dưới, chúng tôi sẽ liên hệ lại trong 24
-                  giờ.
+                <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+                  Điền thông tin bên dưới, chúng tôi sẽ liên hệ lại trong 24 giờ.
                 </p>
 
                 {/* Server error */}
@@ -512,11 +478,7 @@ export default function Contact() {
                   </div>
                 )}
 
-                <form
-                  onSubmit={handleSubmit}
-                  noValidate
-                  className="space-y-4"
-                >
+                <form onSubmit={handleSubmit} noValidate className="space-y-4">
                   {/* =================================
                       Full name + Email
                   ================================== */}
@@ -527,23 +489,18 @@ export default function Contact() {
                         className="block text-xs font-medium mb-1.5"
                         style={{ color: 'var(--text-muted)' }}
                       >
-                        Họ và tên{' '}
-                        <span className="text-red-500">*</span>
+                        Họ và tên <span className="text-red-500">*</span>
                       </label>
 
                       <input
                         value={form.fullName}
-                        onChange={(e) =>
-                          setField('fullName', e.target.value)
-                        }
+                        onChange={(e) => setField('fullName', e.target.value)}
                         placeholder="Nguyễn Văn A"
                         className={inputClass('fullName')}
                         style={{
                           background: 'var(--surface)',
                           color: 'var(--text)',
-                          borderColor: errors.fullName
-                            ? undefined
-                            : 'var(--border)',
+                          borderColor: errors.fullName ? undefined : 'var(--border)',
                         }}
                       />
 
@@ -566,17 +523,13 @@ export default function Contact() {
                       <input
                         type="email"
                         value={form.email}
-                        onChange={(e) =>
-                          setField('email', e.target.value)
-                        }
+                        onChange={(e) => setField('email', e.target.value)}
                         placeholder="email@company.vn"
                         className={inputClass('email')}
                         style={{
                           background: 'var(--surface)',
                           color: 'var(--text)',
-                          borderColor: errors.email
-                            ? undefined
-                            : 'var(--border)',
+                          borderColor: errors.email ? undefined : 'var(--border)',
                         }}
                       />
 
@@ -597,23 +550,18 @@ export default function Contact() {
                         className="block text-xs font-medium mb-1.5"
                         style={{ color: 'var(--text-muted)' }}
                       >
-                        Số điện thoại{' '}
-                        <span className="text-red-500">*</span>
+                        Số điện thoại <span className="text-red-500">*</span>
                       </label>
 
                       <input
                         value={form.phoneNumber}
-                        onChange={(e) =>
-                          setField('phoneNumber', e.target.value)
-                        }
+                        onChange={(e) => setField('phoneNumber', e.target.value)}
                         placeholder="0900 000 000"
                         className={inputClass('phoneNumber')}
                         style={{
                           background: 'var(--surface)',
                           color: 'var(--text)',
-                          borderColor: errors.phoneNumber
-                            ? undefined
-                            : 'var(--border)',
+                          borderColor: errors.phoneNumber ? undefined : 'var(--border)',
                         }}
                       />
 
@@ -639,17 +587,13 @@ export default function Contact() {
 
                       <input
                         value={form.company || ''}
-                        onChange={(e) =>
-                          setField('company', e.target.value)
-                        }
+                        onChange={(e) => setField('company', e.target.value)}
                         placeholder="Tên công ty (nếu có)"
                         className={inputClass('company')}
                         style={{
                           background: 'var(--surface)',
                           color: 'var(--text)',
-                          borderColor: errors.company
-                            ? undefined
-                            : 'var(--border)',
+                          borderColor: errors.company ? undefined : 'var(--border)',
                         }}
                       />
                     </div>
@@ -664,34 +608,23 @@ export default function Contact() {
                       className="block text-xs font-medium mb-1.5"
                       style={{ color: 'var(--text-muted)' }}
                     >
-                      Danh mục yêu cầu{' '}
-                      <span className="text-red-500">*</span>
+                      Danh mục yêu cầu <span className="text-red-500">*</span>
                     </label>
 
                     <select
                       value={form.formCategoryId}
-                      onChange={(e) =>
-                        setField(
-                          'formCategoryId',
-                          Number(e.target.value),
-                        )
-                      }
+                      onChange={(e) => setField('formCategoryId', Number(e.target.value))}
                       className={inputClass('formCategoryId')}
                       style={{
                         background: 'var(--surface)',
                         color: 'var(--text)',
-                        borderColor: errors.formCategoryId
-                          ? undefined
-                          : 'var(--border)',
+                        borderColor: errors.formCategoryId ? undefined : 'var(--border)',
                       }}
                     >
                       <option value={0}>-- Chọn dịch vụ --</option>
 
                       {categories.map((cat) => (
-                        <option
-                          key={cat.formCategoryId}
-                          value={cat.formCategoryId}
-                        >
+                        <option key={cat.formCategoryId} value={cat.formCategoryId}>
                           {cat.categoryName}
                         </option>
                       ))}
@@ -714,24 +647,19 @@ export default function Contact() {
                       className="block text-xs font-medium mb-1.5"
                       style={{ color: 'var(--text-muted)' }}
                     >
-                      Nội dung tin nhắn{' '}
-                      <span className="text-red-500">*</span>
+                      Nội dung tin nhắn <span className="text-red-500">*</span>
                     </label>
 
                     <textarea
                       rows={4}
                       value={form.message}
-                      onChange={(e) =>
-                        setField('message', e.target.value)
-                      }
+                      onChange={(e) => setField('message', e.target.value)}
                       placeholder="Mô tả nhu cầu, quy mô dự án và thông tin khác bạn muốn chia sẻ..."
                       className={`${inputClass('message')} resize-none`}
                       style={{
                         background: 'var(--surface)',
                         color: 'var(--text)',
-                        borderColor: errors.message
-                          ? undefined
-                          : 'var(--border)',
+                        borderColor: errors.message ? undefined : 'var(--border)',
                       }}
                     />
 
@@ -753,9 +681,7 @@ export default function Contact() {
                         type="checkbox"
                         id="consent"
                         checked={form.consent}
-                        onChange={(e) =>
-                          setField('consent', e.target.checked)
-                        }
+                        onChange={(e) => setField('consent', e.target.checked)}
                         className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                       />
 
@@ -765,16 +691,11 @@ export default function Contact() {
                         style={{ color: 'var(--text-muted)' }}
                       >
                         Tôi đồng ý với{' '}
-                        <a
-                          href="#"
-                          className="hover:underline"
-                          style={{ color: 'var(--primary)' }}
-                        >
+                        <a href="#" className="hover:underline" style={{ color: 'var(--primary)' }}>
                           Chính sách bảo mật
                         </a>{' '}
-                        và cho phép{' '}
-                        {generalInfo?.companyName || 'CMS'} liên hệ với tôi
-                        theo thông tin đã cung cấp.
+                        và cho phép {generalInfo?.companyName || 'CMS'} liên hệ với tôi theo thông
+                        tin đã cung cấp.
                       </label>
                     </div>
 
@@ -815,10 +736,7 @@ export default function Contact() {
                   >
                     {loading ? (
                       <>
-                        <Loader2
-                          size={16}
-                          className="animate-spin"
-                        />
+                        <Loader2 size={16} className="animate-spin" />
                         Đang gửi yêu cầu...
                       </>
                     ) : (

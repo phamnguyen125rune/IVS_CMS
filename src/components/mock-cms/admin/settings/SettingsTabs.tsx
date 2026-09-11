@@ -1,24 +1,15 @@
 'use client';
 
-import type {
-  SettingsTabKey,
-} from './constants/settings.constants';
+import type { SettingsTabKey } from './constants/settings.constants';
 
-import {
-  SETTINGS_TABS,
-} from './constants/settings.constants';
+import { SETTINGS_TABS } from './constants/settings.constants';
 
 interface SettingsTabsProps {
   activeTab: SettingsTabKey;
-  onChange: (
-    tab: SettingsTabKey
-  ) => void;
+  onChange: (tab: SettingsTabKey) => void;
 }
 
-export default function SettingsTabs({
-  activeTab,
-  onChange,
-}: SettingsTabsProps) {
+export default function SettingsTabs({ activeTab, onChange }: SettingsTabsProps) {
   return (
     <aside
       className="
@@ -27,23 +18,15 @@ export default function SettingsTabs({
       "
     >
       <nav className="space-y-1">
-        {SETTINGS_TABS.map(
-          ({
-            key,
-            label,
-            icon: Icon,
-          }) => {
-            const isActive =
-              activeTab === key;
+        {SETTINGS_TABS.map(({ key, label, icon: Icon }) => {
+          const isActive = activeTab === key;
 
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() =>
-                  onChange(key)
-                }
-                className="
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onChange(key)}
+              className="
                   flex w-full
                   items-center gap-3
                   rounded-xl px-3 py-2.5
@@ -51,25 +34,18 @@ export default function SettingsTabs({
                   font-medium
                   transition-colors
                 "
-                style={{
-                  background: isActive
-                    ? 'var(--primary-light)'
-                    : 'transparent',
+              style={{
+                background: isActive ? 'var(--primary-light)' : 'transparent',
 
-                  color: isActive
-                    ? 'var(--primary-text)'
-                    : 'var(--text-secondary)',
-                }}
-              >
-                <Icon size={16} />
+                color: isActive ? 'var(--primary-text)' : 'var(--text-secondary)',
+              }}
+            >
+              <Icon size={16} />
 
-                <span>
-                  {label}
-                </span>
-              </button>
-            );
-          }
-        )}
+              <span>{label}</span>
+            </button>
+          );
+        })}
       </nav>
     </aside>
   );

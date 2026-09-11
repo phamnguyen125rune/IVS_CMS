@@ -14,7 +14,7 @@ import {
   ShieldCheck,
   X,
 } from 'lucide-react';
-import { clearStaffSessionToken, setStaffSessionToken } from '@/utils/session-auth';
+import { clearUserSessionToken, setUserSessionToken } from '@/utils/session-auth';
 
 type ModalStep = 'forgot-email' | 'forgot-otp' | 'reset-password' | 'reset-success' | null;
 
@@ -23,7 +23,7 @@ interface ResetVerifyResponse {
   resetToken: string;
 }
 
-interface StaffLoginResponse {
+interface UserLoginResponse {
   mustChangePassword?: boolean;
   accessToken?: string;
   user?: {
@@ -79,7 +79,7 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (lockedReason) {
-      clearStaffSessionToken();
+      clearUserSessionToken();
     }
   }, [lockedReason]);
 
@@ -125,11 +125,11 @@ export default function AuthPage() {
     setIsLoading(true);
 
     try {
-      const data = await request<StaffLoginResponse>('/api/auth/login', {
+      const data = await request<UserLoginResponse>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ loginId, password: loginPassword }),
       });
-      setStaffSessionToken(data.accessToken);
+      setUserSessionToken(data.accessToken);
       const isAdmin = isAdminRoleName(data.user?.role?.name);
       const profilePath = `/${language}/admin/ho-so`;
       const defaultPath = isAdmin ? callbackUrl || `/${language}/admin/nhan-su` : profilePath;

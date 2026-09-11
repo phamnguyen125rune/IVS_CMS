@@ -12,18 +12,10 @@ interface RoleCardProps {
   onDelete: (role: RolePermissions) => void;
 }
 
-export default function RoleCard({
-  role,
-  isActive,
-  onSelect,
-  onEdit,
-  onDelete,
-}: RoleCardProps) {
+export default function RoleCard({ role, isActive, onSelect, onEdit, onDelete }: RoleCardProps) {
   return (
     <div
-      className={`${styles.roleCard} ${
-        isActive ? styles.roleCardActive : ''
-      }`}
+      className={`${styles.roleCard} ${isActive ? styles.roleCardActive : ''}`}
       onClick={() => onSelect(role)}
     >
       <div className={styles.roleCardTop}>
@@ -56,19 +48,13 @@ export default function RoleCard({
         </div>
       </div>
 
-      <h2 className={styles.roleName}>
-        {role.roleName}
-      </h2>
+      <h2 className={styles.roleName}>{role.roleName}</h2>
 
-      <p className={styles.roleDescription}>
-        {role.roleDescription || 'Chưa có mô tả'}
-      </p>
+      <p className={styles.roleDescription}>{role.roleDescription || 'Chưa có mô tả'}</p>
 
       <div className={styles.memberCount}>
         <Users size={15} />
-        <span>
-          {role.memmberCount ?? 0} thành viên
-        </span>
+        <span>{role.memmberCount ?? 0} thành viên</span>
       </div>
     </div>
   );

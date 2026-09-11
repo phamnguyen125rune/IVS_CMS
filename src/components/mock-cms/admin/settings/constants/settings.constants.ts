@@ -1,10 +1,4 @@
-import {
-  Bell,
-  Globe,
-  History,
-  Palette,
-  Shield,
-} from 'lucide-react';
+import { Bell, Globe, History, Palette, Shield } from 'lucide-react';
 
 import type { GeneralInfo } from '@/types/setting.type';
 
@@ -36,15 +30,13 @@ export const SETTINGS_TABS = [
   },
 ] as const;
 
-export type SettingsTabKey =
-  (typeof SETTINGS_TABS)[number]['key'];
+export type SettingsTabKey = (typeof SETTINGS_TABS)[number]['key'];
 
 export const DEFAULT_GENERAL_INFO: GeneralInfo = {
   logo: 'default-logo.png',
   companyName: 'CMS Technology',
   websiteName: 'CMS Portal',
-  websiteDescription:
-    'Công ty giải pháp công nghệ hàng đầu Việt Nam.',
+  websiteDescription: 'Công ty giải pháp công nghệ hàng đầu Việt Nam.',
   email: 'info@cms.vn',
 
   facebookLink: '',

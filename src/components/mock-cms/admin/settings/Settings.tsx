@@ -1,17 +1,11 @@
 'use client';
 
-import {
-  CheckCircle,
-  Loader2,
-  Save,
-} from 'lucide-react';
+import { CheckCircle, Loader2, Save } from 'lucide-react';
 import { useState } from 'react';
 
 import type { GeneralInfo } from '@/types/setting.type';
 
-import {
-  type SettingsTabKey,
-} from './constants/settings.constants';
+import { type SettingsTabKey } from './constants/settings.constants';
 
 import GeneralSettings from './GeneralSettings';
 import SettingsTabs from './SettingsTabs';
@@ -20,17 +14,9 @@ import SystemLogs from './SystemLogs';
 import { useGeneralInfo } from './hooks/useGeneralInfo';
 
 export default function Settings() {
-  const [activeTab, setActiveTab] =
-    useState<SettingsTabKey>('general');
+  const [activeTab, setActiveTab] = useState<SettingsTabKey>('general');
 
-  const {
-    info,
-    loading,
-    saving,
-    saved,
-    handleChange,
-    handleSave,
-  } = useGeneralInfo();
+  const { info, loading, saving, saved, handleChange, handleSave } = useGeneralInfo();
 
   /**
    * Save dữ liệu General tab.
@@ -50,7 +36,6 @@ export default function Settings() {
         color: 'var(--text)',
       }}
     >
-
       {/* =====================================================
           HEADER
       ====================================================== */}
@@ -79,12 +64,10 @@ export default function Settings() {
           <p
             className="mt-0.5 text-sm"
             style={{
-              color:
-                'var(--text-secondary)',
+              color: 'var(--text-secondary)',
             }}
           >
-            Cấu hình hệ thống và tùy chỉnh
-            nền tảng
+            Cấu hình hệ thống và tùy chỉnh nền tảng
           </p>
         </div>
 
@@ -104,24 +87,17 @@ export default function Settings() {
               disabled:opacity-50
             "
             style={{
-              background:
-                'var(--primary)',
-              color:
-                'var(--primary-foreground)',
+              background: 'var(--primary)',
+              color: 'var(--primary-foreground)',
             }}
           >
             {loading || saving ? (
-              <Loader2
-                size={16}
-                className="animate-spin"
-              />
+              <Loader2 size={16} className="animate-spin" />
             ) : (
               <Save size={16} />
             )}
 
-            {saving
-              ? 'Đang lưu...'
-              : 'Lưu cài đặt'}
+            {saving ? 'Đang lưu...' : 'Lưu cài đặt'}
           </button>
         )}
       </div>
@@ -139,20 +115,14 @@ export default function Settings() {
             text-sm
           "
           style={{
-            background:
-              'var(--success-light)',
-            borderColor:
-              'var(--success)',
-            color:
-              'var(--success)',
+            background: 'var(--success-light)',
+            borderColor: 'var(--success)',
+            color: 'var(--success)',
           }}
         >
           <CheckCircle size={16} />
 
-          <span>
-            Thông tin cấu hình đã được lưu
-            vào Database thành công!
-          </span>
+          <span>Thông tin cấu hình đã được lưu vào Database thành công!</span>
         </div>
       )}
 
@@ -166,12 +136,8 @@ export default function Settings() {
           md:flex-row
         "
       >
-
         {/* Sidebar */}
-        <SettingsTabs
-          activeTab={activeTab}
-          onChange={setActiveTab}
-        />
+        <SettingsTabs activeTab={activeTab} onChange={setActiveTab} />
 
         {/* Content */}
         <main
@@ -180,16 +146,10 @@ export default function Settings() {
             max-w-5xl flex-1
           "
         >
-
           {/* =================================================
               GENERAL
           ================================================== */}
-          {activeTab === 'general' && (
-            <GeneralSettings
-              info={info}
-              onChange={handleChange}
-            />
-          )}
+          {activeTab === 'general' && <GeneralSettings info={info} onChange={handleChange} />}
 
           {/* =================================================
               NOTIFICATION
@@ -230,9 +190,7 @@ export default function Settings() {
           {/* =================================================
               LOGS
           ================================================== */}
-          {activeTab === 'logs' && (
-            <SystemLogs />
-          )}
+          {activeTab === 'logs' && <SystemLogs />}
         </main>
       </div>
     </div>
@@ -243,13 +201,7 @@ export default function Settings() {
    EMPTY TAB
 ========================================================= */
 
-function EmptyTab({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+function EmptyTab({ title, description }: { title: string; description: string }) {
   return (
     <div
       className="
@@ -275,8 +227,7 @@ function EmptyTab({
       <p
         className="text-sm"
         style={{
-          color:
-            'var(--text-secondary)',
+          color: 'var(--text-secondary)',
         }}
       >
         {description}

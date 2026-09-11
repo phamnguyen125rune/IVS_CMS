@@ -6,21 +6,14 @@ import { useMemo, useState } from 'react';
 import { MOCK_LOGS } from './constants/settings.constants';
 
 export default function SystemLogs() {
-  const [logSearch, setLogSearch] =
-    useState('');
+  const [logSearch, setLogSearch] = useState('');
 
   const filteredLogs = useMemo(() => {
-    const keyword =
-      logSearch.toLowerCase();
+    const keyword = logSearch.toLowerCase();
 
     return MOCK_LOGS.filter(
       (log) =>
-        log.account
-          .toLowerCase()
-          .includes(keyword) ||
-        log.action
-          .toLowerCase()
-          .includes(keyword)
+        log.account.toLowerCase().includes(keyword) || log.action.toLowerCase().includes(keyword)
     );
   }, [logSearch]);
 
@@ -70,9 +63,7 @@ export default function SystemLogs() {
           <input
             type="text"
             value={logSearch}
-            onChange={(e) =>
-              setLogSearch(e.target.value)
-            }
+            onChange={(e) => setLogSearch(e.target.value)}
             placeholder="
               Tìm theo tài khoản hoặc thao tác...
             "
@@ -83,11 +74,9 @@ export default function SystemLogs() {
               focus:border-[var(--primary)]
             "
             style={{
-              background:
-                'var(--surface)',
+              background: 'var(--surface)',
               color: 'var(--text)',
-              borderColor:
-                'var(--border)',
+              borderColor: 'var(--border)',
             }}
           />
         </div>
@@ -100,31 +89,19 @@ export default function SystemLogs() {
             <tr
               className="border-b"
               style={{
-                background:
-                  'var(--surface-secondary)',
-                borderColor:
-                  'var(--border)',
+                background: 'var(--surface-secondary)',
+                borderColor: 'var(--border)',
               }}
             >
-              <th className={thClass}>
-                Thời gian
-              </th>
+              <th className={thClass}>Thời gian</th>
 
-              <th className={thClass}>
-                Tài khoản
-              </th>
+              <th className={thClass}>Tài khoản</th>
 
-              <th className={thClass}>
-                Thao tác
-              </th>
+              <th className={thClass}>Thao tác</th>
 
-              <th className={thClass}>
-                Đối tượng
-              </th>
+              <th className={thClass}>Đối tượng</th>
 
-              <th className={thClass}>
-                IP
-              </th>
+              <th className={thClass}>IP</th>
             </tr>
           </thead>
 
@@ -134,13 +111,10 @@ export default function SystemLogs() {
                 key={log.id}
                 className="border-b transition-colors"
                 style={{
-                  borderColor:
-                    'var(--border)',
+                  borderColor: 'var(--border)',
                 }}
               >
-                <td className={tdMuted}>
-                  {log.time}
-                </td>
+                <td className={tdMuted}>{log.time}</td>
 
                 <td
                   className="
@@ -153,13 +127,9 @@ export default function SystemLogs() {
                   {log.account}
                 </td>
 
-                <td className={tdText}>
-                  {log.action}
-                </td>
+                <td className={tdText}>{log.action}</td>
 
-                <td className={tdText}>
-                  {log.target}
-                </td>
+                <td className={tdText}>{log.target}</td>
 
                 <td
                   className="
@@ -167,8 +137,7 @@ export default function SystemLogs() {
                     text-xs
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   {log.ip}
@@ -182,8 +151,7 @@ export default function SystemLogs() {
                   colSpan={5}
                   className="px-5 py-8 text-center"
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   Không tìm thấy nhật ký.
