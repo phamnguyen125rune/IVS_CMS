@@ -1,12 +1,16 @@
 Folder PATH listing for volume New Volume
-Volume serial number is 00000235 14E4:3E14
+Volume serial number is 14E4-3E14
 D:\SOURCE\REPOS\IVS_CMS\SRC\APP
 |   favicon.ico
 |   globals.css
 |   layout.tsx
+|   sitemap.ts
 |   
 +---api
 |   +---auth
+|   |   +---change-password
+|   |   |       route.ts
+|   |   |       
 |   |   +---forgot-password
 |   |   |   +---request-otp
 |   |   |   |       route.ts
@@ -23,18 +27,64 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
 |   |   +---logout
 |   |   |       route.ts
 |   |   |       
-|   |   \---profile
+|   |   +---profile
+|   |   |       route.ts
+|   |   |       
+|   |   \---session-events
 |   |           route.ts
 |   |           
-|   \---contacts
+|   +---contacts
+|   |   |   route.ts
+|   |   |   
+|   |   \---[id]
+|   |       |   route.ts
+|   |       |   
+|   |       \---reply
+|   |               route.ts
+|   |               
+|   +---customer-auth
+|   |   +---logout
+|   |   |       route.ts
+|   |   |       
+|   |   \---register
+|   |           route.ts
+|   |           
+|   +---roles
+|   |       route.ts
+|   |       
+|   \---users
 |       |   route.ts
+|       |   _route-utils.ts
 |       |   
+|       +---avatar
+|       |       route.ts
+|       |       
+|       +---deleted
+|       |       route.ts
+|       |       
 |       \---[id]
 |           |   route.ts
 |           |   
-|           \---reply
+|           +---avatar
+|           |       route.ts
+|           |       
+|           +---hard
+|           |       route.ts
+|           |       
+|           +---reset-password
+|           |       route.ts
+|           |       
+|           +---restore
+|           |       route.ts
+|           |       
+|           \---status
 |                   route.ts
 |                   
++---icon
+|       docx.png
+|       pdf.png
+|       xlsx.png
+|       
 \---[language]
     |   layout.tsx
     |   
@@ -63,6 +113,9 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
     |   |   +---danh-muc
     |   |   |       page.tsx
     |   |   |       
+    |   |   +---doi-tac
+    |   |   |       page.tsx
+    |   |   |       
     |   |   +---ho-so
     |   |   |       page.tsx
     |   |   |       
@@ -72,10 +125,16 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
     |   |   +---media
     |   |   |       page.tsx
     |   |   |       
+    |   |   +---menu
+    |   |   |       page.tsx
+    |   |   |       
     |   |   +---nhan-su
     |   |   |       page.tsx
     |   |   |       
     |   |   +---nhat-ky
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---nhom-nhan-su
     |   |   |       page.tsx
     |   |   |       
     |   |   +---phan-quyen
@@ -84,9 +143,6 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
     |   |   \---tong-quan
     |   |           page.tsx
     |   |           
-    |   +---admin-contact
-    |   |       page.tsx
-    |   |       
     |   \---users
     |           LogoutButton.tsx
     |           page.tsx
@@ -141,6 +197,9 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
     |   +---products
     |   |       page.tsx
     |   |       
+    |   +---profile
+    |   |       page.tsx
+    |   |       
     |   +---tin-tuc
     |   |   |   page.tsx
     |   |   |   
@@ -150,17 +209,14 @@ D:\SOURCE\REPOS\IVS_CMS\SRC\APP
     |   \---tuyen-dung
     |       |   page.tsx
     |       |   
-    |       \---[id]
+    |       \---[slug]
     |               page.tsx
     |               
-    +---example
-    |   +---csr
-    |   |       page.tsx
-    |   |       
-    |   \---ssr
-    |           page.tsx
-    |           ShowTextButton.tsx
-    |           
-    \---profile
-            page.tsx
-            
+    \---example
+        +---csr
+        |       page.tsx
+        |       
+        \---ssr
+                page.tsx
+                ShowTextButton.tsx
+                

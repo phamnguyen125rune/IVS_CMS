@@ -1,7 +1,6 @@
 'use client';
 
 import { Edit, Eye, EyeOff, GripVertical, Menu as MenuIcon, Trash2 } from 'lucide-react';
-
 import '@/components/layout/admin/menu_styles/MenuList.css';
 
 interface MenuItem {
@@ -42,18 +41,16 @@ export default function MenuList({
   onDelete,
 }: MenuListProps) {
   return (
-    <div className="admin-list">
-      <div className="admin-list-header">
-        <h3 className="admin-list-header-title">Danh sách Menu</h3>
+    <div className="menu-list">
+      <div className="menu-list-header">
+        <h3>Danh sách Menu</h3>
       </div>
 
-      <div className="admin-list-content">
+      <div className="menu-list-content">
         {loading ? (
-          <div className="admin-list-empty">
-            <p>Đang tải menu...</p>
-          </div>
+          <div className="menu-empty">Đang tải menu...</div>
         ) : menus.length === 0 ? (
-          <div className="admin-list-empty">
+          <div className="menu-empty">
             <MenuIcon size={28} />
             <p>Chưa có menu nào</p>
           </div>
@@ -66,9 +63,9 @@ export default function MenuList({
               onDragOver={(e) => onDragOver(e, menu.menuId)}
               onDrop={() => onDrop(menu.menuId)}
               onDragEnd={onDragEnd}
-              className={`menu-item ${dragOverId === menu.menuId ? 'drag-over' : ''} ${
-                draggedId === menu.menuId ? 'dragging' : ''
-              }`}
+              className={`menu-item ${
+                dragOverId === menu.menuId ? 'drag-over' : ''
+              } ${draggedId === menu.menuId ? 'dragging' : ''}`}
               style={{
                 paddingLeft: `${12 + Math.max(menu.level - 1, 0) * 24}px`,
               }}
@@ -82,7 +79,6 @@ export default function MenuList({
 
               <div className="menu-item-info">
                 <div className="menu-item-title">{menu.title}</div>
-
                 <div className="menu-item-url">{menu.url}</div>
               </div>
 
@@ -93,7 +89,7 @@ export default function MenuList({
                   onToggleVisible(menu);
                 }}
                 title={menu.visible ? 'Ẩn menu' : 'Hiện menu'}
-                className="admin-icon-btn"
+                className="menu-action-btn"
               >
                 {menu.visible ? (
                   <Eye size={14} className="visible-icon" />
@@ -109,7 +105,7 @@ export default function MenuList({
                     e.stopPropagation();
                     onEdit(menu);
                   }}
-                  className="admin-icon-btn edit"
+                  className="menu-action-btn edit"
                   title="Chỉnh sửa"
                 >
                   <Edit size={12} />
@@ -121,7 +117,7 @@ export default function MenuList({
                     e.stopPropagation();
                     onDelete(menu.menuId);
                   }}
-                  className="admin-icon-btn delete"
+                  className="menu-action-btn delete"
                   title="Xóa"
                 >
                   <Trash2 size={12} />

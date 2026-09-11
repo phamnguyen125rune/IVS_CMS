@@ -88,6 +88,7 @@ const navItems = [
     label: 'Quản lý Đối tác',
     icon: Handshake,
     path: '/admin/doi-tac',
+    apiLink: 'partner',
   },
   {
     label: 'Quản lý Biểu mẫu',

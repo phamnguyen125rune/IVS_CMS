@@ -48,7 +48,9 @@ export default function MenuForm({
 
   const level2Menus = availableParents.filter((menu) => menu.level === 2);
 
-  const filteredLevel2Menus = level2Menus.filter((menu) => menu.parentId === selectedLevel1Id);
+  const filteredLevel2Menus = level2Menus.filter(
+    (menu) => menu.parentId === selectedLevel1Id,
+  );
 
   const handleLevelChange = (value: string) => {
     const newLevel = Number(value);
@@ -119,15 +121,17 @@ export default function MenuForm({
 
   return (
     <div className="menu-form-wrapper">
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <h3 className="admin-card-title">{editingId ? 'Chỉnh sửa Menu' : 'Tạo Menu mới'}</h3>
+      <div className="menu-card">
+        <div className="menu-card-header">
+          <h3>
+            {editingId ? 'Chỉnh sửa Menu' : 'Tạo Menu mới'}
+          </h3>
 
           {editingId && (
             <button
               type="button"
               onClick={onCancel}
-              className="admin-cancel-btn"
+              className="menu-cancel-btn"
               title="Hủy chỉnh sửa"
               aria-label="Hủy chỉnh sửa"
             >
@@ -136,8 +140,8 @@ export default function MenuForm({
           )}
         </div>
 
-        <div className="admin-form-fields">
-          <div className="admin-field">
+        <div className="menu-form-fields">
+          <div className="menu-field">
             <label htmlFor="menu-title">Tên Menu</label>
 
             <input
@@ -149,7 +153,7 @@ export default function MenuForm({
             />
           </div>
 
-          <div className="admin-field">
+          <div className="menu-field">
             <label htmlFor="menu-url">Đường dẫn</label>
 
             <input
@@ -158,10 +162,11 @@ export default function MenuForm({
               value={form.url}
               onChange={(e) => handleUrlChange(e.target.value)}
               placeholder="/products"
+              className="menu-url-input"
             />
           </div>
 
-          <div className="admin-field">
+          <div className="menu-field">
             <label htmlFor="menu-level">Cấp</label>
 
             <select
@@ -170,14 +175,12 @@ export default function MenuForm({
               onChange={(e) => handleLevelChange(e.target.value)}
             >
               <option value={1}>Cấp 1</option>
-
               <option value={2}>Cấp 2</option>
-
               <option value={3}>Cấp 3</option>
             </select>
           </div>
 
-          <div className="admin-field">
+          <div className="menu-field">
             <label htmlFor="menu-parent-level-1">Menu cấp 1</label>
 
             <select
@@ -196,12 +199,16 @@ export default function MenuForm({
             </select>
           </div>
 
-          <div className="admin-field">
+          <div className="menu-field">
             <label htmlFor="menu-parent-level-2">Menu cấp 2</label>
 
             <select
               id="menu-parent-level-2"
-              value={form.level === 3 && form.parentId !== null ? form.parentId : ''}
+              value={
+                form.level === 3 && form.parentId !== null
+                  ? form.parentId
+                  : ''
+              }
               onChange={(e) => handleLevel2Change(e.target.value)}
               disabled={form.level !== 3 || selectedLevel1Id === null}
             >
@@ -215,7 +222,7 @@ export default function MenuForm({
             </select>
           </div>
 
-          <label className="admin-checkbox">
+          <label className="menu-checkbox">
             <input
               type="checkbox"
               checked={form.visible}
@@ -226,10 +233,19 @@ export default function MenuForm({
           </label>
         </div>
 
-        <button type="button" onClick={onSubmit} disabled={saving} className="admin-submit-btn">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={saving}
+          className="menu-submit-btn"
+        >
           <Plus size={16} />
 
-          {saving ? 'Đang lưu...' : editingId ? 'Lưu thay đổi' : 'Tạo Menu'}
+          {saving
+            ? 'Đang lưu...'
+            : editingId
+              ? 'Lưu thay đổi'
+              : 'Tạo Menu'}
         </button>
       </div>
     </div>
