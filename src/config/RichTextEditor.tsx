@@ -51,7 +51,7 @@ import {
 
 import 'ckeditor5/ckeditor5.css';
 import { apiFetch } from '@/utils/api-client';
-import type { Media } from '@/types/media/media';
+import type { Media } from '@/types/media.type';
 
 class MediaUploadAdapter implements UploadAdapter {
   private controller = new AbortController();

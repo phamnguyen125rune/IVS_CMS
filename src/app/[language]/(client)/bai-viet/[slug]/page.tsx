@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 
 import PostDetail from '@/components/mock-cms/client/PostDetail';
+import { RECRUITMENT_POST_SECTION } from '@/config/post-sections';
 import { postService } from '@/services/post.service';
-import type { ResPostListDTO } from '@/types/post.type';
+import type { ResPostDTO, ResPostListDTO } from '@/types/post.type';
 import {
   absoluteWebUrl,
   articleSchema,
@@ -11,6 +12,7 @@ import {
   postCanonical,
   postDate,
   postPath,
+  postSectionPath,
   postRobots,
   serializeJsonLd,
 } from '@/utils/post-seo';
@@ -23,7 +25,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
 
   try {
-    const post = await postService.getPostBySlug(slug);
+    const post = await postService.getPublicPostBySlug(slug);
+    if (post.status !== 'PUBLISHED') {
+      return { title: 'Bài viết không tồn tại', robots: { index: false, follow: false } };
+    }
+    if (post.category?.id === RECRUITMENT_POST_SECTION.categoryId) {
+      return {
+        title: post.metadata?.title || post.title,
+        description: post.metadata?.description || `Thông tin tuyển dụng ${post.title}`,
+        alternates: {
+          canonical: postCanonical(post, getSiteUrl(), RECRUITMENT_POST_SECTION.basePath),
+        },
+        robots: postRobots(post),
+      };
+    }
     const siteUrl = getSiteUrl();
     const canonical = postCanonical(post, siteUrl);
     const robots = postRobots(post);
@@ -62,32 +77,52 @@ export default async function SinglePostPage({ params }: PageProps) {
   const { language, slug } = await params;
   if (language !== 'vi') redirect(postPath(slug));
 
+  let post: ResPostDTO;
   try {
-    const post = await postService.getPostBySlug(slug);
-    if (!post) notFound();
-
-    let recentPosts: ResPostListDTO[] = [];
-    try {
-      const recentData = await postService.getPosts({ status: 'PUBLISHED' }, 1, 6);
-      recentPosts = recentData.result || [];
-    } catch {
-      recentPosts = [];
-    }
-
-    const schema = post.status === 'PUBLISHED' ? articleSchema(post, getSiteUrl()) : null;
-
-    return (
-      <>
-        {schema && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
-          />
-        )}
-        <PostDetail post={post} recentPosts={recentPosts} />
-      </>
-    );
+    post = await postService.getPublicPostBySlug(slug);
   } catch {
     notFound();
   }
+
+  if (post.status !== 'PUBLISHED') notFound();
+
+  if (post.category?.id === RECRUITMENT_POST_SECTION.categoryId) {
+    redirect(postSectionPath(post.slug, RECRUITMENT_POST_SECTION.basePath));
+  }
+
+  let recentPosts: ResPostListDTO[] = [];
+  try {
+    const recruitmentCategoryId = RECRUITMENT_POST_SECTION.categoryId;
+    const recentData = post.category?.id
+      ? await postService.getPublicPosts(
+        { categoryId: post.category.id },
+        1,
+        6
+      )
+      : recruitmentCategoryId
+        ? await postService.getPublicPostsExcludingCategory(
+          {},
+          recruitmentCategoryId,
+          1,
+          6
+        )
+        : await postService.getPublicPosts({}, 1, 6);
+    recentPosts = recentData.result || [];
+  } catch {
+    recentPosts = [];
+  }
+
+  const schema = post.status === 'PUBLISHED' ? articleSchema(post, getSiteUrl()) : null;
+
+  return (
+    <>
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
+        />
+      )}
+      <PostDetail post={post} recentPosts={recentPosts} />
+    </>
+  );
 }

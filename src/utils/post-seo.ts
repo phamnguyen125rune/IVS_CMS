@@ -1,13 +1,27 @@
 import type { ResPostDTO } from '@/types/post.type';
 
 export const POST_LANGUAGE = 'vi';
+export const DEFAULT_POST_BASE_PATH = '/bai-viet';
 
 export function getSiteUrl(): string {
   return (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
 }
 
+function normalizeBasePath(basePath: string): string {
+  const normalized = basePath.startsWith('/') ? basePath : `/${basePath}`;
+  return normalized.replace(/\/+$/, '') || '/';
+}
+
+export function postListPath(basePath = DEFAULT_POST_BASE_PATH): string {
+  return `/${POST_LANGUAGE}${normalizeBasePath(basePath)}`;
+}
+
+export function postSectionPath(slug: string, basePath = DEFAULT_POST_BASE_PATH): string {
+  return `${postListPath(basePath)}/${encodeURIComponent(slug)}`;
+}
+
 export function postPath(slug: string): string {
-  return `/${POST_LANGUAGE}/bai-viet/${encodeURIComponent(slug)}`;
+  return postSectionPath(slug, DEFAULT_POST_BASE_PATH);
 }
 
 export function absoluteWebUrl(value?: string, siteUrl = getSiteUrl()): string | undefined {
@@ -20,8 +34,12 @@ export function absoluteWebUrl(value?: string, siteUrl = getSiteUrl()): string |
   }
 }
 
-export function postCanonical(post: ResPostDTO, siteUrl = getSiteUrl()): string {
-  const fallback = new URL(postPath(post.slug), `${siteUrl}/`).href;
+export function postCanonical(
+  post: ResPostDTO,
+  siteUrl = getSiteUrl(),
+  basePath = DEFAULT_POST_BASE_PATH
+): string {
+  const fallback = new URL(postSectionPath(post.slug, basePath), `${siteUrl}/`).href;
   const configured = absoluteWebUrl(post.metadata?.canonicalUrl, siteUrl);
   if (!configured) return fallback;
 
@@ -58,8 +76,18 @@ export function postDate(value?: string): string | undefined {
   return Number.isNaN(Date.parse(normalized)) ? undefined : normalized;
 }
 
-export function articleSchema(post: ResPostDTO, siteUrl = getSiteUrl()) {
-  const canonical = postCanonical(post, siteUrl);
+interface ArticleSchemaOptions {
+  basePath?: string;
+  listName?: string;
+}
+
+export function articleSchema(
+  post: ResPostDTO,
+  siteUrl = getSiteUrl(),
+  options: ArticleSchemaOptions = {}
+) {
+  const basePath = options.basePath || DEFAULT_POST_BASE_PATH;
+  const canonical = postCanonical(post, siteUrl, basePath);
   const image = absoluteWebUrl(post.metadata?.openGraph?.imageUrl, siteUrl);
   const description = post.metadata?.description || post.summary || undefined;
 
@@ -87,8 +115,8 @@ export function articleSchema(post: ResPostDTO, siteUrl = getSiteUrl()) {
           {
             '@type': 'ListItem',
             position: 1,
-            name: 'Bài viết',
-            item: new URL('/vi/bai-viet', `${siteUrl}/`).href,
+            name: options.listName || 'Bài viết',
+            item: new URL(postListPath(basePath), `${siteUrl}/`).href,
           },
           { '@type': 'ListItem', position: 2, name: post.title, item: canonical },
         ],
