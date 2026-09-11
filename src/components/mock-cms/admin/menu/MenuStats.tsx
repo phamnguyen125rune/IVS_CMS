@@ -6,11 +6,7 @@ interface MenuStatsProps {
   hiddenMenus: number;
 }
 
-export default function MenuStats({
-  totalMenus,
-  visibleMenus,
-  hiddenMenus,
-}: MenuStatsProps) {
+export default function MenuStats({ totalMenus, visibleMenus, hiddenMenus }: MenuStatsProps) {
   return (
     <div className="menu-card menu-stats">
       <h3>Thống kê</h3>
@@ -23,16 +19,12 @@ export default function MenuStats({
 
         <div className="menu-stat-row">
           <span>Đang hiển thị</span>
-          <strong className="stat-visible">
-            {visibleMenus}
-          </strong>
+          <strong className="stat-visible">{visibleMenus}</strong>
         </div>
 
         <div className="menu-stat-row">
           <span>Đang ẩn</span>
-          <strong className="stat-hidden">
-            {hiddenMenus}
-          </strong>
+          <strong className="stat-hidden">{hiddenMenus}</strong>
         </div>
       </div>
     </div>

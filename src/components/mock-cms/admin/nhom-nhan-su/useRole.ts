@@ -211,27 +211,22 @@ export function useRole() {
 
   // SET DEFAULT ROLE
 
-  const setUsersToDefaultRole = useCallback(
-    async (userIds: number[]) => {
-      try {
-        setSaving(true);
+  const setUsersToDefaultRole = useCallback(async (userIds: number[]) => {
+    try {
+      setSaving(true);
 
-        const message = await roleService.setUsersToDefaultRole(userIds);
+      const message = await roleService.setUsersToDefaultRole(userIds);
 
-        return message;
-      } catch (error) {
-        setError(
-          error instanceof Error
-            ? error.message
-            : 'Không thể đưa thành viên về nhóm mặc định'
-        );
-        throw error;
-      } finally {
-        setSaving(false);
-      }
-    },
-    []
-  );
+      return message;
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : 'Không thể đưa thành viên về nhóm mặc định'
+      );
+      throw error;
+    } finally {
+      setSaving(false);
+    }
+  }, []);
 
   // =========================================================
   // INITIAL LOAD

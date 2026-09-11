@@ -183,17 +183,11 @@ export default function UserTable({
                         )}
 
                         <div>
-                          <div
-                            className="font-medium"
-                            style={{ color: 'var(--text)' }}
-                          >
+                          <div className="font-medium" style={{ color: 'var(--text)' }}>
                             {user.fullName}
                           </div>
 
-                          <div
-                            className="text-xs"
-                            style={{ color: 'var(--text-muted)' }}
-                          >
+                          <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
                             {user.email}
                           </div>
                         </div>
@@ -226,16 +220,12 @@ export default function UserTable({
                           background: isProfileComplete(user)
                             ? 'var(--success-light)'
                             : 'var(--warning-light)',
-                          color: isProfileComplete(user)
-                            ? 'var(--success)'
-                            : 'var(--warning)',
+                          color: isProfileComplete(user) ? 'var(--success)' : 'var(--warning)',
                         }}
                       >
                         <FileUser size={13} />
 
-                        {isProfileComplete(user)
-                          ? 'Đã cập nhật'
-                          : 'Chưa đầy đủ'}
+                        {isProfileComplete(user) ? 'Đã cập nhật' : 'Chưa đầy đủ'}
                       </span>
                     </td>
 
@@ -261,37 +251,22 @@ export default function UserTable({
                           }}
                         />
 
-                        {showDeleted
-                          ? 'Đã xóa'
-                          : user.isActive
-                            ? 'Hoạt động'
-                            : 'Bị khóa'}
+                        {showDeleted ? 'Đã xóa' : user.isActive ? 'Hoạt động' : 'Bị khóa'}
                       </span>
                     </td>
 
                     <td className="px-5 py-3.5">
-                      <AuditInfo
-                        by={user.createdBy}
-                        at={user.createdAt}
-                        userNames={userNames}
-                      />
+                      <AuditInfo by={user.createdBy} at={user.createdAt} userNames={userNames} />
                     </td>
 
                     <td className="px-5 py-3.5">
-                      <AuditInfo
-                        by={user.updatedBy}
-                        at={user.updatedAt}
-                        userNames={userNames}
-                      />
+                      <AuditInfo by={user.updatedBy} at={user.updatedAt} userNames={userNames} />
                     </td>
 
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
                         {!showDeleted && (
-                          <IconButton
-                            label="Xem chi tiết"
-                            onClick={() => onDetail(user)}
-                          >
+                          <IconButton label="Xem chi tiết" onClick={() => onDetail(user)}>
                             <Eye size={14} />
                           </IconButton>
                         )}
@@ -325,19 +300,12 @@ export default function UserTable({
                           </>
                         ) : (
                           <>
-                            <IconButton
-                              label="Chỉnh sửa"
-                              onClick={() => onEdit(user)}
-                            >
+                            <IconButton label="Chỉnh sửa" onClick={() => onEdit(user)}>
                               <Edit size={14} />
                             </IconButton>
 
                             <IconButton
-                              label={
-                                user.isActive
-                                  ? 'Khóa tài khoản'
-                                  : 'Mở khóa tài khoản'
-                              }
+                              label={user.isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
                               disabled={securityDisabled}
                               onClick={() =>
                                 onConfirm({
@@ -346,11 +314,7 @@ export default function UserTable({
                                 })
                               }
                             >
-                              {user.isActive ? (
-                                <Lock size={14} />
-                              ) : (
-                                <Unlock size={14} />
-                              )}
+                              {user.isActive ? <Lock size={14} /> : <Unlock size={14} />}
                             </IconButton>
 
                             <IconButton
@@ -452,17 +416,11 @@ function AuditInfo({
 }) {
   return (
     <div className="min-w-28">
-      <div
-        className="text-xs font-semibold"
-        style={{ color: 'var(--text-secondary)' }}
-      >
+      <div className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
         {by ? userNames.get(by) || 'Không xác định' : '-'}
       </div>
 
-      <div
-        className="mt-1 whitespace-nowrap text-xs"
-        style={{ color: 'var(--text-muted)' }}
-      >
+      <div className="mt-1 whitespace-nowrap text-xs" style={{ color: 'var(--text-muted)' }}>
         {formatDateTime(at)}
       </div>
     </div>

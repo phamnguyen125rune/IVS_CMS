@@ -6,11 +6,7 @@ import UserDetailModal from './users/UserDetailModal';
 import UserFormModal from './users/UserFormModal';
 import UserTable from './users/UserTable';
 import UserToolbar from './users/UserToolbar';
-import {
-  DEFAULT_USER_PASSWORD,
-  UserConfirmAction,
-  useUsers,
-} from './users/hooks/useUsers';
+import { DEFAULT_USER_PASSWORD, UserConfirmAction, useUsers } from './users/hooks/useUsers';
 
 export default function Users() {
   const user = useUsers();
@@ -20,17 +16,11 @@ export default function Users() {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h1
-            className="text-xl font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>
             {user.showDeleted ? 'Người dùng đã xóa' : 'Quản lý Nhân sự'}
           </h1>
 
-          <p
-            className="mt-0.5 text-sm"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <p className="mt-0.5 text-sm" style={{ color: 'var(--text-muted)' }}>
             {user.filteredUsers.length} người dùng được tìm thấy
           </p>
         </div>
@@ -201,8 +191,6 @@ function isAuthError(message: string) {
   const normalized = message.toLowerCase();
 
   return (
-    normalized.includes('token') ||
-    normalized.includes('đăng nhập') ||
-    normalized.includes('jwt')
+    normalized.includes('token') || normalized.includes('đăng nhập') || normalized.includes('jwt')
   );
 }

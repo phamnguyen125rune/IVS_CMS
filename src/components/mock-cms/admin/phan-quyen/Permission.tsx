@@ -23,10 +23,7 @@ export default function PermissionPage() {
 
   const selectedRoleData = roles.find((role) => role.roleId === selectedRole);
 
-  const totalPermissions = apis.reduce(
-    (total, api) => total + (api.actions?.length ?? 0),
-    0,
-  );
+  const totalPermissions = apis.reduce((total, api) => total + (api.actions?.length ?? 0), 0);
 
   const enabledPermissions = rolePermissions.filter((permission) => {
     const [apiLink, actionName] = permission.split(':');
@@ -251,10 +248,7 @@ export default function PermissionPage() {
 
                       if (!supported) {
                         return (
-                          <td
-                            key={action.actionId}
-                            className={styles.permissionCell}
-                          >
+                          <td key={action.actionId} className={styles.permissionCell}>
                             <span className={styles.notSupported}>-</span>
                           </td>
                         );
@@ -263,18 +257,13 @@ export default function PermissionPage() {
                       const checked = hasPermission(api.apiLink, actionName);
 
                       return (
-                        <td
-                          key={action.actionId}
-                          className={styles.permissionCell}
-                        >
+                        <td key={action.actionId} className={styles.permissionCell}>
                           <label className={styles.switch}>
                             <input
                               type="checkbox"
                               checked={checked}
                               disabled={isLoading}
-                              onChange={() =>
-                                handleTogglePermission(api.apiLink, actionName)
-                              }
+                              onChange={() => handleTogglePermission(api.apiLink, actionName)}
                             />
 
                             <span className={styles.slider} />

@@ -69,21 +69,26 @@ export default function MemberPanel({
         <div className={styles.actions}>
           {role.roleId !== 0 && (
             <>
-            <button type="button" className={styles.addMemberHeaderBtn} onClick={onAddMember}>
-              <UserPlus size={16} />
-              Thêm thành viên
-            </button>
+              <button type="button" className={styles.addMemberHeaderBtn} onClick={onAddMember}>
+                <UserPlus size={16} />
+                Thêm thành viên
+              </button>
 
-            <button type="button" onClick={onReset} disabled={saving} className={styles.resetBtn}>
-              <RefreshCw size={16} />
-              Hoàn tác
-            </button>
+              <button type="button" onClick={onReset} disabled={saving} className={styles.resetBtn}>
+                <RefreshCw size={16} />
+                Hoàn tác
+              </button>
 
-            <button type="button" onClick={onSave}   disabled={!hasChanged || saving} className={styles.saveBtn}>
-              <Save size={16} />
+              <button
+                type="button"
+                onClick={onSave}
+                disabled={!hasChanged || saving}
+                className={styles.saveBtn}
+              >
+                <Save size={16} />
 
-              {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
-            </button>
+                {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+              </button>
             </>
           )}
         </div>
@@ -122,13 +127,7 @@ export default function MemberPanel({
               <th>Employee ID</th>
               <th>Họ và tên</th>
               <th>Email</th>
-              { role.roleId !== 0 && 
-                (
-                  <th>
-                    Thao tác
-                  </th>
-                )
-              }
+              {role.roleId !== 0 && <th>Thao tác</th>}
             </tr>
           </thead>
 

@@ -36,17 +36,11 @@ export default function UserConfirmModal({
         style={{ background: 'var(--surface)' }}
         onClick={(event) => event.stopPropagation()}
       >
-        <h3
-          className="mb-2 text-lg font-bold"
-          style={{ color: 'var(--text)' }}
-        >
+        <h3 className="mb-2 text-lg font-bold" style={{ color: 'var(--text)' }}>
           {title}
         </h3>
 
-        <p
-          className="mb-6 text-sm leading-relaxed"
-          style={{ color: 'var(--text-secondary)' }}
-        >
+        <p className="mb-6 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
           {description}
         </p>
 

@@ -155,9 +155,7 @@ export default function RoleManagement() {
         <div className={styles.selectRoleEmpty}>
           <h3>Chọn một role</h3>
 
-          <p>
-            Nhấn vào role phía trên để xem và quản lý danh sách thành viên.
-          </p>
+          <p>Nhấn vào role phía trên để xem và quản lý danh sách thành viên.</p>
         </div>
       )}
 
@@ -165,11 +163,7 @@ export default function RoleManagement() {
           LOADING
       ================================================== */}
 
-      {loading && (
-        <div className={styles.loading}>
-          Đang tải dữ liệu...
-        </div>
-      )}
+      {loading && <div className={styles.loading}>Đang tải dữ liệu...</div>}
 
       {/* =================================================
           ADD MEMBER MODAL

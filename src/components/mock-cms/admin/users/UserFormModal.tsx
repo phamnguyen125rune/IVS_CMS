@@ -47,17 +47,11 @@ export default function UserFormModal({
           style={{ borderColor: 'var(--border)' }}
         >
           <div>
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text)' }}>
               {isEditing ? 'Chỉnh sửa người dùng' : 'Thêm người dùng'}
             </h2>
 
-            <p
-              className="mt-0.5 text-xs"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
               {isEditing
                 ? `Mã nhân viên: ${editingUser?.employeeCode || '-'}`
                 : 'Tài khoản mới dùng mật khẩu mặc định 123456'}
@@ -96,17 +90,11 @@ export default function UserFormModal({
               )}
 
               <div className="min-w-52 flex-1">
-                <div
-                  className="text-sm font-semibold"
-                  style={{ color: 'var(--text)' }}
-                >
+                <div className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
                   Ảnh đại diện
                 </div>
 
-                <p
-                  className="mt-1 text-xs"
-                  style={{ color: 'var(--text-muted)' }}
-                >
+                <p className="mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
                   JPEG, PNG, GIF hoặc WebP; tối đa 5MB.
                 </p>
               </div>
@@ -117,9 +105,7 @@ export default function UserFormModal({
                 ) : (
                   <ImagePlus size={16} />
                 )}
-
                 Chọn ảnh
-
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/gif,image/webp"
@@ -135,9 +121,7 @@ export default function UserFormModal({
             <Field label="Họ và tên" required>
               <input
                 value={form.fullName}
-                onChange={(event) =>
-                  onChange({ fullName: event.target.value })
-                }
+                onChange={(event) => onChange({ fullName: event.target.value })}
                 className={inputClass}
                 placeholder="Nhập họ và tên"
                 required
@@ -148,9 +132,7 @@ export default function UserFormModal({
               <input
                 type="email"
                 value={form.email}
-                onChange={(event) =>
-                  onChange({ email: event.target.value })
-                }
+                onChange={(event) => onChange({ email: event.target.value })}
                 className={inputClass}
                 placeholder="name@company.com"
                 required
@@ -160,9 +142,7 @@ export default function UserFormModal({
             <Field label="Số điện thoại">
               <input
                 value={form.phoneNumber}
-                onChange={(event) =>
-                  onChange({ phoneNumber: event.target.value })
-                }
+                onChange={(event) => onChange({ phoneNumber: event.target.value })}
                 className={inputClass}
                 placeholder="0900000000"
               />
@@ -188,9 +168,7 @@ export default function UserFormModal({
               <input
                 type="date"
                 value={form.dateOfBirth}
-                onChange={(event) =>
-                  onChange({ dateOfBirth: event.target.value })
-                }
+                onChange={(event) => onChange({ dateOfBirth: event.target.value })}
                 className={inputClass}
               />
             </Field>
@@ -213,9 +191,7 @@ export default function UserFormModal({
               <Field label="Địa chỉ">
                 <input
                   value={form.address}
-                  onChange={(event) =>
-                    onChange({ address: event.target.value })
-                  }
+                  onChange={(event) => onChange({ address: event.target.value })}
                   className={inputClass}
                   placeholder="Nhập địa chỉ"
                 />
@@ -245,11 +221,7 @@ export default function UserFormModal({
             disabled={saving}
             className="flex min-w-32 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <Save size={15} />
-            )}
+            {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
 
             {isEditing ? 'Lưu thay đổi' : 'Thêm mới'}
           </button>
@@ -270,17 +242,11 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span
-        className="mb-1.5 block text-sm font-medium"
-        style={{ color: 'var(--text-secondary)' }}
-      >
+      <span className="mb-1.5 block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
         {label}
 
         {required && (
-          <span
-            className="ml-1"
-            style={{ color: 'var(--error)' }}
-          >
+          <span className="ml-1" style={{ color: 'var(--error)' }}>
             *
           </span>
         )}

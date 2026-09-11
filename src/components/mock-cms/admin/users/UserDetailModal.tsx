@@ -43,17 +43,11 @@ export default function UserDetailModal({
           style={{ borderColor: 'var(--border)' }}
         >
           <div>
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text)' }}>
               Chi tiết người dùng
             </h2>
 
-            <p
-              className="mt-0.5 text-xs"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
               Dữ liệu lấy trực tiếp từ API chi tiết User.
             </p>
           </div>
@@ -69,10 +63,7 @@ export default function UserDetailModal({
         </div>
 
         {loading ? (
-          <div
-            className="p-10 text-center text-sm"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <div className="p-10 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
             <Loader2 className="mx-auto mb-2 animate-spin" size={20} />
             Đang tải chi tiết...
           </div>
@@ -95,80 +86,48 @@ export default function UserDetailModal({
               )}
 
               <div>
-                <div
-                  className="text-lg font-bold"
-                  style={{ color: 'var(--text)' }}
-                >
+                <div className="text-lg font-bold" style={{ color: 'var(--text)' }}>
                   {user.fullName}
                 </div>
 
-                <div
-                  className="text-sm"
-                  style={{ color: 'var(--text-muted)' }}
-                >
+                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
                   {user.email}
                 </div>
 
                 <div className="mt-1 text-xs font-medium text-blue-600">
-                  {user.employeeCode || 'Chưa có mã nhân viên'} ·{' '}
-                  {getRoleLabel(user.role)}
+                  {user.employeeCode || 'Chưa có mã nhân viên'} · {getRoleLabel(user.role)}
                 </div>
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <Info
-                label="Số điện thoại"
-                value={user.phoneNumber || 'Chưa cập nhật'}
-              />
+              <Info label="Số điện thoại" value={user.phoneNumber || 'Chưa cập nhật'} />
 
-              <Info
-                label="Giới tính"
-                value={getGenderLabel(user.gender)}
-              />
+              <Info label="Giới tính" value={getGenderLabel(user.gender)} />
 
-              <Info
-                label="Ngày sinh"
-                value={formatDate(user.dateOfBirth)}
-              />
+              <Info label="Ngày sinh" value={formatDate(user.dateOfBirth)} />
 
-              <Info
-                label="Trạng thái"
-                value={user.isActive ? 'Hoạt động' : 'Bị khóa'}
-              />
+              <Info label="Trạng thái" value={user.isActive ? 'Hoạt động' : 'Bị khóa'} />
 
-              <Info
-                label="Tài khoản hệ thống"
-                value={user.isSystem ? 'Có' : 'Không'}
-              />
+              <Info label="Tài khoản hệ thống" value={user.isSystem ? 'Có' : 'Không'} />
 
-              <Info
-                label="Nhóm người dùng"
-                value={getRoleLabel(user.role)}
-              />
+              <Info label="Nhóm người dùng" value={getRoleLabel(user.role)} />
 
               <div className="sm:col-span-2">
-                <Info
-                  label="Địa chỉ"
-                  value={user.address || 'Chưa cập nhật'}
-                />
+                <Info label="Địa chỉ" value={user.address || 'Chưa cập nhật'} />
               </div>
 
               <Info
                 label="Tạo"
                 value={`${
-                  user.createdBy
-                    ? userNames.get(user.createdBy) || 'Không xác định'
-                    : '-'
+                  user.createdBy ? userNames.get(user.createdBy) || 'Không xác định' : '-'
                 } · ${formatDateTime(user.createdAt)}`}
               />
 
               <Info
                 label="Cập nhật"
                 value={`${
-                  user.updatedBy
-                    ? userNames.get(user.updatedBy) || 'Không xác định'
-                    : '-'
+                  user.updatedBy ? userNames.get(user.updatedBy) || 'Không xác định' : '-'
                 } · ${formatDateTime(user.updatedAt)}`}
               />
             </div>
@@ -179,18 +138,9 @@ export default function UserDetailModal({
   );
 }
 
-function Info({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="rounded-lg border p-3"
-      style={{ borderColor: 'var(--border)' }}
-    >
+    <div className="rounded-lg border p-3" style={{ borderColor: 'var(--border)' }}>
       <div
         className="text-xs font-semibold uppercase tracking-wide"
         style={{ color: 'var(--text-muted)' }}
@@ -198,10 +148,7 @@ function Info({
         {label}
       </div>
 
-      <div
-        className="mt-1 break-words text-sm font-medium"
-        style={{ color: 'var(--text)' }}
-      >
+      <div className="mt-1 break-words text-sm font-medium" style={{ color: 'var(--text)' }}>
         {value}
       </div>
     </div>
