@@ -209,6 +209,30 @@ export function useRole() {
     }
   }, []);
 
+  // SET DEFAULT ROLE
+
+  const setUsersToDefaultRole = useCallback(
+    async (userIds: number[]) => {
+      try {
+        setSaving(true);
+
+        const message = await roleService.setUsersToDefaultRole(userIds);
+
+        return message;
+      } catch (error) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : 'Không thể đưa thành viên về nhóm mặc định'
+        );
+        throw error;
+      } finally {
+        setSaving(false);
+      }
+    },
+    []
+  );
+
   // =========================================================
   // INITIAL LOAD
   // =========================================================
@@ -233,6 +257,8 @@ export function useRole() {
     // add user vào role
     saveRoleMembers,
     searchUsersNotInRole,
+
+    setUsersToDefaultRole,
     createRole,
     updateRole,
     deleteRole,

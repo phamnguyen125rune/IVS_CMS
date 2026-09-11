@@ -21,6 +21,8 @@ export function useRoleManagement() {
     fetchRoleMembers,
     saveRoleMembers,
     searchUsersNotInRole,
+    setUsersToDefaultRole,
+
     createRole,
     updateRole,
     deleteRole,
@@ -76,7 +78,7 @@ export function useRoleManagement() {
   // =========================================================
   // SELECT ROLE
   // =========================================================
-
+  const [removedUserIds, setRemovedUserIds] = useState<number[]>([]);
   const handleSelectRole = async (role: RolePermissions) => {
     setSelectedRole(role);
     setRemovedUserIds([]);
@@ -89,7 +91,7 @@ export function useRoleManagement() {
   // =========================================================
   // MEMBER
   // =========================================================
-
+  
   useEffect(() => {
     const loadCurrentUser = async () => {
       try {
@@ -111,27 +113,41 @@ export function useRoleManagement() {
     console.log('CURRENT USER ID STATE:', currentUserId);
   }, [currentUserId]);
 
-  const [removedUserIds, setRemovedUserIds] = useState<number[]>([]);
-
   const handleRemoveMember = (userId: number) => {
-    setMembers((prev) => prev.filter((user) => user.userId !== userId));
+    setMembers((prev) =>
+      prev.filter((user) => user.userId !== userId)
+    );
 
+    setRemovedUserIds((prev) =>
+      prev.includes(userId)
+        ? prev
+        : [...prev, userId]
+    );
     setHasChanged(true);
   };
 
   const handleSaveMembers = async () => {
-    if (!selectedRole) {
+    if (removedUserIds.length === 0) {
       return;
     }
 
     try {
-      await saveRoleMembers(selectedRole.roleId, members);
+      const message = await setUsersToDefaultRole(removedUserIds);
 
+      alert(message);
+
+      setRemovedUserIds([]);
       setHasChanged(false);
 
-      alert('Đã lưu danh sách thành viên');
-    } catch {
-      alert('Lưu danh sách thành viên thất bại');
+      if (selectedRole) {
+        const updatedMembers = await fetchRoleMembers(
+          selectedRole.roleId
+        );
+
+        setMembers(updatedMembers);
+      }
+    } catch (error) {
+      console.error('Lỗi khi lưu thay đổi:', error);
     }
   };
 
@@ -143,6 +159,7 @@ export function useRoleManagement() {
     const data = await fetchRoleMembers(selectedRole.roleId);
 
     setMembers(data);
+    setRemovedUserIds([]);
     setHasChanged(false);
   };
 

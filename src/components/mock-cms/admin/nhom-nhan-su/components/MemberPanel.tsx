@@ -24,6 +24,7 @@ export default function MemberPanel({
   members,
   currentUserId,
   saving,
+  hasChanged,
   onAddMember,
   onSave,
   onReset,
@@ -66,21 +67,25 @@ export default function MemberPanel({
         </div>
 
         <div className={styles.actions}>
-          <button type="button" className={styles.addMemberHeaderBtn} onClick={onAddMember}>
-            <UserPlus size={16} />
-            Thêm thành viên
-          </button>
+          {role.roleId !== 0 && (
+            <>
+            <button type="button" className={styles.addMemberHeaderBtn} onClick={onAddMember}>
+              <UserPlus size={16} />
+              Thêm thành viên
+            </button>
 
-          <button type="button" onClick={onReset} disabled={saving} className={styles.resetBtn}>
-            <RefreshCw size={16} />
-            Hoàn tác
-          </button>
+            <button type="button" onClick={onReset} disabled={saving} className={styles.resetBtn}>
+              <RefreshCw size={16} />
+              Hoàn tác
+            </button>
 
-          <button type="button" onClick={onSave} disabled={saving} className={styles.saveBtn}>
-            <Save size={16} />
+            <button type="button" onClick={onSave}   disabled={!hasChanged || saving} className={styles.saveBtn}>
+              <Save size={16} />
 
-            {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
-          </button>
+              {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+            </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -117,7 +122,13 @@ export default function MemberPanel({
               <th>Employee ID</th>
               <th>Họ và tên</th>
               <th>Email</th>
-              <th>Thao tác</th>
+              { role.roleId !== 0 && 
+                (
+                  <th>
+                    Thao tác
+                  </th>
+                )
+              }
             </tr>
           </thead>
 
@@ -136,7 +147,7 @@ export default function MemberPanel({
                   <td>{user.email}</td>
 
                   <td>
-                    {user.userId !== currentUserId && (
+                    {role.roleId !== 0 && user.userId !== currentUserId && (
                       <button
                         type="button"
                         className={styles.removeMemberBtn}
