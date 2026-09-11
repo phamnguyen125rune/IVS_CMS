@@ -13,12 +13,7 @@ import {
   X,
 } from 'lucide-react';
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type FormEvent,
-} from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 
 import { FormDetailService } from '@/services/contact.service';
 
@@ -42,22 +37,19 @@ const statusConfig: Record<
 > = {
   new: {
     label: 'Mới',
-    className:
-      'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    className: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
     icon: AlertCircle,
   },
 
   read: {
     label: 'Đã xem',
-    className:
-      'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+    className: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
     icon: Eye,
   },
 
   replied: {
     label: 'Đã phản hồi',
-    className:
-      'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    className: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
     icon: CheckCircle,
   },
 };
@@ -123,16 +115,11 @@ export default function Contacts() {
      MODALS
   ======================================================== */
 
-  const [viewContact, setViewContact] = useState<FormDetail | null>(
-    null
-  );
+  const [viewContact, setViewContact] = useState<FormDetail | null>(null);
 
-  const [replyContact, setReplyContact] = useState<FormDetail | null>(
-    null
-  );
+  const [replyContact, setReplyContact] = useState<FormDetail | null>(null);
 
-  const [deleteContact, setDeleteContact] =
-    useState<FormDetail | null>(null);
+  const [deleteContact, setDeleteContact] = useState<FormDetail | null>(null);
 
   const [detailLoading, setDetailLoading] = useState(false);
 
@@ -149,13 +136,7 @@ export default function Contacts() {
     setError(null);
 
     try {
-      const response =
-        await FormDetailService.getFormDetails(
-          page,
-          pageSize,
-          statusFilter,
-          search
-        );
+      const response = await FormDetailService.getFormDetails(page, pageSize, statusFilter, search);
 
       /*
        * Backend response:
@@ -184,28 +165,16 @@ export default function Contacts() {
 
       setTotalElements(data?.meta?.total ?? contacts.length);
     } catch (err: unknown) {
-      console.error(
-        'Lỗi khi tải danh sách form:',
-        err
-      );
+      console.error('Lỗi khi tải danh sách form:', err);
 
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể tải danh sách biểu mẫu.'
-      );
+      setError(err instanceof Error ? err.message : 'Không thể tải danh sách biểu mẫu.');
 
       setContactList([]);
       setTotalElements(0);
     } finally {
       setLoading(false);
     }
-  }, [
-    page,
-    pageSize,
-    statusFilter,
-    search,
-  ]);
+  }, [page, pageSize, statusFilter, search]);
 
   /* =======================================================
      LOAD
@@ -219,9 +188,7 @@ export default function Contacts() {
      SEARCH
   ======================================================== */
 
-  const handleSearchChange = (
-    value: string
-  ) => {
+  const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
   };
@@ -230,9 +197,7 @@ export default function Contacts() {
      STATUS FILTER
   ======================================================== */
 
-  const handleStatusFilter = (
-    status: string
-  ) => {
+  const handleStatusFilter = (status: string) => {
     setStatusFilter(status);
     setPage(1);
   };
@@ -241,9 +206,7 @@ export default function Contacts() {
      VIEW DETAIL
   ======================================================== */
 
-  const handleView = async (
-    contact: FormDetail
-  ) => {
+  const handleView = async (contact: FormDetail) => {
     const id = contact.formId;
 
     if (!id) {
@@ -254,10 +217,7 @@ export default function Contacts() {
     setDetailLoading(true);
 
     try {
-      const response =
-        await FormDetailService.getFormDetailById(
-          id
-        );
+      const response = await FormDetailService.getFormDetailById(id);
 
       /*
        * Backend:
@@ -269,8 +229,7 @@ export default function Contacts() {
        * }
        */
 
-      const detail =
-        response.data;
+      const detail = response.data;
 
       if (detail) {
         setViewContact(detail);
@@ -281,14 +240,8 @@ export default function Contacts() {
        *
        * Backend đang sử dụng status lowercase.
        */
-      if (
-        contact.status?.toLowerCase() ===
-        'new'
-      ) {
-        await FormDetailService.updateFormDetailStatus(
-          id,
-          'read'
-        );
+      if (contact.status?.toLowerCase() === 'new') {
+        await FormDetailService.updateFormDetailStatus(id, 'read');
 
         /*
          * Reload danh sách để cập nhật badge.
@@ -296,10 +249,7 @@ export default function Contacts() {
         await fetchContacts();
       }
     } catch (err) {
-      console.error(
-        'Lỗi khi lấy chi tiết form:',
-        err
-      );
+      console.error('Lỗi khi lấy chi tiết form:', err);
     } finally {
       setDetailLoading(false);
     }
@@ -309,16 +259,12 @@ export default function Contacts() {
      REPLY
   ======================================================== */
 
-  const handleOpenReply = (
-    contact: FormDetail
-  ) => {
+  const handleOpenReply = (contact: FormDetail) => {
     setReplyContact(contact);
     setReplyMessage('');
   };
 
-  const handleSendReply = async (
-    e: FormEvent<HTMLFormElement>
-  ) => {
+  const handleSendReply = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!replyContact) {
@@ -334,26 +280,16 @@ export default function Contacts() {
     setActionLoading(true);
 
     try {
-      await FormDetailService.replyFormDetail(
-        id,
-        replyMessage.trim()
-      );
+      await FormDetailService.replyFormDetail(id, replyMessage.trim());
 
       setReplyContact(null);
       setReplyMessage('');
 
       await fetchContacts();
     } catch (err: unknown) {
-      console.error(
-        'Lỗi khi phản hồi form:',
-        err
-      );
+      console.error('Lỗi khi phản hồi form:', err);
 
-      alert(
-        err instanceof Error
-          ? err.message
-          : 'Gửi phản hồi thất bại.'
-      );
+      alert(err instanceof Error ? err.message : 'Gửi phản hồi thất bại.');
     } finally {
       setActionLoading(false);
     }
@@ -377,9 +313,7 @@ export default function Contacts() {
     setActionLoading(true);
 
     try {
-      await FormDetailService.deleteFormDetail(
-        id
-      );
+      await FormDetailService.deleteFormDetail(id);
 
       setDeleteContact(null);
 
@@ -388,16 +322,9 @@ export default function Contacts() {
        */
       await fetchContacts();
     } catch (err: unknown) {
-      console.error(
-        'Lỗi khi xóa form:',
-        err
-      );
+      console.error('Lỗi khi xóa form:', err);
 
-      alert(
-        err instanceof Error
-          ? err.message
-          : 'Xóa biểu mẫu thất bại.'
-      );
+      alert(err instanceof Error ? err.message : 'Xóa biểu mẫu thất bại.');
     } finally {
       setActionLoading(false);
     }
@@ -407,23 +334,13 @@ export default function Contacts() {
      NEW COUNT
   ======================================================== */
 
-  const newCount =
-    contactList.filter(
-      (contact) =>
-        contact.status?.toLowerCase() ===
-        'new'
-    ).length;
+  const newCount = contactList.filter((contact) => contact.status?.toLowerCase() === 'new').length;
 
   /* =======================================================
      PAGINATION
   ======================================================== */
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(
-      totalElements / pageSize
-    )
-  );
+  const totalPages = Math.max(1, Math.ceil(totalElements / pageSize));
 
   /* =======================================================
      RENDER
@@ -457,12 +374,10 @@ export default function Contacts() {
           <p
             className="mt-0.5 text-sm"
             style={{
-              color:
-                'var(--text-secondary)',
+              color: 'var(--text-secondary)',
             }}
           >
-            {newCount} biểu mẫu mới
-            chờ xử lý
+            {newCount} biểu mẫu mới chờ xử lý
           </p>
         </div>
       </div>
@@ -479,12 +394,9 @@ export default function Contacts() {
             text-sm
           "
           style={{
-            background:
-              'var(--error-light)',
-            borderColor:
-              'var(--error)',
-            color:
-              'var(--error)',
+            background: 'var(--error-light)',
+            borderColor: 'var(--error)',
+            color: 'var(--error)',
           }}
         >
           <AlertCircle size={16} />
@@ -500,8 +412,7 @@ export default function Contacts() {
               font-semibold
             "
             style={{
-              background:
-                'var(--surface)',
+              background: 'var(--surface)',
               color: 'var(--text)',
             }}
           >
@@ -520,10 +431,8 @@ export default function Contacts() {
           rounded-xl border p-4
         "
         style={{
-          background:
-            'var(--surface)',
-          borderColor:
-            'var(--border)',
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
         }}
       >
         <div
@@ -538,18 +447,13 @@ export default function Contacts() {
               -translate-y-1/2
             "
             style={{
-              color:
-                'var(--text-muted)',
+              color: 'var(--text-muted)',
             }}
           />
 
           <input
             value={search}
-            onChange={(e) =>
-              handleSearchChange(
-                e.target.value
-              )
-            }
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Tìm theo tên, email..."
             className="
               w-full rounded-lg
@@ -558,12 +462,9 @@ export default function Contacts() {
               focus:border-[var(--primary)]
             "
             style={{
-              background:
-                'var(--surface)',
-              color:
-                'var(--text)',
-              borderColor:
-                'var(--border)',
+              background: 'var(--surface)',
+              color: 'var(--text)',
+              borderColor: 'var(--border)',
             }}
           />
         </div>
@@ -590,28 +491,20 @@ export default function Contacts() {
             <button
               key={item.value}
               type="button"
-              onClick={() =>
-                handleStatusFilter(
-                  item.value
-                )
-              }
+              onClick={() => handleStatusFilter(item.value)}
               className="
                 rounded-lg px-3 py-2
                 text-xs font-medium
                 transition-colors
               "
               style={
-                statusFilter ===
-                item.value
+                statusFilter === item.value
                   ? {
-                      background:
-                        'var(--primary)',
-                      color:
-                        'var(--primary-foreground)',
+                      background: 'var(--primary)',
+                      color: 'var(--primary-foreground)',
                     }
                   : {
-                      color:
-                        'var(--text-secondary)',
+                      color: 'var(--text-secondary)',
                     }
               }
             >
@@ -631,10 +524,8 @@ export default function Contacts() {
           border
         "
         style={{
-          background:
-            'var(--surface)',
-          borderColor:
-            'var(--border)',
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
         }}
       >
         <div className="overflow-x-auto">
@@ -643,10 +534,8 @@ export default function Contacts() {
               <tr
                 className="border-b"
                 style={{
-                  background:
-                    'var(--surface-secondary)',
-                  borderColor:
-                    'var(--border)',
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
                 }}
               >
                 <th
@@ -656,8 +545,7 @@ export default function Contacts() {
                     uppercase tracking-wide
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   Người liên hệ
@@ -670,8 +558,7 @@ export default function Contacts() {
                     uppercase tracking-wide
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   Mã biểu mẫu
@@ -684,8 +571,7 @@ export default function Contacts() {
                     uppercase tracking-wide
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   Trạng thái
@@ -698,8 +584,7 @@ export default function Contacts() {
                     uppercase tracking-wide
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   Thời gian
@@ -712,8 +597,7 @@ export default function Contacts() {
                     uppercase tracking-wide
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   Hành động
@@ -728,10 +612,7 @@ export default function Contacts() {
 
               {loading ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="px-5 py-14"
-                  >
+                  <td colSpan={5} className="px-5 py-14">
                     <div
                       className="
                         flex flex-col
@@ -740,136 +621,106 @@ export default function Contacts() {
                         gap-3
                       "
                       style={{
-                        color:
-                          'var(--text-muted)',
+                        color: 'var(--text-muted)',
                       }}
                     >
-                      <Loader2
-                        size={24}
-                        className="animate-spin"
-                      />
+                      <Loader2 size={24} className="animate-spin" />
 
-                      <span className="text-sm">
-                        Đang tải danh sách
-                        biểu mẫu...
-                      </span>
+                      <span className="text-sm">Đang tải danh sách biểu mẫu...</span>
                     </div>
                   </td>
                 </tr>
               ) : contactList.length > 0 ? (
-                contactList.map(
-                  (contact) => {
-                    const status =
-                      getStatus(contact);
+                contactList.map((contact) => {
+                  const status = getStatus(contact);
 
-                    const config =
-                      statusConfig[
-                        status
-                      ] ??
-                      statusConfig.new;
+                  const config = statusConfig[status] ?? statusConfig.new;
 
-                    const StatusIcon =
-                      config.icon;
+                  const StatusIcon = config.icon;
 
-                    return (
-                      <tr
-                        key={contact.formId}
-                        className="
+                  return (
+                    <tr
+                      key={contact.formId}
+                      className="
                           border-t
                           transition-colors
                         "
-                        style={{
-                          borderColor:
-                            'var(--border)',
-                        }}
-                      >
-                        {/* CONTACT */}
+                      style={{
+                        borderColor: 'var(--border)',
+                      }}
+                    >
+                      {/* CONTACT */}
 
-                        <td className="px-5 py-3.5">
-                          <div
-                            className="
+                      <td className="px-5 py-3.5">
+                        <div
+                          className="
                               font-medium
                             "
-                            style={{
-                              color:
-                                'var(--text)',
-                            }}
-                          >
-                            {contact.fullName ||
-                              'Không có tên'}
-                          </div>
+                          style={{
+                            color: 'var(--text)',
+                          }}
+                        >
+                          {contact.fullName || 'Không có tên'}
+                        </div>
 
-                          <div
-                            className="text-xs"
-                            style={{
-                              color:
-                                'var(--text-muted)',
-                            }}
-                          >
-                            {contact.email ||
-                              '—'}
+                        <div
+                          className="text-xs"
+                          style={{
+                            color: 'var(--text-muted)',
+                          }}
+                        >
+                          {contact.email || '—'}
 
-                            {' · '}
+                          {' · '}
 
-                            {contact.company ||
-                              '—'}
-                          </div>
+                          {contact.company || '—'}
+                        </div>
 
-                          <div
-                            className="mt-0.5 text-xs"
-                            style={{
-                              color:
-                                'var(--text-muted)',
-                            }}
-                          >
-                            {contact.phoneNumber ||
-                              '—'}
-                          </div>
-                        </td>
+                        <div
+                          className="mt-0.5 text-xs"
+                          style={{
+                            color: 'var(--text-muted)',
+                          }}
+                        >
+                          {contact.phoneNumber || '—'}
+                        </div>
+                      </td>
 
-                        {/* FORM CODE */}
+                      {/* FORM CODE */}
 
-                        <td className="px-5 py-3.5">
-                          <div
-                            className="
+                      <td className="px-5 py-3.5">
+                        <div
+                          className="
                               max-w-xs truncate
                               font-medium
                             "
-                            title={
-                              contact.formCode
-                            }
-                            style={{
-                              color:
-                                'var(--text-secondary)',
-                            }}
-                          >
-                            {contact.formCode ||
-                              '—'}
-                          </div>
+                          title={contact.formCode}
+                          style={{
+                            color: 'var(--text-secondary)',
+                          }}
+                        >
+                          {contact.formCode || '—'}
+                        </div>
 
-                          <div
-                            className="
+                        <div
+                          className="
                               mt-1 max-w-xs
                               truncate text-xs
                             "
-                            title={
-                              contact.message
-                            }
-                            style={{
-                              color:
-                                'var(--text-muted)',
-                            }}
-                          >
-                            {contact.message ||
-                              '—'}
-                          </div>
-                        </td>
+                          title={contact.message}
+                          style={{
+                            color: 'var(--text-muted)',
+                          }}
+                        >
+                          {contact.message || '—'}
+                        </div>
+                      </td>
 
-                        {/* STATUS */}
+                      {/* STATUS */}
 
-                        <td className="px-5 py-3.5">
-                          <span
-                            className={`
+                      <td className="px-5 py-3.5">
+                        <span
+                          className={`
                               inline-flex
                               items-center
                               gap-1.5
@@ -880,119 +731,94 @@ export default function Contacts() {
                               font-medium
                               ${config.className}
                             `}
-                          >
-                            <StatusIcon
-                              size={12}
-                            />
+                        >
+                          <StatusIcon size={12} />
 
-                            {config.label}
-                          </span>
-                        </td>
+                          {config.label}
+                        </span>
+                      </td>
 
-                        {/* DATE */}
+                      {/* DATE */}
 
-                        <td className="px-5 py-3.5">
-                          <div
-                            className="
+                      <td className="px-5 py-3.5">
+                        <div
+                          className="
                               flex items-center
                               gap-1.5
                               whitespace-nowrap
                               text-xs
                             "
-                            style={{
-                              color:
-                                'var(--text-muted)',
-                            }}
-                          >
-                            <Clock size={11} />
+                          style={{
+                            color: 'var(--text-muted)',
+                          }}
+                        >
+                          <Clock size={11} />
 
-                            {formatDate(
-                              contact.createdAt
-                            )}
-                          </div>
-                        </td>
+                          {formatDate(contact.createdAt)}
+                        </div>
+                      </td>
 
-                        {/* ACTIONS */}
+                      {/* ACTIONS */}
 
-                        <td className="px-5 py-3.5">
-                          <div
-                            className="
+                      <td className="px-5 py-3.5">
+                        <div
+                          className="
                               flex items-center
                               justify-end gap-1
                             "
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleView(contact)}
+                            className="
+                                rounded-lg p-1.5
+                                transition-colors
+                                hover:bg-[var(--hover)]
+                              "
+                            style={{
+                              color: 'var(--text-muted)',
+                            }}
+                            title="Xem chi tiết"
                           >
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleView(
-                                  contact
-                                )
-                              }
-                              className="
-                                rounded-lg p-1.5
-                                transition-colors
-                                hover:bg-[var(--hover)]
-                              "
-                              style={{
-                                color:
-                                  'var(--text-muted)',
-                              }}
-                              title="Xem chi tiết"
-                            >
-                              <Eye size={14} />
-                            </button>
+                            <Eye size={14} />
+                          </button>
 
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenReply(
-                                  contact
-                                )
-                              }
-                              className="
+                          <button
+                            type="button"
+                            onClick={() => handleOpenReply(contact)}
+                            className="
                                 rounded-lg p-1.5
                                 transition-colors
                                 hover:bg-[var(--hover)]
                               "
-                              style={{
-                                color:
-                                  'var(--text-muted)',
-                              }}
-                              title="Phản hồi"
-                            >
-                              <Reply
-                                size={14}
-                              />
-                            </button>
+                            style={{
+                              color: 'var(--text-muted)',
+                            }}
+                            title="Phản hồi"
+                          >
+                            <Reply size={14} />
+                          </button>
 
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setDeleteContact(
-                                  contact
-                                )
-                              }
-                              className="
+                          <button
+                            type="button"
+                            onClick={() => setDeleteContact(contact)}
+                            className="
                                 rounded-lg p-1.5
                                 transition-colors
                                 hover:bg-[var(--hover)]
                               "
-                              style={{
-                                color:
-                                  'var(--text-muted)',
-                              }}
-                              title="Xóa biểu mẫu"
-                            >
-                              <Trash2
-                                size={14}
-                              />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  }
-                )
+                            style={{
+                              color: 'var(--text-muted)',
+                            }}
+                            title="Xóa biểu mẫu"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td
@@ -1004,12 +830,10 @@ export default function Contacts() {
                   >
                     <div
                       style={{
-                        color:
-                          'var(--text-muted)',
+                        color: 'var(--text-muted)',
                       }}
                     >
-                      Không tìm thấy biểu
-                      mẫu nào.
+                      Không tìm thấy biểu mẫu nào.
                     </div>
                   </td>
                 </tr>
@@ -1022,96 +846,70 @@ export default function Contacts() {
             PAGINATION
         ================================================== */}
 
-        {!loading &&
-          contactList.length > 0 && (
-            <div
-              className="
+        {!loading && contactList.length > 0 && (
+          <div
+            className="
                 flex items-center
                 justify-between
                 border-t px-5 py-3
               "
+            style={{
+              borderColor: 'var(--border)',
+              background: 'var(--surface-secondary)',
+            }}
+          >
+            <span
+              className="text-xs"
               style={{
-                borderColor:
-                  'var(--border)',
-                background:
-                  'var(--surface-secondary)',
+                color: 'var(--text-muted)',
               }}
             >
-              <span
-                className="text-xs"
+              Trang {page} / {totalPages}
+              {' · '}
+              {totalElements} biểu mẫu
+            </span>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                className="
+                    rounded-lg border
+                    px-3 py-1.5
+                    text-xs
+                    disabled:cursor-not-allowed
+                    disabled:opacity-40
+                  "
                 style={{
-                  color:
-                    'var(--text-muted)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
                 }}
               >
-                Trang {page} / {totalPages}
-                {' · '}
-                {totalElements} biểu mẫu
-              </span>
+                Trước
+              </button>
 
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  disabled={page <= 1}
-                  onClick={() =>
-                    setPage(
-                      (prev) =>
-                        Math.max(
-                          1,
-                          prev - 1
-                        )
-                    )
-                  }
-                  className="
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                className="
                     rounded-lg border
                     px-3 py-1.5
                     text-xs
                     disabled:cursor-not-allowed
                     disabled:opacity-40
                   "
-                  style={{
-                    borderColor:
-                      'var(--border)',
-                    color:
-                      'var(--text-secondary)',
-                  }}
-                >
-                  Trước
-                </button>
-
-                <button
-                  type="button"
-                  disabled={
-                    page >= totalPages
-                  }
-                  onClick={() =>
-                    setPage(
-                      (prev) =>
-                        Math.min(
-                          totalPages,
-                          prev + 1
-                        )
-                    )
-                  }
-                  className="
-                    rounded-lg border
-                    px-3 py-1.5
-                    text-xs
-                    disabled:cursor-not-allowed
-                    disabled:opacity-40
-                  "
-                  style={{
-                    borderColor:
-                      'var(--border)',
-                    color:
-                      'var(--text-secondary)',
-                  }}
-                >
-                  Sau
-                </button>
-              </div>
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                Sau
+              </button>
             </div>
-          )}
+          </div>
+        )}
       </div>
 
       {/* =================================================
@@ -1127,9 +925,7 @@ export default function Contacts() {
             bg-black/40 p-4
             backdrop-blur-sm
           "
-          onClick={() =>
-            setViewContact(null)
-          }
+          onClick={() => setViewContact(null)}
         >
           <div
             className="
@@ -1139,12 +935,9 @@ export default function Contacts() {
               shadow-2xl
             "
             style={{
-              background:
-                'var(--surface)',
+              background: 'var(--surface)',
             }}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
           >
             {/* HEADER */}
 
@@ -1155,8 +948,7 @@ export default function Contacts() {
                 border-b px-6 py-4
               "
               style={{
-                borderColor:
-                  'var(--border)',
+                borderColor: 'var(--border)',
               }}
             >
               <div>
@@ -1166,8 +958,7 @@ export default function Contacts() {
                     font-bold
                   "
                   style={{
-                    color:
-                      'var(--text)',
+                    color: 'var(--text)',
                   }}
                 >
                   Chi tiết biểu mẫu
@@ -1176,8 +967,7 @@ export default function Contacts() {
                 <p
                   className="mt-0.5 text-xs"
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
                   {viewContact.formCode}
@@ -1186,13 +976,10 @@ export default function Contacts() {
 
               <button
                 type="button"
-                onClick={() =>
-                  setViewContact(null)
-                }
+                onClick={() => setViewContact(null)}
                 className="rounded-lg p-1.5"
                 style={{
-                  color:
-                    'var(--text-muted)',
+                  color: 'var(--text-muted)',
                 }}
               >
                 <X size={18} />
@@ -1214,8 +1001,7 @@ export default function Contacts() {
                     size={24}
                     className="animate-spin"
                     style={{
-                      color:
-                        'var(--primary)',
+                      color: 'var(--primary)',
                     }}
                   />
                 </div>
@@ -1229,58 +1015,21 @@ export default function Contacts() {
                       sm:grid-cols-2
                     "
                     style={{
-                      background:
-                        'var(--surface-secondary)',
-                      borderColor:
-                        'var(--border)',
+                      background: 'var(--surface-secondary)',
+                      borderColor: 'var(--border)',
                     }}
                   >
-                    <DetailField
-                      label="Họ tên"
-                      value={
-                        viewContact.fullName ||
-                        '—'
-                      }
-                    />
+                    <DetailField label="Họ tên" value={viewContact.fullName || '—'} />
 
-                    <DetailField
-                      label="Email"
-                      value={
-                        viewContact.email ||
-                        '—'
-                      }
-                    />
+                    <DetailField label="Email" value={viewContact.email || '—'} />
 
-                    <DetailField
-                      label="Số điện thoại"
-                      value={
-                        viewContact.phoneNumber ||
-                        '—'
-                      }
-                    />
+                    <DetailField label="Số điện thoại" value={viewContact.phoneNumber || '—'} />
 
-                    <DetailField
-                      label="Công ty"
-                      value={
-                        viewContact.company ||
-                        '—'
-                      }
-                    />
+                    <DetailField label="Công ty" value={viewContact.company || '—'} />
 
-                    <DetailField
-                      label="Mã biểu mẫu"
-                      value={
-                        viewContact.formCode ||
-                        '—'
-                      }
-                    />
+                    <DetailField label="Mã biểu mẫu" value={viewContact.formCode || '—'} />
 
-                    <DetailField
-                      label="Thời gian gửi"
-                      value={formatDate(
-                        viewContact.createdAt
-                      )}
-                    />
+                    <DetailField label="Thời gian gửi" value={formatDate(viewContact.createdAt)} />
                   </div>
 
                   <div>
@@ -1290,8 +1039,7 @@ export default function Contacts() {
                         font-medium
                       "
                       style={{
-                        color:
-                          'var(--text-muted)',
+                        color: 'var(--text-muted)',
                       }}
                     >
                       Nội dung
@@ -1305,16 +1053,12 @@ export default function Contacts() {
                         leading-relaxed
                       "
                       style={{
-                        background:
-                          'var(--surface)',
-                        color:
-                          'var(--text-secondary)',
-                        borderColor:
-                          'var(--border)',
+                        background: 'var(--surface)',
+                        color: 'var(--text-secondary)',
+                        borderColor: 'var(--border)',
                       }}
                     >
-                      {viewContact.message ||
-                        '—'}
+                      {viewContact.message || '—'}
                     </div>
                   </div>
 
@@ -1326,8 +1070,7 @@ export default function Contacts() {
                           font-medium
                         "
                         style={{
-                          color:
-                            'var(--text-muted)',
+                          color: 'var(--text-muted)',
                         }}
                       >
                         Nội dung phản hồi
@@ -1341,17 +1084,12 @@ export default function Contacts() {
                           leading-relaxed
                         "
                         style={{
-                          background:
-                            'var(--success-light)',
-                          color:
-                            'var(--text-secondary)',
-                          borderColor:
-                            'var(--border)',
+                          background: 'var(--success-light)',
+                          color: 'var(--text-secondary)',
+                          borderColor: 'var(--border)',
                         }}
                       >
-                        {
-                          viewContact.replyMessage
-                        }
+                        {viewContact.replyMessage}
                       </div>
                     </div>
                   )}
@@ -1368,26 +1106,20 @@ export default function Contacts() {
                 border-t px-6 py-4
               "
               style={{
-                background:
-                  'var(--surface-secondary)',
-                borderColor:
-                  'var(--border)',
+                background: 'var(--surface-secondary)',
+                borderColor: 'var(--border)',
               }}
             >
               <button
                 type="button"
-                onClick={() =>
-                  setViewContact(null)
-                }
+                onClick={() => setViewContact(null)}
                 className="
                   rounded-xl border
                   px-4 py-2 text-sm
                 "
                 style={{
-                  borderColor:
-                    'var(--border)',
-                  color:
-                    'var(--text-secondary)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
                 }}
               >
                 Đóng
@@ -1396,9 +1128,7 @@ export default function Contacts() {
               <button
                 type="button"
                 onClick={() => {
-                  handleOpenReply(
-                    viewContact
-                  );
+                  handleOpenReply(viewContact);
                   setViewContact(null);
                 }}
                 className="
@@ -1408,14 +1138,11 @@ export default function Contacts() {
                   text-sm font-semibold
                 "
                 style={{
-                  background:
-                    'var(--primary)',
-                  color:
-                    'var(--primary-foreground)',
+                  background: 'var(--primary)',
+                  color: 'var(--primary-foreground)',
                 }}
               >
                 <Reply size={14} />
-
                 Phản hồi ngay
               </button>
             </div>
@@ -1436,10 +1163,7 @@ export default function Contacts() {
             bg-black/40 p-4
             backdrop-blur-sm
           "
-          onClick={() =>
-            !actionLoading &&
-            setReplyContact(null)
-          }
+          onClick={() => !actionLoading && setReplyContact(null)}
         >
           <form
             onSubmit={handleSendReply}
@@ -1450,12 +1174,9 @@ export default function Contacts() {
               shadow-2xl
             "
             style={{
-              background:
-                'var(--surface)',
+              background: 'var(--surface)',
             }}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
           >
             <div
               className="
@@ -1464,10 +1185,8 @@ export default function Contacts() {
                 border-b px-6 py-4
               "
               style={{
-                background:
-                  'var(--success-light)',
-                borderColor:
-                  'var(--border)',
+                background: 'var(--success-light)',
+                borderColor: 'var(--border)',
               }}
             >
               <div>
@@ -1478,18 +1197,15 @@ export default function Contacts() {
                     text-lg font-bold
                   "
                   style={{
-                    color:
-                      'var(--text)',
+                    color: 'var(--text)',
                   }}
                 >
                   <Reply
                     size={18}
                     style={{
-                      color:
-                        'var(--success)',
+                      color: 'var(--success)',
                     }}
                   />
-
                   Phản hồi biểu mẫu
                 </h3>
 
@@ -1498,26 +1214,20 @@ export default function Contacts() {
                     mt-0.5 text-xs
                   "
                   style={{
-                    color:
-                      'var(--text-secondary)',
+                    color: 'var(--text-secondary)',
                   }}
                 >
-                  Gửi email tới:{' '}
-                  {replyContact.email ||
-                    '—'}
+                  Gửi email tới: {replyContact.email || '—'}
                 </p>
               </div>
 
               <button
                 type="button"
                 disabled={actionLoading}
-                onClick={() =>
-                  setReplyContact(null)
-                }
+                onClick={() => setReplyContact(null)}
                 className="rounded-lg p-1.5"
                 style={{
-                  color:
-                    'var(--text-muted)',
+                  color: 'var(--text-muted)',
                 }}
               >
                 <X size={20} />
@@ -1532,12 +1242,10 @@ export default function Contacts() {
                     font-medium
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
-                  Đang trả lời cho
-                  biểu mẫu:
+                  Đang trả lời cho biểu mẫu:
                 </span>
 
                 <div
@@ -1546,18 +1254,12 @@ export default function Contacts() {
                     p-3
                   "
                   style={{
-                    background:
-                      'var(--surface-secondary)',
-                    color:
-                      'var(--text)',
-                    borderColor:
-                      'var(--border)',
+                    background: 'var(--surface-secondary)',
+                    color: 'var(--text)',
+                    borderColor: 'var(--border)',
                   }}
                 >
-                  <p className="text-sm font-semibold">
-                    {replyContact.formCode ||
-                      '—'}
-                  </p>
+                  <p className="text-sm font-semibold">{replyContact.formCode || '—'}</p>
 
                   <p
                     className="
@@ -1565,12 +1267,10 @@ export default function Contacts() {
                       line-clamp-2
                     "
                     style={{
-                      color:
-                        'var(--text-secondary)',
+                      color: 'var(--text-secondary)',
                     }}
                   >
-                    {replyContact.message ||
-                      '—'}
+                    {replyContact.message || '—'}
                   </p>
                 </div>
               </div>
@@ -1582,16 +1282,13 @@ export default function Contacts() {
                     font-medium
                   "
                   style={{
-                    color:
-                      'var(--text-muted)',
+                    color: 'var(--text-muted)',
                   }}
                 >
-                  Nội dung email
-                  phản hồi{' '}
+                  Nội dung email phản hồi{' '}
                   <span
                     style={{
-                      color:
-                        'var(--error)',
+                      color: 'var(--error)',
                     }}
                   >
                     *
@@ -1602,14 +1299,8 @@ export default function Contacts() {
                   required
                   rows={6}
                   value={replyMessage}
-                  onChange={(e) =>
-                    setReplyMessage(
-                      e.target.value
-                    )
-                  }
-                  disabled={
-                    actionLoading
-                  }
+                  onChange={(e) => setReplyMessage(e.target.value)}
+                  disabled={actionLoading}
                   placeholder={`Chào ${replyContact.fullName || 'bạn'},\n\nCảm ơn bạn đã liên hệ...`}
                   className="
                     w-full resize-none
@@ -1619,12 +1310,9 @@ export default function Contacts() {
                     focus:border-[var(--primary)]
                   "
                   style={{
-                    background:
-                      'var(--surface)',
-                    color:
-                      'var(--text)',
-                    borderColor:
-                      'var(--border)',
+                    background: 'var(--surface)',
+                    color: 'var(--text)',
+                    borderColor: 'var(--border)',
                   }}
                 />
               </div>
@@ -1637,26 +1325,21 @@ export default function Contacts() {
                 border-t px-6 py-4
               "
               style={{
-                borderColor:
-                  'var(--border)',
+                borderColor: 'var(--border)',
               }}
             >
               <button
                 type="button"
                 disabled={actionLoading}
-                onClick={() =>
-                  setReplyContact(null)
-                }
+                onClick={() => setReplyContact(null)}
                 className="
                   rounded-xl border
                   px-4 py-2.5
                   text-sm font-medium
                 "
                 style={{
-                  borderColor:
-                    'var(--border)',
-                  color:
-                    'var(--text-secondary)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
                 }}
               >
                 Hủy
@@ -1664,10 +1347,7 @@ export default function Contacts() {
 
               <button
                 type="submit"
-                disabled={
-                  actionLoading ||
-                  !replyMessage.trim()
-                }
+                disabled={actionLoading || !replyMessage.trim()}
                 className="
                   flex items-center
                   gap-1.5 rounded-xl
@@ -1676,24 +1356,17 @@ export default function Contacts() {
                   disabled:opacity-50
                 "
                 style={{
-                  background:
-                    'var(--success)',
-                  color:
-                    'var(--primary-foreground)',
+                  background: 'var(--success)',
+                  color: 'var(--primary-foreground)',
                 }}
               >
                 {actionLoading ? (
-                  <Loader2
-                    size={14}
-                    className="animate-spin"
-                  />
+                  <Loader2 size={14} className="animate-spin" />
                 ) : (
                   <Send size={14} />
                 )}
 
-                {actionLoading
-                  ? 'Đang gửi...'
-                  : 'Gửi phản hồi'}
+                {actionLoading ? 'Đang gửi...' : 'Gửi phản hồi'}
               </button>
             </div>
           </form>
@@ -1713,10 +1386,7 @@ export default function Contacts() {
             bg-black/40 p-4
             backdrop-blur-sm
           "
-          onClick={() =>
-            !actionLoading &&
-            setDeleteContact(null)
-          }
+          onClick={() => !actionLoading && setDeleteContact(null)}
         >
           <div
             className="
@@ -1725,12 +1395,9 @@ export default function Contacts() {
               text-center shadow-2xl
             "
             style={{
-              background:
-                'var(--surface)',
+              background: 'var(--surface)',
             }}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
           >
             <div
               className="
@@ -1740,10 +1407,8 @@ export default function Contacts() {
                 rounded-full
               "
               style={{
-                background:
-                  'var(--error-light)',
-                color:
-                  'var(--error)',
+                background: 'var(--error-light)',
+                color: 'var(--error)',
               }}
             >
               <Trash2 size={24} />
@@ -1755,8 +1420,7 @@ export default function Contacts() {
                 text-lg font-bold
               "
               style={{
-                color:
-                  'var(--text)',
+                color: 'var(--text)',
               }}
             >
               Xóa biểu mẫu?
@@ -1768,33 +1432,24 @@ export default function Contacts() {
                 leading-relaxed
               "
               style={{
-                color:
-                  'var(--text-secondary)',
+                color: 'var(--text-secondary)',
               }}
             >
-              Bạn có chắc chắn muốn
-              xóa biểu mẫu từ{' '}
-
+              Bạn có chắc chắn muốn xóa biểu mẫu từ{' '}
               <span
                 className="font-semibold"
                 style={{
-                  color:
-                    'var(--text)',
+                  color: 'var(--text)',
                 }}
               >
-                {deleteContact.fullName ||
-                  'người dùng này'}
-              </span>
-
-              {' '}không?
+                {deleteContact.fullName || 'người dùng này'}
+              </span>{' '}
+              không?
               <br />
-
               Thao tác này{' '}
-
               <strong
                 style={{
-                  color:
-                    'var(--error)',
+                  color: 'var(--error)',
                 }}
               >
                 không thể hoàn tác
@@ -1806,19 +1461,15 @@ export default function Contacts() {
               <button
                 type="button"
                 disabled={actionLoading}
-                onClick={() =>
-                  setDeleteContact(null)
-                }
+                onClick={() => setDeleteContact(null)}
                 className="
                   w-full rounded-xl
                   border px-5 py-2.5
                   text-sm font-medium
                 "
                 style={{
-                  borderColor:
-                    'var(--border)',
-                  color:
-                    'var(--text-secondary)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
                 }}
               >
                 Hủy
@@ -1838,19 +1489,11 @@ export default function Contacts() {
                   disabled:opacity-50
                 "
                 style={{
-                  background:
-                    'var(--error)',
-                  color:
-                    'var(--primary-foreground)',
+                  background: 'var(--error)',
+                  color: 'var(--primary-foreground)',
                 }}
               >
-                {actionLoading && (
-                  <Loader2
-                    size={14}
-                    className="animate-spin"
-                  />
-                )}
-
+                {actionLoading && <Loader2 size={14} className="animate-spin" />}
                 Xác nhận xóa
               </button>
             </div>
@@ -1865,13 +1508,7 @@ export default function Contacts() {
    DETAIL FIELD
 ========================================================= */
 
-function DetailField({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function DetailField({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <span
@@ -1880,8 +1517,7 @@ function DetailField({
           font-medium
         "
         style={{
-          color:
-            'var(--text-muted)',
+          color: 'var(--text-muted)',
         }}
       >
         {label}
@@ -1890,8 +1526,7 @@ function DetailField({
       <p
         className="font-medium"
         style={{
-          color:
-            'var(--text)',
+          color: 'var(--text)',
         }}
       >
         {value}

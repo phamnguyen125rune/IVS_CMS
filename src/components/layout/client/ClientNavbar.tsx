@@ -56,43 +56,43 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [generalInfo, setGeneralInfo] = useState<GeneralInfo>({
-  logo: 'default-logo.png',
-  companyName: 'CMS Technology',
-  websiteName: 'CMS Portal',
-  websiteDescription: '',
-  email: '',
-  facebookLink: '',
-  twitterLink: '',
-  instagramLink: '',
-  linkedinLink: '',
-  youtubeLink: '',
-  zaloLink: '',
-  companyPhoneNumber: '',
-  address: '',
-  workingHours: '',
-  mapEmbedUrl: '',
-  footerLinks: '',
-});
+    logo: 'default-logo.png',
+    companyName: 'CMS Technology',
+    websiteName: 'CMS Portal',
+    websiteDescription: '',
+    email: '',
+    facebookLink: '',
+    twitterLink: '',
+    instagramLink: '',
+    linkedinLink: '',
+    youtubeLink: '',
+    zaloLink: '',
+    companyPhoneNumber: '',
+    address: '',
+    workingHours: '',
+    mapEmbedUrl: '',
+    footerLinks: '',
+  });
 
   const dropdownTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const activeLang = languages.find((lang) => lang.code === language) || languages[0];
 
   useEffect(() => {
-  const fetchGeneralInfo = async () => {
-    try {
-      const response = await settingService.getGeneralInfo();
+    const fetchGeneralInfo = async () => {
+      try {
+        const response = await settingService.getGeneralInfo();
 
-      if (response?.data) {
-        setGeneralInfo(response.data);
+        if (response?.data) {
+          setGeneralInfo(response.data);
+        }
+      } catch (error) {
+        console.error('Fetch general info error:', error);
       }
-    } catch (error) {
-      console.error('Fetch general info error:', error);
-    }
-  };
+    };
 
-  fetchGeneralInfo();
-}, []);
+    fetchGeneralInfo();
+  }, []);
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -267,12 +267,9 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
           color: 'var(--text)',
         }}
       >
-        <Link
-  href={getLocalizedPath('/')}
-  className="flex items-center gap-2.5"
->
-  <div
-    className="
+        <Link href={getLocalizedPath('/')} className="flex items-center gap-2.5">
+          <div
+            className="
       flex
       h-9
       w-9
@@ -283,43 +280,41 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
       text-base
       font-bold
     "
-    style={{
-      background: 'var(--primary)',
-      color: 'var(--primary-foreground)',
-    }}
-  >
-    {generalInfo.logo ? (
-      <img
-        src={
-          generalInfo.logo.startsWith('http://') ||
-          generalInfo.logo.startsWith('https://') ||
-          generalInfo.logo.startsWith('/')
-            ? generalInfo.logo
-            : `/images/${generalInfo.logo}`
-        }
-        alt={generalInfo.companyName || 'Logo'}
-        className="h-full w-full object-contain"
-      />
-    ) : (
-      'C'
-    )}
-  </div>
+            style={{
+              background: 'var(--primary)',
+              color: 'var(--primary-foreground)',
+            }}
+          >
+            {generalInfo.logo ? (
+              <img
+                src={
+                  generalInfo.logo.startsWith('http://') ||
+                  generalInfo.logo.startsWith('https://') ||
+                  generalInfo.logo.startsWith('/')
+                    ? generalInfo.logo
+                    : `/images/${generalInfo.logo}`
+                }
+                alt={generalInfo.companyName || 'Logo'}
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              'C'
+            )}
+          </div>
 
-  <span
-    className="
+          <span
+            className="
       font-display
       text-lg
       font-bold
     "
-    style={{
-      color: 'var(--text)',
-    }}
-  >
-    {generalInfo.websiteName ||
-      generalInfo.companyName ||
-      'CMS'}
-  </span>
-</Link>
+            style={{
+              color: 'var(--text)',
+            }}
+          >
+            {generalInfo.websiteName || generalInfo.companyName || 'CMS'}
+          </span>
+        </Link>
 
         <nav className="hidden lg:flex items-center gap-1">
           {!loading &&

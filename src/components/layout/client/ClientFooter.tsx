@@ -18,8 +18,7 @@ const defaultGeneralInfo: GeneralInfo = {
   logo: 'default-logo.png',
   companyName: 'CMS Technology',
   websiteName: 'CMS Portal',
-  websiteDescription:
-    'Công ty giải pháp công nghệ hàng đầu Việt Nam.',
+  websiteDescription: 'Công ty giải pháp công nghệ hàng đầu Việt Nam.',
   email: 'info@cms.vn',
   facebookLink: '',
   twitterLink: '',
@@ -35,8 +34,7 @@ const defaultGeneralInfo: GeneralInfo = {
 };
 
 export default function ClientFooter({ language }: ClientFooterProps) {
-  const [generalInfo, setGeneralInfo] =
-    useState<GeneralInfo>(defaultGeneralInfo);
+  const [generalInfo, setGeneralInfo] = useState<GeneralInfo>(defaultGeneralInfo);
 
   const getLocalizedPath = (path: string) => {
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
@@ -159,11 +157,7 @@ export default function ClientFooter({ language }: ClientFooterProps) {
       return '/images/default-logo.png';
     }
 
-    if (
-      logo.startsWith('http://') ||
-      logo.startsWith('https://') ||
-      logo.startsWith('/')
-    ) {
+    if (logo.startsWith('http://') || logo.startsWith('https://') || logo.startsWith('/')) {
       return logo;
     }
 
@@ -183,7 +177,6 @@ export default function ClientFooter({ language }: ClientFooterProps) {
 
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
-
           {/* =================================================
               BRAND
           ================================================== */}
@@ -223,9 +216,7 @@ export default function ClientFooter({ language }: ClientFooterProps) {
                   color: 'var(--dark-text)',
                 }}
               >
-                {generalInfo.websiteName ||
-                  generalInfo.companyName ||
-                  'CMS'}
+                {generalInfo.websiteName || generalInfo.companyName || 'CMS'}
               </span>
             </div>
 
@@ -235,8 +226,7 @@ export default function ClientFooter({ language }: ClientFooterProps) {
                 color: 'var(--dark-text-secondary)',
               }}
             >
-              {generalInfo.websiteDescription ||
-                'Công ty giải pháp công nghệ hàng đầu Việt Nam.'}
+              {generalInfo.websiteDescription || 'Công ty giải pháp công nghệ hàng đầu Việt Nam.'}
             </p>
 
             {/* Social links */}
@@ -372,7 +362,6 @@ export default function ClientFooter({ language }: ClientFooterProps) {
             </h4>
 
             <ul className="space-y-3">
-
               {/* Address */}
 
               {generalInfo.address && (
@@ -414,10 +403,7 @@ export default function ClientFooter({ language }: ClientFooterProps) {
                     color: 'var(--dark-text-muted)',
                   }}
                 >
-                  <Phone
-                    size={14}
-                    className="shrink-0 text-blue-400"
-                  />
+                  <Phone size={14} className="shrink-0 text-blue-400" />
 
                   <a
                     href={`tel:${generalInfo.companyPhoneNumber}`}
@@ -442,15 +428,9 @@ export default function ClientFooter({ language }: ClientFooterProps) {
                     color: 'var(--dark-text-muted)',
                   }}
                 >
-                  <Mail
-                    size={14}
-                    className="shrink-0 text-blue-400"
-                  />
+                  <Mail size={14} className="shrink-0 text-blue-400" />
 
-                  <a
-                    href={`mailto:${generalInfo.email}`}
-                    className="hover:text-[var(--primary)]"
-                  >
+                  <a href={`mailto:${generalInfo.email}`} className="hover:text-[var(--primary)]">
                     {generalInfo.email}
                   </a>
                 </li>
@@ -470,11 +450,7 @@ export default function ClientFooter({ language }: ClientFooterProps) {
                     color: 'var(--dark-text-muted)',
                   }}
                 >
-                  <span
-                    className="shrink-0 text-blue-400"
-                  >
-                    ⏰
-                  </span>
+                  <span className="shrink-0 text-blue-400">⏰</span>
 
                   <span>{generalInfo.workingHours}</span>
                 </li>
@@ -513,8 +489,7 @@ export default function ClientFooter({ language }: ClientFooterProps) {
               color: 'var(--dark-text-muted)',
             }}
           >
-            © {new Date().getFullYear()}{' '}
-            {generalInfo.companyName || 'CMS'}. Bảo lưu mọi quyền.
+            © {new Date().getFullYear()} {generalInfo.companyName || 'CMS'}. Bảo lưu mọi quyền.
           </p>
 
           {legalLinks.length > 0 && (

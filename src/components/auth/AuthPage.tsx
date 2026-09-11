@@ -290,8 +290,8 @@ export default function AuthPage() {
             </div>
             <PrimaryButton loading={isLoading}>Đăng nhập</PrimaryButton>
             <p className="text-center text-xs text-slate-400">
-              Tài khoản demo: <span className="font-semibold text-slate-600">cms@gmail.com</span>{' '}
-              / <span className="font-semibold text-slate-600">123456</span>
+              Tài khoản demo: <span className="font-semibold text-slate-600">cms@gmail.com</span> /{' '}
+              <span className="font-semibold text-slate-600">123456</span>
             </p>
             <p className="text-center text-sm text-slate-500">
               Khách hàng?{' '}
