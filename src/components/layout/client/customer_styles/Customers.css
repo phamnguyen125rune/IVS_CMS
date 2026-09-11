@@ -1,0 +1,219 @@
+.customers-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columns-per-row), minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.customer-card {
+  position: relative;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  overflow: visible;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  z-index: 1;
+}
+
+.customer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  z-index: 20;
+}
+
+.customer-logo {
+  width: 100%;
+  height: 100%;
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.customer-logo img {
+  display: block;
+  max-width: 90%;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.customer-card:hover .customer-logo img {
+  transform: scale(1.05);
+}
+
+.customer-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 14px);
+  z-index: 1000;
+  width: 320px;
+  padding: 18px 20px;
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 10px);
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
+}
+
+.customer-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.customer-card:hover .customer-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.customer-tooltip-name {
+  margin-bottom: 8px;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.customer-tooltip-description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.customers-grid[style*='--columns-per-row: 2'] .customer-card {
+  min-height: 230px;
+}
+
+.customers-grid[style*='--columns-per-row: 2'] .customer-logo img {
+  max-height: 140px;
+}
+
+.customers-grid[style*='--columns-per-row: 3'] .customer-card {
+  min-height: 210px;
+}
+
+.customers-grid[style*='--columns-per-row: 3'] .customer-logo img {
+  max-height: 120px;
+}
+
+.customers-grid[style*='--columns-per-row: 4'] .customer-card {
+  min-height: 190px;
+}
+
+.customers-grid[style*='--columns-per-row: 4'] .customer-logo img {
+  max-height: 110px;
+}
+
+.customers-grid[style*='--columns-per-row: 5'] .customer-card {
+  min-height: 175px;
+}
+
+.customers-grid[style*='--columns-per-row: 5'] .customer-logo img {
+  max-height: 100px;
+}
+
+.customers-grid[style*='--columns-per-row: 6'] .customer-card {
+  min-height: 160px;
+}
+
+.customers-grid[style*='--columns-per-row: 6'] .customer-logo img {
+  max-height: 90px;
+}
+
+@media (max-width: 1024px) {
+  .customers-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .customer-card {
+    min-height: 190px;
+  }
+
+  .customer-logo img {
+    max-height: 100px;
+  }
+
+  .customer-tooltip {
+    width: 290px;
+  }
+}
+
+@media (max-width: 768px) {
+  .customers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .customer-card {
+    min-height: 170px;
+    padding: 24px;
+  }
+
+  .customer-logo img {
+    max-height: 85px;
+  }
+
+  .customer-tooltip {
+    width: 280px;
+    padding: 16px;
+  }
+
+  .customer-tooltip-name {
+    font-size: 14px;
+  }
+
+  .customer-tooltip-description {
+    font-size: 12px;
+    -webkit-line-clamp: 4;
+  }
+}
+
+@media (max-width: 480px) {
+  .customers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-card {
+    min-height: 190px;
+  }
+
+  .customer-logo img {
+    max-height: 100px;
+  }
+
+  .customer-tooltip {
+    width: calc(100vw - 40px);
+    max-width: 320px;
+  }
+}
