@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { LogOut, Mail, ShieldCheck, UserRound } from 'lucide-react';
-import { ResUserDTO } from '@/types';
+import { UserResponse } from '@/types/user.type';
 
 export default function ProfilePage() {
   const router = useRouter();
   const params = useParams();
   const language = (params?.language as string) || 'vi';
-  const [profile, setProfile] = useState<ResUserDTO | null>(null);
+  const [profile, setProfile] = useState<UserResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,7 +22,7 @@ export default function ProfilePage() {
         if (!res.ok) {
           throw new Error(data?.message || 'Không thể tải hồ sơ');
         }
-        return data as ResUserDTO;
+        return data as UserResponse;
       })
       .then((data) => {
         if (active) {
@@ -88,16 +88,16 @@ export default function ProfilePage() {
 
         {profile && (
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <InfoItem icon={<UserRound size={18} />} label="Họ và tên" value={profile.fullname} />
+            <InfoItem icon={<UserRound size={18} />} label="Họ và tên" value={profile.fullName} />
             <InfoItem icon={<Mail size={18} />} label="Email" value={profile.email} />
             <InfoItem label="Mã nhân viên" value={profile.employeeCode || 'Chưa có'} />
             <InfoItem
               icon={<ShieldCheck size={18} />}
               label="Vai trò"
-              value={profile.role?.name || 'Chưa có'}
+              value={profile.role?.roleName || 'Chưa có'}
             />
-            <InfoItem label="Trạng thái" value={profile.status || 'ACTIVE'} />
-            <InfoItem label="Số điện thoại" value={profile.phone || 'Chưa cập nhật'} />
+            <InfoItem label="Trạng thái" value={profile.isActive ? 'ACTIVE' : 'LOCKED'} />
+            <InfoItem label="Số điện thoại" value={profile.phoneNumber || 'Chưa cập nhật'} />
           </div>
         )}
       </section>

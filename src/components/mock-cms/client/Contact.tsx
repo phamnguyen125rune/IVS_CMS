@@ -1,13 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { AlertCircle, CheckCircle, Clock, Loader2, Mail, MapPin, Phone, Send } from 'lucide-react';
 
 import type { FormCategory, FormDetailFormData, FormDetailFormErrors } from '@/types/contact.type';
 
 import { FormDetailService } from '@/services/contact.service';
+import { settingService } from '@/services/setting.service';
+import type { GeneralInfo } from '@/types/setting.type';
 
 export default function Contact() {
+  // ================================
+  // Initial form
+  // ================================
+
   const initialForm: FormDetailFormData = {
     fullName: '',
     email: '',
@@ -18,11 +25,24 @@ export default function Contact() {
     consent: false,
   };
 
+  // ================================
+  // State
+  // ================================
+
   const [form, setForm] = useState<FormDetailFormData>(initialForm);
+
   const [categories, setCategories] = useState<FormCategory[]>([]);
+
+  const [generalInfo, setGeneralInfo] = useState<GeneralInfo | null>(null);
+
   const [errors, setErrors] = useState<FormDetailFormErrors>({});
+
   const [submitted, setSubmitted] = useState(false);
+
   const [loading, setLoading] = useState(false);
+
+  const [generalInfoLoading, setGeneralInfoLoading] = useState(true);
+
   const [serverError, setServerError] = useState<string | null>(null);
 
   // ================================
@@ -43,6 +63,36 @@ export default function Contact() {
     };
 
     fetchCategories();
+  }, []);
+
+  // ================================
+  // Load general information
+  // ================================
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchGeneralInfo = async () => {
+      try {
+        const res = await settingService.getGeneralInfo();
+
+        if (mounted && res?.data) {
+          setGeneralInfo(res.data);
+        }
+      } catch (error) {
+        console.error('Lỗi khi tải thông tin liên hệ:', error);
+      } finally {
+        if (mounted) {
+          setGeneralInfoLoading(false);
+        }
+      }
+    };
+
+    fetchGeneralInfo();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // ================================
@@ -153,22 +203,22 @@ export default function Contact() {
     const hasError = Boolean(errors[key]);
 
     return `
-    w-full
-    px-3.5
-    py-2.5
-    border
-    rounded-xl
-    text-sm
-    outline-none
-    transition-all
-    focus:ring-2
-    placeholder:text-[var(--text-placeholder)]
-    ${
-      hasError
-        ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
-        : 'focus:border-[var(--primary)] focus:ring-[var(--primary-light)]'
-    }
-  `;
+      w-full
+      px-3.5
+      py-2.5
+      border
+      rounded-xl
+      text-sm
+      outline-none
+      transition-all
+      focus:ring-2
+      placeholder:text-[var(--text-placeholder)]
+      ${
+        hasError
+          ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
+          : 'focus:border-[var(--primary)] focus:ring-[var(--primary-light)]'
+      }
+    `;
   };
 
   // ================================
@@ -181,6 +231,41 @@ export default function Contact() {
     setErrors({});
     setServerError(null);
   };
+
+  // ================================
+  // Dynamic contact information
+  // ================================
+
+  const contactInformation = [
+    {
+      icon: MapPin,
+      label: 'Địa chỉ',
+      value: generalInfo?.address || 'Chưa cập nhật',
+      color: 'text-blue-600 bg-blue-50',
+    },
+    {
+      icon: Phone,
+      label: 'Điện thoại',
+      value: generalInfo?.companyPhoneNumber || 'Chưa cập nhật',
+      color: 'text-emerald-600 bg-emerald-50',
+    },
+    {
+      icon: Mail,
+      label: 'Email',
+      value: generalInfo?.email || 'Chưa cập nhật',
+      color: 'text-violet-600 bg-violet-50',
+    },
+    {
+      icon: Clock,
+      label: 'Giờ làm việc',
+      value: generalInfo?.workingHours || 'Chưa cập nhật',
+      color: 'text-amber-600 bg-amber-50',
+    },
+  ];
+
+  // ================================
+  // Render
+  // ================================
 
   return (
     <div
@@ -217,8 +302,10 @@ export default function Contact() {
           </h1>
 
           <p className="text-base max-w-xl" style={{ color: 'var(--dark-text-secondary)' }}>
-            Đội ngũ chuyên gia của CMS sẵn sàng lắng nghe và tư vấn giải pháp phù hợp nhất cho doanh
-            nghiệp của bạn.
+            {generalInfo?.websiteDescription ||
+              `Đội ngũ chuyên gia của ${
+                generalInfo?.companyName || 'CMS'
+              } sẵn sàng lắng nghe và tư vấn giải pháp phù hợp nhất cho doanh nghiệp của bạn.`}
           </p>
         </div>
       </section>
@@ -240,32 +327,7 @@ export default function Contact() {
               </h2>
 
               <div className="space-y-4">
-                {[
-                  {
-                    icon: MapPin,
-                    label: 'Địa chỉ',
-                    value: 'Tầng 12, 141 Lê Duẩn\nQuận 1, TP. Hồ Chí Minh',
-                    color: 'text-blue-600 bg-blue-50',
-                  },
-                  {
-                    icon: Phone,
-                    label: 'Điện thoại',
-                    value: '+84 28 3456 7890\n+84 28 3456 7891',
-                    color: 'text-emerald-600 bg-emerald-50',
-                  },
-                  {
-                    icon: Mail,
-                    label: 'Email',
-                    value: 'info@cms.vn\nsales@cms.vn',
-                    color: 'text-violet-600 bg-violet-50',
-                  },
-                  {
-                    icon: Clock,
-                    label: 'Giờ làm việc',
-                    value: 'Thứ 2 – Thứ 6: 8:00 – 18:00\nThứ 7: 8:00 – 12:00',
-                    color: 'text-amber-600 bg-amber-50',
-                  },
-                ].map(({ icon: Icon, label, value, color }) => (
+                {contactInformation.map(({ icon: Icon, label, value, color }) => (
                   <div key={label} className="flex items-start gap-4">
                     {/* Decorative icon color - giữ nguyên */}
                     <div
@@ -286,7 +348,7 @@ export default function Contact() {
                         className="text-sm whitespace-pre-line leading-relaxed"
                         style={{ color: 'var(--text-secondary)' }}
                       >
-                        {value}
+                        {generalInfoLoading ? 'Đang tải...' : value}
                       </div>
                     </div>
                   </div>
@@ -305,16 +367,25 @@ export default function Contact() {
                 borderColor: 'var(--border)',
               }}
             >
-              <iframe
-                title="Bản đồ vị trí CMS"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4602324215983!2d106.69463931533413!3d10.776019992321852!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3a61d19129%3A0xe96825dfa2202d5d!2zMTQxIEzDqiBEdeG6q24sIELhur9uIE5naMOpLCBRdeG6rW4gMSwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5o!5e0!3m2!1svi!2s!4v1670000000000!5m2!1svi!2s"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+              {generalInfo?.mapEmbedUrl ? (
+                <iframe
+                  title={`Bản đồ vị trí ${generalInfo.companyName || 'công ty'}`}
+                  src={generalInfo.mapEmbedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 flex items-center justify-center text-sm"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  Chưa cập nhật bản đồ
+                </div>
+              )}
             </div>
           </div>
 
@@ -351,8 +422,8 @@ export default function Contact() {
                     className="mb-6 max-w-md mx-auto text-sm"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    Cảm ơn bạn đã liên hệ. Đội ngũ CMS đã nhận được thông tin và sẽ phản hồi trong
-                    vòng 24 giờ làm việc.
+                    Cảm ơn bạn đã liên hệ. Đội ngũ {generalInfo?.companyName || 'CMS'} đã nhận được
+                    thông tin và sẽ phản hồi trong vòng 24 giờ làm việc.
                   </p>
 
                   <button
@@ -403,7 +474,6 @@ export default function Contact() {
                     }}
                   >
                     <AlertCircle size={14} className="shrink-0" />
-
                     <span>{serverError}</span>
                   </div>
                 )}
@@ -624,7 +694,8 @@ export default function Contact() {
                         <a href="#" className="hover:underline" style={{ color: 'var(--primary)' }}>
                           Chính sách bảo mật
                         </a>{' '}
-                        và cho phép CMS liên hệ với tôi theo thông tin đã cung cấp.
+                        và cho phép {generalInfo?.companyName || 'CMS'} liên hệ với tôi theo thông
+                        tin đã cung cấp.
                       </label>
                     </div>
 
@@ -660,7 +731,7 @@ export default function Contact() {
                     "
                     style={{
                       background: 'var(--primary)',
-                      color: 'white',
+                      color: 'var(--primary-foreground)',
                     }}
                   >
                     {loading ? (

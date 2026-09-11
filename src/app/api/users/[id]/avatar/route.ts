@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { userService } from '@/services/user.service';
-import { ApiError } from '@/utils/api-client';
+import { handleUserRouteError, parseUserId } from '../../_route-utils';
 
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function POST(request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
     const formData = await request.formData();
@@ -12,16 +14,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ message: 'Vui lòng chọn ảnh đại diện' }, { status: 400 });
     }
 
-    return NextResponse.json(await userService.uploadUserAvatar(Number(id), file), { status: 201 });
-  } catch (err) {
-    return handleRouteError(err);
+    const result = await userService.uploadUserAvatar(parseUserId(id), file);
+    return NextResponse.json(result, { status: 201 });
+  } catch (error) {
+    return handleUserRouteError(error);
   }
-}
-
-function handleRouteError(err: unknown) {
-  if (err instanceof ApiError) {
-    return NextResponse.json({ message: err.message }, { status: err.status });
-  }
-  const message = err instanceof Error ? err.message : 'Lỗi hệ thống';
-  return NextResponse.json({ message }, { status: 500 });
 }

@@ -1,36 +1,35 @@
 import { NextResponse } from 'next/server';
 import { userService } from '@/services/user.service';
-import { ApiError } from '@/utils/api-client';
+import { UserUpdateRequest } from '@/types/user.type';
+import { handleUserRouteError, parseUserId } from '../_route-utils';
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
-    const payload = await request.json();
-    return NextResponse.json(await userService.updateUser(Number(id), payload));
-  } catch (err) {
-    return handleRouteError(err);
+    return NextResponse.json(await userService.getUserById(parseUserId(id)));
+  } catch (error) {
+    return handleUserRouteError(error);
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
-    await userService.deleteUser(Number(id));
+    const payload = (await request.json()) as UserUpdateRequest;
+    return NextResponse.json(await userService.updateUser(parseUserId(id), payload));
+  } catch (error) {
+    return handleUserRouteError(error);
+  }
+}
+
+export async function DELETE(_request: Request, { params }: RouteContext) {
+  try {
+    const { id } = await params;
+    await userService.softDeleteUser(parseUserId(id));
     return new NextResponse(null, { status: 204 });
-  } catch (err) {
-    return handleRouteError(err);
+  } catch (error) {
+    return handleUserRouteError(error);
   }
-}
-
-function handleRouteError(err: unknown) {
-  if (err instanceof ApiError) {
-    const response = NextResponse.json({ message: err.message }, { status: err.status });
-    if (err.status === 401) {
-      response.cookies.delete('session_token');
-      response.cookies.delete('must_change_password');
-    }
-    return response;
-  }
-  const message = err instanceof Error ? err.message : 'Lỗi hệ thống';
-  return NextResponse.json({ message }, { status: 500 });
 }

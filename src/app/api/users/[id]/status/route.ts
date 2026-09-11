@@ -1,22 +1,17 @@
 import { NextResponse } from 'next/server';
 import { userService } from '@/services/user.service';
-import { ApiError } from '@/utils/api-client';
+import { UserStatus } from '@/types/user.type';
+import { handleUserRouteError, parseUserId } from '../../_route-utils';
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
-    const { status } = await request.json();
-    await userService.updateUserStatus(Number(id), status);
+    const { status } = (await request.json()) as { status: UserStatus };
+    await userService.updateUserStatus(parseUserId(id), status);
     return NextResponse.json({ message: 'Cập nhật trạng thái thành công' });
-  } catch (err) {
-    return handleRouteError(err);
+  } catch (error) {
+    return handleUserRouteError(error);
   }
-}
-
-function handleRouteError(err: unknown) {
-  if (err instanceof ApiError) {
-    return NextResponse.json({ message: err.message }, { status: err.status });
-  }
-  const message = err instanceof Error ? err.message : 'Lỗi hệ thống';
-  return NextResponse.json({ message }, { status: 500 });
 }

@@ -12,11 +12,21 @@ import {
   ShieldCheck,
   UserRound,
 } from 'lucide-react';
-import { ResUserDTO, UserCreatePayload } from '@/types';
+import { UserGender, UserResponse } from '@/types/user.type';
 import { calculateAge } from '@/utils/age';
 import { resolveAssetUrl } from '@/utils/asset-url';
 
 const DEFAULT_PASSWORD = '123456';
+
+type ProfileForm = {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  gender: UserGender;
+  dateOfBirth: string;
+  avatarUrl: string;
+};
 
 type PasswordForm = {
   oldPassword: string;
@@ -24,14 +34,14 @@ type PasswordForm = {
   confirmPassword: string;
 };
 
-const emptyProfileForm: UserCreatePayload = {
-  fullname: '',
+const emptyProfileForm: ProfileForm = {
+  fullName: '',
   email: '',
-  phone: '',
-  age: 0,
+  phoneNumber: '',
   address: '',
-  gender: 'OTHER',
+  gender: 'OTHERS',
   dateOfBirth: '',
+  avatarUrl: '',
 };
 
 const emptyPasswordForm: PasswordForm = {
@@ -41,8 +51,8 @@ const emptyPasswordForm: PasswordForm = {
 };
 
 export default function Profile() {
-  const [profile, setProfile] = useState<ResUserDTO | null>(null);
-  const [form, setForm] = useState<UserCreatePayload>(emptyProfileForm);
+  const [profile, setProfile] = useState<UserResponse | null>(null);
+  const [form, setForm] = useState<ProfileForm>(emptyProfileForm);
   const [passwordForm, setPasswordForm] = useState<PasswordForm>(emptyPasswordForm);
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -56,16 +66,15 @@ export default function Profile() {
 
     fetch('/api/auth/profile')
       .then(readJson)
-      .then((data: ResUserDTO) => {
+      .then((data: UserResponse) => {
         if (!active) return;
         setProfile(data);
         setForm({
-          fullname: data.fullname || '',
+          fullName: data.fullName || '',
           email: data.email,
-          phone: data.phone || '',
-          age: calculateAge(data.dateOfBirth),
+          phoneNumber: data.phoneNumber || '',
           address: data.address || '',
-          gender: data.gender || 'OTHER',
+          gender: data.gender || 'OTHERS',
           dateOfBirth: data.dateOfBirth || '',
           avatarUrl: data.avatarUrl || '',
         });
@@ -96,11 +105,11 @@ export default function Profile() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullname: form.fullname?.trim(),
-          phone: form.phone?.trim(),
+          fullname: form.fullName.trim(),
+          phone: form.phoneNumber.trim(),
           age: calculateAge(form.dateOfBirth),
           address: form.address?.trim(),
-          gender: form.gender || 'OTHER',
+          gender: form.gender,
           dateOfBirth: form.dateOfBirth || undefined,
         }),
       }).then(readJson);
@@ -197,17 +206,18 @@ export default function Profile() {
               <img
                 src={resolveAssetUrl(profile.avatarUrl)}
                 className="h-10 w-10 rounded-lg object-cover"
-                alt={profile.fullname}
+                alt={profile.fullName}
               />
             ) : (
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 font-bold text-blue-700">
-                {getInitial(profile.fullname)}
+                {getInitial(profile.fullName)}
               </div>
             )}
             <div>
               <div className="text-sm font-semibold text-slate-900">{profile.email}</div>
               <div className="text-xs text-slate-500">
-                {profile.employeeCode || 'Chưa có mã'} · {profile.role?.name || 'Chưa có vai trò'}
+                {profile.employeeCode || 'Chưa có mã'} ·{' '}
+                {profile.role?.roleName || 'Chưa có vai trò'}
               </div>
             </div>
           </div>
@@ -250,11 +260,11 @@ export default function Profile() {
                 <img
                   src={resolveAssetUrl(form.avatarUrl)}
                   className="h-20 w-20 rounded-lg object-cover"
-                  alt={form.fullname || 'Ảnh đại diện'}
+                  alt={form.fullName || 'Ảnh đại diện'}
                 />
               ) : (
                 <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-blue-100 text-xl font-bold text-blue-700">
-                  {getInitial(form.fullname || profile?.fullname || '')}
+                  {getInitial(form.fullName || profile?.fullName || '')}
                 </div>
               )}
               <div className="min-w-56 flex-1">
@@ -282,9 +292,9 @@ export default function Profile() {
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <Field label="Họ và tên">
                 <input
-                  value={form.fullname || ''}
+                  value={form.fullName || ''}
                   onChange={(event) =>
-                    setForm((value) => ({ ...value, fullname: event.target.value }))
+                    setForm((value) => ({ ...value, fullName: event.target.value }))
                   }
                   className={inputClass}
                   required
@@ -295,9 +305,9 @@ export default function Profile() {
               </Field>
               <Field label="Số điện thoại">
                 <input
-                  value={form.phone || ''}
+                  value={form.phoneNumber || ''}
                   onChange={(event) =>
-                    setForm((value) => ({ ...value, phone: event.target.value }))
+                    setForm((value) => ({ ...value, phoneNumber: event.target.value }))
                   }
                   className={inputClass}
                   placeholder="0900000000"
@@ -305,15 +315,15 @@ export default function Profile() {
               </Field>
               <Field label="Giới tính">
                 <select
-                  value={form.gender || 'OTHER'}
+                  value={form.gender}
                   onChange={(event) =>
-                    setForm((value) => ({ ...value, gender: event.target.value }))
+                    setForm((value) => ({ ...value, gender: event.target.value as UserGender }))
                   }
                   className={inputClass}
                 >
                   <option value="MALE">Nam</option>
                   <option value="FEMALE">Nữ</option>
-                  <option value="OTHER">Khác</option>
+                  <option value="OTHERS">Khác</option>
                 </select>
               </Field>
               <Field label="Ngày sinh">
