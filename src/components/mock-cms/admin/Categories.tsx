@@ -160,17 +160,11 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1
-            className="font-display text-xl font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h1 className="font-display text-xl font-bold" style={{ color: 'var(--text)' }}>
             Quản lý Danh mục
           </h1>
 
-          <p
-            className="text-sm mt-0.5"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
             Quản lý danh mục và thẻ từ khóa bài viết
           </p>
         </div>
@@ -206,9 +200,7 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
               setError('');
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === key
-                ? 'shadow-sm'
-                : 'hover:opacity-80'
+              activeTab === key ? 'shadow-sm' : 'hover:opacity-80'
             }`}
             style={
               activeTab === key
@@ -241,20 +233,14 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
               borderColor: 'var(--border)',
             }}
           >
-            <h3
-              className="text-sm font-semibold"
-              style={{ color: 'var(--text-secondary)' }}
-            >
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
               {activeTab === 'categories' ? 'Danh sách danh mục' : 'Danh sách thẻ'}
             </h3>
           </div>
 
           <div className="p-2 min-h-40">
             {loading ? (
-              <div
-                className="p-8 text-center text-sm"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              <div className="p-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
                 Đang tải dữ liệu...
               </div>
             ) : activeTab === 'categories' ? (
@@ -267,10 +253,7 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                   >
                     <span className="w-5 shrink-0" />
 
-                    <Folder
-                      size={15}
-                      className="text-amber-500 shrink-0"
-                    />
+                    <Folder size={15} className="text-amber-500 shrink-0" />
 
                     <span
                       className="flex-1 text-sm font-medium"
@@ -315,10 +298,7 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                   </div>
                 ))
               ) : (
-                <div
-                  className="p-8 text-center text-sm"
-                  style={{ color: 'var(--text-muted)' }}
-                >
+                <div className="p-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
                   Chưa có danh mục.
                 </div>
               )
@@ -332,15 +312,9 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                       background: 'var(--surface-secondary)',
                     }}
                   >
-                    <TagIcon
-                      size={12}
-                      style={{ color: 'var(--text-muted)' }}
-                    />
+                    <TagIcon size={12} style={{ color: 'var(--text-muted)' }} />
 
-                    <span
-                      className="text-sm"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
+                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                       {item.tagName}
                     </span>
 
@@ -367,10 +341,7 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                 ))}
               </div>
             ) : (
-              <div
-                className="p-8 text-center text-sm"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              <div className="p-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
                 Chưa có thẻ.
               </div>
             )}
@@ -385,10 +356,7 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
               borderColor: 'var(--border)',
             }}
           >
-            <h3
-              className="text-sm font-semibold mb-4"
-              style={{ color: 'var(--text)' }}
-            >
+            <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text)' }}>
               {activeTab === 'categories'
                 ? editingCategory
                   ? 'Đổi tên danh mục'
@@ -440,10 +408,7 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
                 />
 
                 {editingCategory && (
-                  <p
-                    className="text-[11px] mt-1.5"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
+                  <p className="text-[11px] mt-1.5" style={{ color: 'var(--text-muted)' }}>
                     Backend hiện chỉ hỗ trợ đổi tên, không đổi slug.
                   </p>
                 )}
@@ -494,30 +459,18 @@ export default function Categories({ initialTab = 'categories' }: CategoriesProp
               borderColor: 'var(--border)',
             }}
           >
-            <h3
-              className="text-sm font-semibold mb-3"
-              style={{ color: 'var(--text)' }}
-            >
+            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>
               Thống kê
             </h3>
 
             <div className="space-y-2.5">
               {stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="flex justify-between items-center"
-                >
-                  <span
-                    className="text-sm"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
+                <div key={stat.label} className="flex justify-between items-center">
+                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                     {stat.label}
                   </span>
 
-                  <span
-                    className="text-sm font-bold font-mono"
-                    style={{ color: 'var(--text)' }}
-                  >
+                  <span className="text-sm font-bold font-mono" style={{ color: 'var(--text)' }}>
                     {stat.value}
                   </span>
                 </div>

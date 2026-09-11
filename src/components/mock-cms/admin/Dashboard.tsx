@@ -101,17 +101,11 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-20 font-['Plus_Jakarta_Sans']">
       <div>
-        <h1
-          className="text-2xl font-bold"
-          style={{ color: 'var(--text)' }}
-        >
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
           Tổng quan hệ thống
         </h1>
 
-        <p
-          className="mt-1"
-          style={{ color: 'var(--text-muted)' }}
-        >
+        <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
           Theo dõi các chỉ số quan trọng và hoạt động gần đây của nền tảng.
         </p>
       </div>
@@ -139,26 +133,16 @@ export default function Dashboard() {
               >
                 {metric.change}
 
-                {metric.up ? (
-                  <TrendingUp size={16} />
-                ) : (
-                  <TrendingDown size={16} />
-                )}
+                {metric.up ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
               </div>
             </div>
 
             <div className="mt-4">
-              <h3
-                className="text-3xl font-bold"
-                style={{ color: 'var(--text)' }}
-              >
+              <h3 className="text-3xl font-bold" style={{ color: 'var(--text)' }}>
                 {metric.value}
               </h3>
 
-              <p
-                className="mt-1 text-sm"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                 {metric.label}
               </p>
             </div>
@@ -176,17 +160,11 @@ export default function Dashboard() {
       >
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text)' }}>
               Lưu lượng truy cập tuần qua
             </h2>
 
-            <p
-              className="mt-1 text-sm"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
               Số lượt truy cập website phân bổ theo các ngày trong tuần.
             </p>
 
@@ -194,20 +172,14 @@ export default function Dashboard() {
             <div className="mt-4 flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-blue-100" />
-                <span
-                  className="text-sm"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
+                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   Tổng lượt truy cập
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-blue-600" />
-                <span
-                  className="text-sm"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
+                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   Người dùng mới
                 </span>
               </div>
@@ -229,10 +201,7 @@ export default function Dashboard() {
         {/* CSS-based Bar Chart */}
         <div className="mt-4 flex h-64 items-end justify-between gap-2 px-2">
           {chartData.map((d, i) => (
-            <div
-              key={i}
-              className="group flex w-full flex-col items-center"
-            >
+            <div key={i} className="group flex w-full flex-col items-center">
               <div className="relative flex h-52 w-full justify-center">
                 <div
                   className="relative w-full max-w-[4rem] cursor-pointer rounded-t-xl bg-blue-100 transition-all duration-500 group-hover:bg-blue-200"
@@ -282,17 +251,11 @@ export default function Dashboard() {
           className="flex items-center justify-between border-b p-6"
           style={{ borderColor: 'var(--border)' }}
         >
-          <h2
-            className="text-lg font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h2 className="text-lg font-bold" style={{ color: 'var(--text)' }}>
             Hoạt động gần đây
           </h2>
 
-          <button
-            type="button"
-            className="text-sm font-medium text-blue-600 hover:text-blue-700"
-          >
+          <button type="button" className="text-sm font-medium text-blue-600 hover:text-blue-700">
             Xem tất cả
           </button>
         </div>
@@ -301,28 +264,38 @@ export default function Dashboard() {
           <table className="w-full border-collapse text-left">
             <thead>
               <tr style={{ background: 'var(--surface-secondary)' }}>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: 'var(--text-muted)' }}>
+                <th
+                  className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Người thực hiện
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: 'var(--text-muted)' }}>
+                <th
+                  className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Hành động
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: 'var(--text-muted)' }}>
+                <th
+                  className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Đối tượng
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: 'var(--text-muted)' }}>
+                <th
+                  className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Thời gian
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: 'var(--text-muted)' }}>
+                <th
+                  className="px-6 py-4 text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Trạng thái
                 </th>
 
@@ -343,10 +316,7 @@ export default function Dashboard() {
                         {act.user.charAt(0)}
                       </div>
 
-                      <span
-                        className="text-sm font-semibold"
-                        style={{ color: 'var(--text)' }}
-                      >
+                      <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
                         {act.user}
                       </span>
                     </div>
@@ -381,10 +351,7 @@ export default function Dashboard() {
                           act.status === 'Hoàn tất'
                             ? 'var(--success-light)'
                             : 'var(--warning-light)',
-                        color:
-                          act.status === 'Hoàn tất'
-                            ? 'var(--success)'
-                            : 'var(--warning)',
+                        color: act.status === 'Hoàn tất' ? 'var(--success)' : 'var(--warning)',
                       }}
                     >
                       {act.status}
@@ -392,10 +359,7 @@ export default function Dashboard() {
                   </td>
 
                   <td className="whitespace-nowrap px-6 py-4 text-right">
-                    <button
-                      type="button"
-                      className="text-slate-400 hover:text-slate-600"
-                    >
+                    <button type="button" className="text-slate-400 hover:text-slate-600">
                       <MoreHorizontal size={20} />
                     </button>
                   </td>
