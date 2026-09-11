@@ -121,7 +121,7 @@ export default function Contact() {
 
     if (!form.email.trim()) {
       e.email = 'Vui lòng nhập địa chỉ email';
-    } else if (!/^[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       e.email = 'Địa chỉ email không hợp lệ';
     }
 

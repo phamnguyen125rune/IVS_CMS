@@ -1,349 +1,1421 @@
 'use client';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Eye,
+  Loader2,
+  Reply,
+  Search,
+  Send,
+  Trash2,
+  X,
+} from 'lucide-react';
 
-import { useState } from 'react';
-import { Search, Eye, Trash2, X, Reply, Clock, CheckCircle, AlertCircle, Send } from 'lucide-react';
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type FormEvent,
+} from 'react';
 
-// Đổi thành initialContacts để dùng làm giá trị khởi tạo cho State
-const initialContacts = [
-  {
-    id: 1,
-    name: 'Nguyễn Hoàng Nam',
-    email: 'nam.nguyen@techstart.vn',
-    phone: '0908 765 432',
-    company: 'TechStart Vietnam',
-    subject: 'Tư vấn giải pháp phần mềm ERP',
-    message:
-      'Kính gửi Quý công ty, chúng tôi đang tìm kiếm một giải pháp ERP phù hợp với quy mô 200 nhân viên. Mong được tư vấn cụ thể về chi phí và thời gian triển khai.',
-    status: 'new',
-    date: '14/07/2024 09:30',
-  },
-  {
-    id: 2,
-    name: 'Trần Thị Bảo Châu',
-    email: 'chau.tran@retailvn.com',
-    phone: '0912 345 678',
-    company: 'RetailVN Corporation',
-    subject: 'Hợp tác phát triển ứng dụng thương mại điện tử',
-    message:
-      'Chúng tôi muốn phát triển nền tảng thương mại điện tử B2B riêng. Mong được trao đổi về năng lực và kinh nghiệm của CMS trong lĩnh vực này.',
-    status: 'read',
-    date: '13/07/2024 15:45',
-  },
-  {
-    id: 3,
-    name: 'Lê Minh Đức',
-    email: 'duc.le@fintech.io',
-    phone: '0934 567 890',
-    company: 'FinTech Solutions',
-    subject: 'Bảo mật hệ thống thanh toán trực tuyến',
-    message:
-      'Chúng tôi cần kiểm tra và nâng cấp hệ thống bảo mật thanh toán hiện tại. Hãy cho chúng tôi biết về dịch vụ security audit của CMS.',
-    status: 'replied',
-    date: '12/07/2024 11:20',
-  },
-  {
-    id: 4,
-    name: 'Phạm Văn Khoa',
-    email: 'khoa.pham@logistics.vn',
-    phone: '0946 789 012',
-    company: 'VN Logistics Group',
-    subject: 'Hệ thống quản lý kho bãi thông minh',
-    message:
-      'Doanh nghiệp chúng tôi cần giải pháp WMS (Warehouse Management System) tích hợp với các đối tác vận chuyển. Mong nhận được báo giá chi tiết.',
-    status: 'new',
-    date: '11/07/2024 08:15',
-  },
-  {
-    id: 5,
-    name: 'Ngô Thanh Huyền',
-    email: 'huyen.ngo@education.vn',
-    phone: '0958 901 234',
-    company: 'EduTech Vietnam',
-    subject: 'Nền tảng học trực tuyến cho doanh nghiệp',
-    message:
-      'Chúng tôi muốn xây dựng hệ thống LMS (Learning Management System) cho 500 nhân viên. Cần tư vấn về kiến trúc hệ thống và phương án triển khai.',
-    status: 'read',
-    date: '10/07/2024 14:00',
-  },
-];
+import { FormDetailService } from '@/services/contact.service';
 
-const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
-  new: { label: 'Mới', color: 'bg-blue-100 text-blue-700', icon: AlertCircle },
-  read: { label: 'Đã xem', color: 'bg-slate-100 text-slate-600', icon: Eye },
+import type {
+  FormDetail,
+  FormDetailPaginationResponse,
+  SingleFormDetailResponse,
+} from '@/types/contact.type';
+
+/* =========================================================
+   STATUS CONFIG
+========================================================= */
+
+const statusConfig: Record<
+  string,
+  {
+    label: string;
+    className: string;
+    icon: typeof AlertCircle;
+  }
+> = {
+  new: {
+    label: 'Mới',
+    className:
+      'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    icon: AlertCircle,
+  },
+
+  read: {
+    label: 'Đã xem',
+    className:
+      'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+    icon: Eye,
+  },
+
   replied: {
     label: 'Đã phản hồi',
-    color: 'bg-emerald-100 text-emerald-700',
+    className:
+      'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
     icon: CheckCircle,
   },
 };
 
-export default function Contacts() {
-  const [contactList, setContactList] = useState(initialContacts);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('Tất cả');
+/* =========================================================
+   HELPERS
+========================================================= */
 
-  // States quản lý Modal
-  const [viewContact, setViewContact] = useState<(typeof initialContacts)[0] | null>(null);
-  const [replyContact, setReplyContact] = useState<(typeof initialContacts)[0] | null>(null);
-  const [deleteContact, setDeleteContact] = useState<(typeof initialContacts)[0] | null>(null);
+function getStatus(contact: FormDetail) {
+  return contact.status?.toLowerCase() || 'new';
+}
 
-  // Lọc dữ liệu
-  const filtered = contactList.filter((c) => {
-    const matchSearch =
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase()) ||
-      c.subject.toLowerCase().includes(search.toLowerCase());
-    const matchStatus =
-      statusFilter === 'Tất cả' ||
-      (statusFilter === 'Mới'
-        ? c.status === 'new'
-        : statusFilter === 'Đã xem'
-          ? c.status === 'read'
-          : c.status === 'replied');
-    return matchSearch && matchStatus;
+function formatDate(value?: string) {
+  if (!value) {
+    return '—';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
+}
 
-  // Đánh dấu đã xem khi mở Modal Xem
-  const handleView = (contact: (typeof initialContacts)[0]) => {
+/* =========================================================
+   COMPONENT
+========================================================= */
+
+export default function Contacts() {
+  /* =======================================================
+     LIST STATE
+  ======================================================== */
+
+  const [contactList, setContactList] = useState<FormDetail[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState<string | null>(null);
+
+  /* =======================================================
+     FILTER
+  ======================================================== */
+
+  const [search, setSearch] = useState('');
+
+  const [statusFilter, setStatusFilter] = useState('ALL');
+
+  const [page, setPage] = useState(1);
+
+  const [pageSize] = useState(10);
+
+  const [totalElements, setTotalElements] = useState(0);
+
+  /* =======================================================
+     MODALS
+  ======================================================== */
+
+  const [viewContact, setViewContact] = useState<FormDetail | null>(
+    null
+  );
+
+  const [replyContact, setReplyContact] = useState<FormDetail | null>(
+    null
+  );
+
+  const [deleteContact, setDeleteContact] =
+    useState<FormDetail | null>(null);
+
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const [replyMessage, setReplyMessage] = useState('');
+
+  /* =======================================================
+     FETCH LIST
+  ======================================================== */
+
+  const fetchContacts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response =
+        await FormDetailService.getFormDetails(
+          page,
+          pageSize,
+          statusFilter,
+          search
+        );
+
+      /*
+       * Backend response:
+       *
+       * {
+       *   statusCode: 200,
+       *   error: null,
+       *   message: "...",
+       *   data: {
+       *     meta: {
+       *       page: 1,
+       *       pageSize: 10,
+       *       pages: 1,
+       *       total: 2
+       *     },
+       *     result: [...]
+       *   }
+       * }
+       */
+
+      const data = response.data;
+
+      const contacts = data?.result ?? [];
+
+      setContactList(contacts);
+
+      setTotalElements(data?.meta?.total ?? contacts.length);
+    } catch (err: unknown) {
+      console.error(
+        'Lỗi khi tải danh sách form:',
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Không thể tải danh sách biểu mẫu.'
+      );
+
+      setContactList([]);
+      setTotalElements(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    page,
+    pageSize,
+    statusFilter,
+    search,
+  ]);
+
+  /* =======================================================
+     LOAD
+  ======================================================== */
+
+  useEffect(() => {
+    fetchContacts();
+  }, [fetchContacts]);
+
+  /* =======================================================
+     SEARCH
+  ======================================================== */
+
+  const handleSearchChange = (
+    value: string
+  ) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  /* =======================================================
+     STATUS FILTER
+  ======================================================== */
+
+  const handleStatusFilter = (
+    status: string
+  ) => {
+    setStatusFilter(status);
+    setPage(1);
+  };
+
+  /* =======================================================
+     VIEW DETAIL
+  ======================================================== */
+
+  const handleView = async (
+    contact: FormDetail
+  ) => {
+    const id = contact.formId;
+
+    if (!id) {
+      return;
+    }
+
     setViewContact(contact);
-    if (contact.status === 'new') {
-      setContactList((prev) =>
-        prev.map((c) => (c.id === contact.id ? { ...c, status: 'read' } : c))
+    setDetailLoading(true);
+
+    try {
+      const response =
+        await FormDetailService.getFormDetailById(
+          id
+        );
+
+      /*
+       * Backend:
+       *
+       * {
+       *   statusCode: 200,
+       *   message: "...",
+       *   data: FormDetail
+       * }
+       */
+
+      const detail =
+        response.data;
+
+      if (detail) {
+        setViewContact(detail);
+      }
+
+      /*
+       * NEW -> READ
+       *
+       * Backend đang sử dụng status lowercase.
+       */
+      if (
+        contact.status?.toLowerCase() ===
+        'new'
+      ) {
+        await FormDetailService.updateFormDetailStatus(
+          id,
+          'read'
+        );
+
+        /*
+         * Reload danh sách để cập nhật badge.
+         */
+        await fetchContacts();
+      }
+    } catch (err) {
+      console.error(
+        'Lỗi khi lấy chi tiết form:',
+        err
       );
+    } finally {
+      setDetailLoading(false);
     }
   };
 
-  // Xử lý gửi phản hồi
-  const handleSendReply = (e: React.FormEvent<HTMLFormElement>) => {
+  /* =======================================================
+     REPLY
+  ======================================================== */
+
+  const handleOpenReply = (
+    contact: FormDetail
+  ) => {
+    setReplyContact(contact);
+    setReplyMessage('');
+  };
+
+  const handleSendReply = async (
+    e: FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    if (replyContact) {
-      setContactList((prev) =>
-        prev.map((c) => (c.id === replyContact.id ? { ...c, status: 'replied' } : c))
+
+    if (!replyContact) {
+      return;
+    }
+
+    const id = replyContact.formId;
+
+    if (!id || !replyMessage.trim()) {
+      return;
+    }
+
+    setActionLoading(true);
+
+    try {
+      await FormDetailService.replyFormDetail(
+        id,
+        replyMessage.trim()
       );
+
       setReplyContact(null);
+      setReplyMessage('');
+
+      await fetchContacts();
+    } catch (err: unknown) {
+      console.error(
+        'Lỗi khi phản hồi form:',
+        err
+      );
+
+      alert(
+        err instanceof Error
+          ? err.message
+          : 'Gửi phản hồi thất bại.'
+      );
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  // Xử lý xóa
-  const handleDelete = () => {
-    if (deleteContact) {
-      setContactList((prev) => prev.filter((c) => c.id !== deleteContact.id));
+  /* =======================================================
+     DELETE
+  ======================================================== */
+
+  const handleDelete = async () => {
+    if (!deleteContact) {
+      return;
+    }
+
+    const id = deleteContact.formId;
+
+    if (!id) {
+      return;
+    }
+
+    setActionLoading(true);
+
+    try {
+      await FormDetailService.deleteFormDetail(
+        id
+      );
+
       setDeleteContact(null);
+
+      /*
+       * Reload dữ liệu sau khi xóa.
+       */
+      await fetchContacts();
+    } catch (err: unknown) {
+      console.error(
+        'Lỗi khi xóa form:',
+        err
+      );
+
+      alert(
+        err instanceof Error
+          ? err.message
+          : 'Xóa biểu mẫu thất bại.'
+      );
+    } finally {
+      setActionLoading(false);
     }
   };
+
+  /* =======================================================
+     NEW COUNT
+  ======================================================== */
+
+  const newCount =
+    contactList.filter(
+      (contact) =>
+        contact.status?.toLowerCase() ===
+        'new'
+    ).length;
+
+  /* =======================================================
+     PAGINATION
+  ======================================================== */
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(
+      totalElements / pageSize
+    )
+  );
+
+  /* =======================================================
+     RENDER
+  ======================================================== */
 
   return (
-    <div className="p-6 relative">
-      <div className="flex items-center justify-between mb-6">
+    <div
+      className="relative p-6"
+      style={{
+        color: 'var(--text)',
+      }}
+    >
+      {/* =================================================
+          HEADER
+      ================================================== */}
+
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-xl font-bold text-slate-900">Quản lý Biểu mẫu</h1>
-          <p className="text-slate-500 text-sm mt-0.5">
-            {contactList.filter((c) => c.status === 'new').length} biểu mẫu mới chờ xử lý
+          <h1
+            className="
+              font-display text-xl
+              font-bold
+            "
+            style={{
+              color: 'var(--text)',
+            }}
+          >
+            Quản lý Biểu mẫu
+          </h1>
+
+          <p
+            className="mt-0.5 text-sm"
+            style={{
+              color:
+                'var(--text-secondary)',
+            }}
+          >
+            {newCount} biểu mẫu mới
+            chờ xử lý
           </p>
         </div>
       </div>
 
-      {/* Filters */}
+      {/* =================================================
+          ERROR
+      ================================================== */}
+
+      {error && (
+        <div
+          className="
+            mb-5 flex items-center gap-2
+            rounded-xl border px-4 py-3
+            text-sm
+          "
+          style={{
+            background:
+              'var(--error-light)',
+            borderColor:
+              'var(--error)',
+            color:
+              'var(--error)',
+          }}
+        >
+          <AlertCircle size={16} />
+
+          <span>{error}</span>
+
+          <button
+            type="button"
+            onClick={fetchContacts}
+            className="
+              ml-auto rounded-lg
+              px-3 py-1.5 text-xs
+              font-semibold
+            "
+            style={{
+              background:
+                'var(--surface)',
+              color: 'var(--text)',
+            }}
+          >
+            Thử lại
+          </button>
+        </div>
+      )}
+
+      {/* =================================================
+          FILTERS
+      ================================================== */}
+
       <div
-        className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3"
-        style={{ borderColor: 'var(--border)' }}
+        className="
+          mb-5 flex flex-wrap gap-3
+          rounded-xl border p-4
+        "
+        style={{
+          background:
+            'var(--surface)',
+          borderColor:
+            'var(--border)',
+        }}
       >
-        <div className="flex-1 min-w-48 relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <div
+          className="
+            relative min-w-48 flex-1
+          "
+        >
+          <Search
+            size={15}
+            className="
+              absolute left-3 top-1/2
+              -translate-y-1/2
+            "
+            style={{
+              color:
+                'var(--text-muted)',
+            }}
+          />
+
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm theo tên, email, chủ đề..."
-            className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
-            style={{ borderColor: 'var(--border)' }}
+            onChange={(e) =>
+              handleSearchChange(
+                e.target.value
+              )
+            }
+            placeholder="Tìm theo tên, email..."
+            className="
+              w-full rounded-lg
+              border py-2 pl-9 pr-3
+              text-sm outline-none
+              focus:border-[var(--primary)]
+            "
+            style={{
+              background:
+                'var(--surface)',
+              color:
+                'var(--text)',
+              borderColor:
+                'var(--border)',
+            }}
           />
         </div>
+
         <div className="flex gap-1">
-          {['Tất cả', 'Mới', 'Đã xem', 'Đã phản hồi'].map((s) => (
+          {[
+            {
+              value: 'ALL',
+              label: 'Tất cả',
+            },
+            {
+              value: 'new',
+              label: 'Mới',
+            },
+            {
+              value: 'read',
+              label: 'Đã xem',
+            },
+            {
+              value: 'replied',
+              label: 'Đã phản hồi',
+            },
+          ].map((item) => (
             <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${statusFilter === s ? 'text-white' : 'text-slate-500 hover:bg-slate-100'}`}
-              style={statusFilter === s ? { background: 'var(--primary)' } : {}}
+              key={item.value}
+              type="button"
+              onClick={() =>
+                handleStatusFilter(
+                  item.value
+                )
+              }
+              className="
+                rounded-lg px-3 py-2
+                text-xs font-medium
+                transition-colors
+              "
+              style={
+                statusFilter ===
+                item.value
+                  ? {
+                      background:
+                        'var(--primary)',
+                      color:
+                        'var(--primary-foreground)',
+                    }
+                  : {
+                      color:
+                        'var(--text-secondary)',
+                    }
+              }
             >
-              {s}
+              {item.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Table */}
+      {/* =================================================
+          TABLE
+      ================================================== */}
+
       <div
-        className="bg-white rounded-xl border overflow-hidden"
-        style={{ borderColor: 'var(--border)' }}
+        className="
+          overflow-hidden rounded-xl
+          border
+        "
+        style={{
+          background:
+            'var(--surface)',
+          borderColor:
+            'var(--border)',
+        }}
       >
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Người liên hệ
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Chủ đề
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Trạng thái
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Thời gian
-              </th>
-              <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Hành động
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length > 0 ? (
-              filtered.map((contact) => {
-                const sc = statusConfig[contact.status];
-                return (
-                  <tr
-                    key={contact.id}
-                    className="border-t hover:bg-slate-50 transition-colors"
-                    style={{ borderColor: 'var(--border)' }}
-                  >
-                    <td className="px-5 py-3.5">
-                      <div className="font-medium text-slate-800">{contact.name}</div>
-                      <div className="text-xs text-slate-400">
-                        {contact.email} · {contact.company}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <div className="text-slate-700 max-w-xs truncate" title={contact.subject}>
-                        {contact.subject}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span
-                        className={`text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${sc.color}`}
-                      >
-                        {sc.label}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 whitespace-nowrap">
-                        <Clock size={11} />
-                        {contact.date}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => handleView(contact)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                          title="Xem chi tiết"
-                        >
-                          <Eye size={14} />
-                        </button>
-                        <button
-                          onClick={() => setReplyContact(contact)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                          title="Phản hồi"
-                        >
-                          <Reply size={14} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteContact(contact)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                          title="Xóa liên hệ"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={5} className="px-5 py-10 text-center text-slate-500">
-                  Không tìm thấy liên hệ nào.
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr
+                className="border-b"
+                style={{
+                  background:
+                    'var(--surface-secondary)',
+                  borderColor:
+                    'var(--border)',
+                }}
+              >
+                <th
+                  className="
+                    px-5 py-3 text-left
+                    text-xs font-semibold
+                    uppercase tracking-wide
+                  "
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  Người liên hệ
+                </th>
+
+                <th
+                  className="
+                    px-5 py-3 text-left
+                    text-xs font-semibold
+                    uppercase tracking-wide
+                  "
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  Mã biểu mẫu
+                </th>
+
+                <th
+                  className="
+                    px-5 py-3 text-left
+                    text-xs font-semibold
+                    uppercase tracking-wide
+                  "
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  Trạng thái
+                </th>
+
+                <th
+                  className="
+                    px-5 py-3 text-left
+                    text-xs font-semibold
+                    uppercase tracking-wide
+                  "
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  Thời gian
+                </th>
+
+                <th
+                  className="
+                    px-5 py-3 text-right
+                    text-xs font-semibold
+                    uppercase tracking-wide
+                  "
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  Hành động
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {/* =================================================
+                  LOADING
+              ================================================== */}
+
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-5 py-14"
+                  >
+                    <div
+                      className="
+                        flex flex-col
+                        items-center
+                        justify-center
+                        gap-3
+                      "
+                      style={{
+                        color:
+                          'var(--text-muted)',
+                      }}
+                    >
+                      <Loader2
+                        size={24}
+                        className="animate-spin"
+                      />
+
+                      <span className="text-sm">
+                        Đang tải danh sách
+                        biểu mẫu...
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ) : contactList.length > 0 ? (
+                contactList.map(
+                  (contact) => {
+                    const status =
+                      getStatus(contact);
+
+                    const config =
+                      statusConfig[
+                        status
+                      ] ??
+                      statusConfig.new;
+
+                    const StatusIcon =
+                      config.icon;
+
+                    return (
+                      <tr
+                        key={contact.formId}
+                        className="
+                          border-t
+                          transition-colors
+                        "
+                        style={{
+                          borderColor:
+                            'var(--border)',
+                        }}
+                      >
+                        {/* CONTACT */}
+
+                        <td className="px-5 py-3.5">
+                          <div
+                            className="
+                              font-medium
+                            "
+                            style={{
+                              color:
+                                'var(--text)',
+                            }}
+                          >
+                            {contact.fullName ||
+                              'Không có tên'}
+                          </div>
+
+                          <div
+                            className="text-xs"
+                            style={{
+                              color:
+                                'var(--text-muted)',
+                            }}
+                          >
+                            {contact.email ||
+                              '—'}
+
+                            {' · '}
+
+                            {contact.company ||
+                              '—'}
+                          </div>
+
+                          <div
+                            className="mt-0.5 text-xs"
+                            style={{
+                              color:
+                                'var(--text-muted)',
+                            }}
+                          >
+                            {contact.phoneNumber ||
+                              '—'}
+                          </div>
+                        </td>
+
+                        {/* FORM CODE */}
+
+                        <td className="px-5 py-3.5">
+                          <div
+                            className="
+                              max-w-xs truncate
+                              font-medium
+                            "
+                            title={
+                              contact.formCode
+                            }
+                            style={{
+                              color:
+                                'var(--text-secondary)',
+                            }}
+                          >
+                            {contact.formCode ||
+                              '—'}
+                          </div>
+
+                          <div
+                            className="
+                              mt-1 max-w-xs
+                              truncate text-xs
+                            "
+                            title={
+                              contact.message
+                            }
+                            style={{
+                              color:
+                                'var(--text-muted)',
+                            }}
+                          >
+                            {contact.message ||
+                              '—'}
+                          </div>
+                        </td>
+
+                        {/* STATUS */}
+
+                        <td className="px-5 py-3.5">
+                          <span
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              whitespace-nowrap
+                              rounded-full
+                              px-2.5 py-1
+                              text-xs
+                              font-medium
+                              ${config.className}
+                            `}
+                          >
+                            <StatusIcon
+                              size={12}
+                            />
+
+                            {config.label}
+                          </span>
+                        </td>
+
+                        {/* DATE */}
+
+                        <td className="px-5 py-3.5">
+                          <div
+                            className="
+                              flex items-center
+                              gap-1.5
+                              whitespace-nowrap
+                              text-xs
+                            "
+                            style={{
+                              color:
+                                'var(--text-muted)',
+                            }}
+                          >
+                            <Clock size={11} />
+
+                            {formatDate(
+                              contact.createdAt
+                            )}
+                          </div>
+                        </td>
+
+                        {/* ACTIONS */}
+
+                        <td className="px-5 py-3.5">
+                          <div
+                            className="
+                              flex items-center
+                              justify-end gap-1
+                            "
+                          >
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleView(
+                                  contact
+                                )
+                              }
+                              className="
+                                rounded-lg p-1.5
+                                transition-colors
+                                hover:bg-[var(--hover)]
+                              "
+                              style={{
+                                color:
+                                  'var(--text-muted)',
+                              }}
+                              title="Xem chi tiết"
+                            >
+                              <Eye size={14} />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleOpenReply(
+                                  contact
+                                )
+                              }
+                              className="
+                                rounded-lg p-1.5
+                                transition-colors
+                                hover:bg-[var(--hover)]
+                              "
+                              style={{
+                                color:
+                                  'var(--text-muted)',
+                              }}
+                              title="Phản hồi"
+                            >
+                              <Reply
+                                size={14}
+                              />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setDeleteContact(
+                                  contact
+                                )
+                              }
+                              className="
+                                rounded-lg p-1.5
+                                transition-colors
+                                hover:bg-[var(--hover)]
+                              "
+                              style={{
+                                color:
+                                  'var(--text-muted)',
+                              }}
+                              title="Xóa biểu mẫu"
+                            >
+                              <Trash2
+                                size={14}
+                              />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                )
+              ) : (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="
+                      px-5 py-12
+                      text-center
+                    "
+                  >
+                    <div
+                      style={{
+                        color:
+                          'var(--text-muted)',
+                      }}
+                    >
+                      Không tìm thấy biểu
+                      mẫu nào.
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* =================================================
+            PAGINATION
+        ================================================== */}
+
+        {!loading &&
+          contactList.length > 0 && (
+            <div
+              className="
+                flex items-center
+                justify-between
+                border-t px-5 py-3
+              "
+              style={{
+                borderColor:
+                  'var(--border)',
+                background:
+                  'var(--surface-secondary)',
+              }}
+            >
+              <span
+                className="text-xs"
+                style={{
+                  color:
+                    'var(--text-muted)',
+                }}
+              >
+                Trang {page} / {totalPages}
+                {' · '}
+                {totalElements} biểu mẫu
+              </span>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={page <= 1}
+                  onClick={() =>
+                    setPage(
+                      (prev) =>
+                        Math.max(
+                          1,
+                          prev - 1
+                        )
+                    )
+                  }
+                  className="
+                    rounded-lg border
+                    px-3 py-1.5
+                    text-xs
+                    disabled:cursor-not-allowed
+                    disabled:opacity-40
+                  "
+                  style={{
+                    borderColor:
+                      'var(--border)',
+                    color:
+                      'var(--text-secondary)',
+                  }}
+                >
+                  Trước
+                </button>
+
+                <button
+                  type="button"
+                  disabled={
+                    page >= totalPages
+                  }
+                  onClick={() =>
+                    setPage(
+                      (prev) =>
+                        Math.min(
+                          totalPages,
+                          prev + 1
+                        )
+                    )
+                  }
+                  className="
+                    rounded-lg border
+                    px-3 py-1.5
+                    text-xs
+                    disabled:cursor-not-allowed
+                    disabled:opacity-40
+                  "
+                  style={{
+                    borderColor:
+                      'var(--border)',
+                    color:
+                      'var(--text-secondary)',
+                  }}
+                >
+                  Sau
+                </button>
+              </div>
+            </div>
+          )}
       </div>
 
-      {/* ================= MODALS ================= */}
+      {/* =================================================
+          VIEW DETAIL MODAL
+      ================================================== */}
 
-      {/* 1. Modal Xem Chi Tiết */}
       {viewContact && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-          onClick={() => setViewContact(null)}
+          className="
+            fixed inset-0 z-50
+            flex items-center
+            justify-center
+            bg-black/40 p-4
+            backdrop-blur-sm
+          "
+          onClick={() =>
+            setViewContact(null)
+          }
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-xl"
-            onClick={(e) => e.stopPropagation()}
+            className="
+              w-full max-w-xl
+              overflow-hidden
+              rounded-2xl
+              shadow-2xl
+            "
+            style={{
+              background:
+                'var(--surface)',
+            }}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
+            {/* HEADER */}
+
             <div
-              className="flex items-center justify-between px-6 py-4 border-b"
-              style={{ borderColor: 'var(--border)' }}
+              className="
+                flex items-center
+                justify-between
+                border-b px-6 py-4
+              "
+              style={{
+                borderColor:
+                  'var(--border)',
+              }}
             >
-              <h3 className="font-display font-bold text-slate-900 text-lg">Chi tiết biểu mẫu</h3>
+              <div>
+                <h3
+                  className="
+                    font-display text-lg
+                    font-bold
+                  "
+                  style={{
+                    color:
+                      'var(--text)',
+                  }}
+                >
+                  Chi tiết biểu mẫu
+                </h3>
+
+                <p
+                  className="mt-0.5 text-xs"
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  {viewContact.formCode}
+                </p>
+              </div>
+
               <button
-                onClick={() => setViewContact(null)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition-colors"
+                type="button"
+                onClick={() =>
+                  setViewContact(null)
+                }
+                className="rounded-lg p-1.5"
+                style={{
+                  color:
+                    'var(--text-muted)',
+                }}
               >
                 <X size={18} />
               </button>
             </div>
-            <div className="p-6 space-y-5">
-              <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
-                {[
-                  { label: 'Họ tên', value: viewContact.name },
-                  { label: 'Email', value: viewContact.email },
-                  { label: 'Số điện thoại', value: viewContact.phone },
-                  { label: 'Công ty', value: viewContact.company },
-                  { label: 'Thời gian gửi', value: viewContact.date },
-                ].map((f) => (
-                  <div key={f.label}>
-                    <span className="text-xs text-slate-400 font-medium block mb-1">{f.label}</span>
-                    <p className="text-slate-800 font-medium">{f.value}</p>
-                  </div>
-                ))}
-              </div>
-              <div>
-                <span className="text-xs text-slate-400 font-medium block mb-1">Chủ đề</span>
-                <p className="text-slate-800 font-bold text-base">{viewContact.subject}</p>
-              </div>
-              <div>
-                <span className="text-xs text-slate-400 font-medium block mb-1">
-                  Nội dung chi tiết
-                </span>
-                <div className="p-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 leading-relaxed shadow-sm">
-                  {viewContact.message}
+
+            {/* BODY */}
+
+            <div className="space-y-5 p-6">
+              {detailLoading ? (
+                <div
+                  className="
+                    flex items-center
+                    justify-center
+                    py-10
+                  "
+                >
+                  <Loader2
+                    size={24}
+                    className="animate-spin"
+                    style={{
+                      color:
+                        'var(--primary)',
+                    }}
+                  />
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div
+                    className="
+                      grid grid-cols-1
+                      gap-4 rounded-xl
+                      border p-4
+                      sm:grid-cols-2
+                    "
+                    style={{
+                      background:
+                        'var(--surface-secondary)',
+                      borderColor:
+                        'var(--border)',
+                    }}
+                  >
+                    <DetailField
+                      label="Họ tên"
+                      value={
+                        viewContact.fullName ||
+                        '—'
+                      }
+                    />
+
+                    <DetailField
+                      label="Email"
+                      value={
+                        viewContact.email ||
+                        '—'
+                      }
+                    />
+
+                    <DetailField
+                      label="Số điện thoại"
+                      value={
+                        viewContact.phoneNumber ||
+                        '—'
+                      }
+                    />
+
+                    <DetailField
+                      label="Công ty"
+                      value={
+                        viewContact.company ||
+                        '—'
+                      }
+                    />
+
+                    <DetailField
+                      label="Mã biểu mẫu"
+                      value={
+                        viewContact.formCode ||
+                        '—'
+                      }
+                    />
+
+                    <DetailField
+                      label="Thời gian gửi"
+                      value={formatDate(
+                        viewContact.createdAt
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <span
+                      className="
+                        mb-1 block text-xs
+                        font-medium
+                      "
+                      style={{
+                        color:
+                          'var(--text-muted)',
+                      }}
+                    >
+                      Nội dung
+                    </span>
+
+                    <div
+                      className="
+                        whitespace-pre-wrap
+                        rounded-xl border
+                        p-4 text-sm
+                        leading-relaxed
+                      "
+                      style={{
+                        background:
+                          'var(--surface)',
+                        color:
+                          'var(--text-secondary)',
+                        borderColor:
+                          'var(--border)',
+                      }}
+                    >
+                      {viewContact.message ||
+                        '—'}
+                    </div>
+                  </div>
+
+                  {viewContact.replyMessage && (
+                    <div>
+                      <span
+                        className="
+                          mb-1 block text-xs
+                          font-medium
+                        "
+                        style={{
+                          color:
+                            'var(--text-muted)',
+                        }}
+                      >
+                        Nội dung phản hồi
+                      </span>
+
+                      <div
+                        className="
+                          whitespace-pre-wrap
+                          rounded-xl border
+                          p-4 text-sm
+                          leading-relaxed
+                        "
+                        style={{
+                          background:
+                            'var(--success-light)',
+                          color:
+                            'var(--text-secondary)',
+                          borderColor:
+                            'var(--border)',
+                        }}
+                      >
+                        {
+                          viewContact.replyMessage
+                        }
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
+
+            {/* FOOTER */}
+
             <div
-              className="flex items-center justify-end gap-3 px-6 py-4 border-t bg-slate-50 rounded-b-2xl"
-              style={{ borderColor: 'var(--border)' }}
+              className="
+                flex items-center
+                justify-end gap-3
+                border-t px-6 py-4
+              "
+              style={{
+                background:
+                  'var(--surface-secondary)',
+                borderColor:
+                  'var(--border)',
+              }}
             >
               <button
-                onClick={() => setViewContact(null)}
-                className="px-4 py-2 rounded-xl border text-sm text-slate-600 hover:bg-white transition-colors bg-transparent"
-                style={{ borderColor: 'var(--border)' }}
+                type="button"
+                onClick={() =>
+                  setViewContact(null)
+                }
+                className="
+                  rounded-xl border
+                  px-4 py-2 text-sm
+                "
+                style={{
+                  borderColor:
+                    'var(--border)',
+                  color:
+                    'var(--text-secondary)',
+                }}
               >
                 Đóng
               </button>
+
               <button
+                type="button"
                 onClick={() => {
-                  setReplyContact(viewContact);
+                  handleOpenReply(
+                    viewContact
+                  );
                   setViewContact(null);
                 }}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-colors"
-                style={{ background: 'var(--primary)' }}
+                className="
+                  flex items-center
+                  gap-1.5 rounded-xl
+                  px-4 py-2
+                  text-sm font-semibold
+                "
+                style={{
+                  background:
+                    'var(--primary)',
+                  color:
+                    'var(--primary-foreground)',
+                }}
               >
                 <Reply size={14} />
+
                 Phản hồi ngay
               </button>
             </div>
@@ -351,123 +1423,479 @@ export default function Contacts() {
         </div>
       )}
 
-      {/* 2. Modal Phản Hồi (Reply) */}
+      {/* =================================================
+          REPLY MODAL
+      ================================================== */}
+
       {replyContact && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-          onClick={() => setReplyContact(null)}
+          className="
+            fixed inset-0 z-50
+            flex items-center
+            justify-center
+            bg-black/40 p-4
+            backdrop-blur-sm
+          "
+          onClick={() =>
+            !actionLoading &&
+            setReplyContact(null)
+          }
         >
           <form
             onSubmit={handleSendReply}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-xl"
-            onClick={(e) => e.stopPropagation()}
+            className="
+              w-full max-w-xl
+              overflow-hidden
+              rounded-2xl
+              shadow-2xl
+            "
+            style={{
+              background:
+                'var(--surface)',
+            }}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
             <div
-              className="flex items-center justify-between px-6 py-4 border-b bg-emerald-50 rounded-t-2xl"
-              style={{ borderColor: 'var(--border)' }}
+              className="
+                flex items-center
+                justify-between
+                border-b px-6 py-4
+              "
+              style={{
+                background:
+                  'var(--success-light)',
+                borderColor:
+                  'var(--border)',
+              }}
             >
               <div>
-                <h3 className="font-display font-bold text-emerald-900 text-lg flex items-center gap-2">
-                  <Reply size={18} className="text-emerald-600" />
+                <h3
+                  className="
+                    flex items-center
+                    gap-2 font-display
+                    text-lg font-bold
+                  "
+                  style={{
+                    color:
+                      'var(--text)',
+                  }}
+                >
+                  <Reply
+                    size={18}
+                    style={{
+                      color:
+                        'var(--success)',
+                    }}
+                  />
+
                   Phản hồi biểu mẫu
                 </h3>
-                <p className="text-emerald-700/80 text-xs mt-0.5">
-                  Gửi email tới: {replyContact.email}
+
+                <p
+                  className="
+                    mt-0.5 text-xs
+                  "
+                  style={{
+                    color:
+                      'var(--text-secondary)',
+                  }}
+                >
+                  Gửi email tới:{' '}
+                  {replyContact.email ||
+                    '—'}
                 </p>
               </div>
+
               <button
                 type="button"
-                onClick={() => setReplyContact(null)}
-                className="text-emerald-600/60 hover:text-emerald-800 p-1 rounded-lg transition-colors"
+                disabled={actionLoading}
+                onClick={() =>
+                  setReplyContact(null)
+                }
+                className="rounded-lg p-1.5"
+                style={{
+                  color:
+                    'var(--text-muted)',
+                }}
               >
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+
+            <div className="space-y-4 p-6">
               <div>
-                <span className="text-xs text-slate-400 font-medium block mb-1">
-                  Đang trả lời cho chủ đề:
+                <span
+                  className="
+                    mb-1 block text-xs
+                    font-medium
+                  "
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  Đang trả lời cho
+                  biểu mẫu:
                 </span>
-                <p className="text-slate-800 font-semibold bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm">
-                  Re: {replyContact.subject}
-                </p>
+
+                <div
+                  className="
+                    rounded-lg border
+                    p-3
+                  "
+                  style={{
+                    background:
+                      'var(--surface-secondary)',
+                    color:
+                      'var(--text)',
+                    borderColor:
+                      'var(--border)',
+                  }}
+                >
+                  <p className="text-sm font-semibold">
+                    {replyContact.formCode ||
+                      '—'}
+                  </p>
+
+                  <p
+                    className="
+                      mt-1 text-xs
+                      line-clamp-2
+                    "
+                    style={{
+                      color:
+                        'var(--text-secondary)',
+                    }}
+                  >
+                    {replyContact.message ||
+                      '—'}
+                  </p>
+                </div>
               </div>
+
               <div>
-                <span className="text-xs text-slate-400 font-medium block mb-1.5">
-                  Nội dung email phản hồi <span className="text-red-500">*</span>
-                </span>
+                <label
+                  className="
+                    mb-1.5 block text-xs
+                    font-medium
+                  "
+                  style={{
+                    color:
+                      'var(--text-muted)',
+                  }}
+                >
+                  Nội dung email
+                  phản hồi{' '}
+                  <span
+                    style={{
+                      color:
+                        'var(--error)',
+                    }}
+                  >
+                    *
+                  </span>
+                </label>
+
                 <textarea
                   required
                   rows={6}
-                  placeholder={`Chào ${replyContact.name},\n\nCảm ơn bạn đã liên hệ...`}
-                  className="w-full px-4 py-3 border rounded-xl text-sm outline-none resize-none focus:border-emerald-500 bg-white"
-                  style={{ borderColor: 'var(--border)' }}
+                  value={replyMessage}
+                  onChange={(e) =>
+                    setReplyMessage(
+                      e.target.value
+                    )
+                  }
+                  disabled={
+                    actionLoading
+                  }
+                  placeholder={`Chào ${replyContact.fullName || 'bạn'},\n\nCảm ơn bạn đã liên hệ...`}
+                  className="
+                    w-full resize-none
+                    rounded-xl border
+                    px-4 py-3 text-sm
+                    outline-none
+                    focus:border-[var(--primary)]
+                  "
+                  style={{
+                    background:
+                      'var(--surface)',
+                    color:
+                      'var(--text)',
+                    borderColor:
+                      'var(--border)',
+                  }}
                 />
               </div>
             </div>
+
             <div
-              className="flex items-center justify-end gap-3 px-6 py-4 border-t"
-              style={{ borderColor: 'var(--border)' }}
+              className="
+                flex items-center
+                justify-end gap-3
+                border-t px-6 py-4
+              "
+              style={{
+                borderColor:
+                  'var(--border)',
+              }}
             >
               <button
                 type="button"
-                onClick={() => setReplyContact(null)}
-                className="px-4 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                style={{ borderColor: 'var(--border)' }}
+                disabled={actionLoading}
+                onClick={() =>
+                  setReplyContact(null)
+                }
+                className="
+                  rounded-xl border
+                  px-4 py-2.5
+                  text-sm font-medium
+                "
+                style={{
+                  borderColor:
+                    'var(--border)',
+                  color:
+                    'var(--text-secondary)',
+                }}
               >
                 Hủy
               </button>
+
               <button
                 type="submit"
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-white text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/20"
+                disabled={
+                  actionLoading ||
+                  !replyMessage.trim()
+                }
+                className="
+                  flex items-center
+                  gap-1.5 rounded-xl
+                  px-5 py-2.5
+                  text-sm font-semibold
+                  disabled:opacity-50
+                "
+                style={{
+                  background:
+                    'var(--success)',
+                  color:
+                    'var(--primary-foreground)',
+                }}
               >
-                <Send size={14} />
-                Gửi phản hồi
+                {actionLoading ? (
+                  <Loader2
+                    size={14}
+                    className="animate-spin"
+                  />
+                ) : (
+                  <Send size={14} />
+                )}
+
+                {actionLoading
+                  ? 'Đang gửi...'
+                  : 'Gửi phản hồi'}
               </button>
             </div>
           </form>
         </div>
       )}
 
-      {/* 3. Modal Xác Nhận Xóa */}
+      {/* =================================================
+          DELETE MODAL
+      ================================================== */}
+
       {deleteContact && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-          onClick={() => setDeleteContact(null)}
+          className="
+            fixed inset-0 z-50
+            flex items-center
+            justify-center
+            bg-black/40 p-4
+            backdrop-blur-sm
+          "
+          onClick={() =>
+            !actionLoading &&
+            setDeleteContact(null)
+          }
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center"
-            onClick={(e) => e.stopPropagation()}
+            className="
+              w-full max-w-sm
+              rounded-2xl p-6
+              text-center shadow-2xl
+            "
+            style={{
+              background:
+                'var(--surface)',
+            }}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
-            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+            <div
+              className="
+                mx-auto mb-4
+                flex h-12 w-12
+                items-center justify-center
+                rounded-full
+              "
+              style={{
+                background:
+                  'var(--error-light)',
+                color:
+                  'var(--error)',
+              }}
+            >
               <Trash2 size={24} />
             </div>
-            <h3 className="font-display font-bold text-slate-900 text-lg mb-2">Xóa biểu mẫu?</h3>
-            <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-              Bạn có chắc chắn muốn xóa biểu mẫu từ{' '}
-              <span className="font-semibold text-slate-900">{deleteContact.name}</span> không?
+
+            <h3
+              className="
+                mb-2 font-display
+                text-lg font-bold
+              "
+              style={{
+                color:
+                  'var(--text)',
+              }}
+            >
+              Xóa biểu mẫu?
+            </h3>
+
+            <p
+              className="
+                mb-6 text-sm
+                leading-relaxed
+              "
+              style={{
+                color:
+                  'var(--text-secondary)',
+              }}
+            >
+              Bạn có chắc chắn muốn
+              xóa biểu mẫu từ{' '}
+
+              <span
+                className="font-semibold"
+                style={{
+                  color:
+                    'var(--text)',
+                }}
+              >
+                {deleteContact.fullName ||
+                  'người dùng này'}
+              </span>
+
+              {' '}không?
               <br />
-              Thao tác này <strong className="text-red-500">không thể hoàn tác</strong>.
+
+              Thao tác này{' '}
+
+              <strong
+                style={{
+                  color:
+                    'var(--error)',
+                }}
+              >
+                không thể hoàn tác
+              </strong>
+              .
             </p>
 
-            <div className="flex justify-center gap-3">
+            <div className="flex gap-3">
               <button
-                onClick={() => setDeleteContact(null)}
-                className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors w-full"
-                style={{ borderColor: 'var(--border)' }}
+                type="button"
+                disabled={actionLoading}
+                onClick={() =>
+                  setDeleteContact(null)
+                }
+                className="
+                  w-full rounded-xl
+                  border px-5 py-2.5
+                  text-sm font-medium
+                "
+                style={{
+                  borderColor:
+                    'var(--border)',
+                  color:
+                    'var(--text-secondary)',
+                }}
               >
                 Hủy
               </button>
+
               <button
+                type="button"
+                disabled={actionLoading}
                 onClick={handleDelete}
-                className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold bg-red-500 hover:bg-red-600 transition-colors w-full shadow-sm shadow-red-500/30"
+                className="
+                  flex w-full
+                  items-center
+                  justify-center
+                  gap-2 rounded-xl
+                  px-5 py-2.5
+                  text-sm font-semibold
+                  disabled:opacity-50
+                "
+                style={{
+                  background:
+                    'var(--error)',
+                  color:
+                    'var(--primary-foreground)',
+                }}
               >
+                {actionLoading && (
+                  <Loader2
+                    size={14}
+                    className="animate-spin"
+                  />
+                )}
+
                 Xác nhận xóa
               </button>
             </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* =========================================================
+   DETAIL FIELD
+========================================================= */
+
+function DetailField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div>
+      <span
+        className="
+          mb-1 block text-xs
+          font-medium
+        "
+        style={{
+          color:
+            'var(--text-muted)',
+        }}
+      >
+        {label}
+      </span>
+
+      <p
+        className="font-medium"
+        style={{
+          color:
+            'var(--text)',
+        }}
+      >
+        {value}
+      </p>
     </div>
   );
 }
