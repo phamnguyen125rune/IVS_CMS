@@ -9,7 +9,6 @@ export function useRole() {
   // ROLE STATE
   // =========================================================
 
-
   const [members, setMembers] = useState<RoleUser2[]>([]);
   const [roles, setRoles] = useState<RolePermissions[]>([]);
 

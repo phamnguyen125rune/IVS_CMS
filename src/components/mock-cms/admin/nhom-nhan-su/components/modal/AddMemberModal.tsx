@@ -61,16 +61,11 @@ export default function AddMemberModal({
             <h2>Thêm thành viên</h2>
 
             <p>
-              Thêm thành viên vào role:{' '}
-              <strong>{role.roleName}</strong>
+              Thêm thành viên vào role: <strong>{role.roleName}</strong>
             </p>
           </div>
 
-          <button
-            type="button"
-            className={styles.closeModalBtn}
-            onClick={onClose}
-          >
+          <button type="button" className={styles.closeModalBtn} onClick={onClose}>
             <X size={18} />
           </button>
         </div>
@@ -79,59 +74,35 @@ export default function AddMemberModal({
         <div className={styles.addMemberContent}>
           {/* LEFT */}
           <div className={styles.availableMembersPanel}>
-            <div className={styles.panelTitle}>
-              Tìm kiếm thành viên
-            </div>
+            <div className={styles.panelTitle}>Tìm kiếm thành viên</div>
 
-            <form
-              className={styles.addMemberSearch}
-              onSubmit={onSearch}
-            >
+            <form className={styles.addMemberSearch} onSubmit={onSearch}>
               <div className={styles.searchInputWrapper}>
-                <Search
-                  size={17}
-                  className={styles.searchIcon}
-                />
+                <Search size={17} className={styles.searchIcon} />
 
                 <input
                   type="text"
                   value={searchKeyword}
-                  onChange={(e) =>
-                    onSearchKeywordChange(e.target.value)
-                  }
+                  onChange={(e) => onSearchKeywordChange(e.target.value)}
                   placeholder="Nhập mã nhân viên, họ tên hoặc email..."
                   className={styles.searchInput}
                 />
               </div>
 
-              <button
-                type="submit"
-                className={styles.searchBtn}
-                disabled={searching}
-              >
+              <button type="submit" className={styles.searchBtn} disabled={searching}>
                 <Search size={16} />
 
-                {searching
-                  ? 'Đang tìm...'
-                  : 'Tìm kiếm'}
+                {searching ? 'Đang tìm...' : 'Tìm kiếm'}
               </button>
             </form>
 
-            {error && (
-              <div className={styles.errorBox}>
-                {error}
-              </div>
-            )}
+            {error && <div className={styles.errorBox}>{error}</div>}
 
             <div className={styles.availableMembersList}>
               {searching ? (
-                <div className={styles.emptySearchResult}>
-                  Đang tìm kiếm thành viên...
-                </div>
+                <div className={styles.emptySearchResult}>Đang tìm kiếm thành viên...</div>
               ) : availableMembers.length === 0 ? (
-                <div className={styles.emptySearchResult}>
-                  Thành viên không tồn tại
-                </div>
+                <div className={styles.emptySearchResult}>Thành viên không tồn tại</div>
               ) : (
                 availableMembers.map((user) => (
                   <button
@@ -140,29 +111,11 @@ export default function AddMemberModal({
                     className={styles.availableUserItem}
                     onClick={() => onSelectMember(user)}
                   >
-                    <div
-                      className={
-                        styles.availableUserEmployeeCode
-                      }
-                    >
-                      {user.employeeCode}
-                    </div>
+                    <div className={styles.availableUserEmployeeCode}>{user.employeeCode}</div>
 
-                    <div
-                      className={
-                        styles.availableUserName
-                      }
-                    >
-                      {user.fullName}
-                    </div>
+                    <div className={styles.availableUserName}>{user.fullName}</div>
 
-                    <div
-                      className={
-                        styles.availableUserRole
-                      }
-                    >
-                      Đang thuộc role: {user.roleId}
-                    </div>
+                    <div className={styles.availableUserRole}>Đang thuộc role: {user.roleId}</div>
                   </button>
                 ))
               )}
@@ -171,94 +124,41 @@ export default function AddMemberModal({
 
           {/* RIGHT */}
           <div className={styles.selectedMembersPanel}>
-            <div className={styles.panelTitle}>
-              Thành viên trong role
-            </div>
+            <div className={styles.panelTitle}>Thành viên trong role</div>
 
             <div className={styles.selectedMembersList}>
-              {members.length === 0 &&
-              selectedNewMembers.length === 0 ? (
-                <div className={styles.emptyMemberList}>
-                  Chưa có thành viên
-                </div>
+              {members.length === 0 && selectedNewMembers.length === 0 ? (
+                <div className={styles.emptyMemberList}>Chưa có thành viên</div>
               ) : (
                 <>
                   {/* EXISTING */}
                   {members.map((user) => (
-                    <div
-                      key={`existing-${user.userId}`}
-                      className={
-                        styles.selectedMemberItem
-                      }
-                    >
+                    <div key={`existing-${user.userId}`} className={styles.selectedMemberItem}>
                       <div>
-                        <div
-                          className={
-                            styles.memberEmployeeCode
-                          }
-                        >
-                          {user.employeeCode}
-                        </div>
+                        <div className={styles.memberEmployeeCode}>{user.employeeCode}</div>
 
-                        <div
-                          className={
-                            styles.memberFullName
-                          }
-                        >
-                          {user.fullName}
-                        </div>
+                        <div className={styles.memberFullName}>{user.fullName}</div>
 
-                        <div
-                          className={
-                            styles.memberEmail
-                          }
-                        >
-                          {user.email}
-                        </div>
+                        <div className={styles.memberEmail}>{user.email}</div>
                       </div>
                     </div>
                   ))}
 
                   {/* NEW */}
                   {selectedNewMembers.map((user) => (
-                    <div
-                      key={`new-${user.userId}`}
-                      className={
-                        styles.selectedMemberItem
-                      }
-                    >
+                    <div key={`new-${user.userId}`} className={styles.selectedMemberItem}>
                       <div>
-                        <div
-                          className={
-                            styles.memberEmployeeCode
-                          }
-                        >
-                          {user.employeeCode}
-                        </div>
+                        <div className={styles.memberEmployeeCode}>{user.employeeCode}</div>
 
-                        <div
-                          className={
-                            styles.memberFullName
-                          }
-                        >
-                          {user.fullName}
-                        </div>
+                        <div className={styles.memberFullName}>{user.fullName}</div>
 
-                        <div
-                          className={
-                            styles.memberEmail
-                          }
-                        >
-                          {user.email}
-                        </div>
+                        <div className={styles.memberEmail}>{user.email}</div>
                       </div>
 
                       <button
                         type="button"
                         className={styles.cancelAddBtn}
-                        onClick={() =>
-                          onCancelMember(user)
-                        }
+                        onClick={() => onCancelMember(user)}
                       >
                         <X size={14} />
                         Hủy
@@ -273,11 +173,7 @@ export default function AddMemberModal({
 
         {/* FOOTER */}
         <div className={styles.modalFooter}>
-          <button
-            type="button"
-            className={styles.cancelBtn}
-            onClick={onClose}
-          >
+          <button type="button" className={styles.cancelBtn} onClick={onClose}>
             Hủy
           </button>
 
@@ -285,10 +181,7 @@ export default function AddMemberModal({
             type="button"
             className={styles.completeBtn}
             onClick={onComplete}
-            disabled={
-              saving ||
-              selectedNewMembers.length === 0
-            }
+            disabled={saving || selectedNewMembers.length === 0}
           >
             {saving ? 'Đang xử lý...' : 'Hoàn tất'}
           </button>

@@ -69,25 +69,16 @@ export default function RoleManagement() {
         <div className={styles.headerInner}>
           <div className={styles.headerContent}>
             <div>
-              <div className={styles.headerLabel}>
-                User Management
-              </div>
+              <div className={styles.headerLabel}>User Management</div>
 
-              <h1 className={styles.headerTitle}>
-                Quản lý nhóm nhân sự
-              </h1>
+              <h1 className={styles.headerTitle}>Quản lý nhóm nhân sự</h1>
 
               <p className={styles.headerDescription}>
-                Quản lý role và danh sách thành viên thuộc từng
-                nhóm người dùng trong hệ thống.
+                Quản lý role và danh sách thành viên thuộc từng nhóm người dùng trong hệ thống.
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={openCreateModal}
-              className={styles.createRoleBtn}
-            >
+            <button type="button" onClick={openCreateModal} className={styles.createRoleBtn}>
               Thêm role
             </button>
           </div>
@@ -95,11 +86,7 @@ export default function RoleManagement() {
       </section>
 
       <main className={styles.main}>
-        {error && (
-          <div className={styles.errorBox}>
-            {error}
-          </div>
-        )}
+        {error && <div className={styles.errorBox}>{error}</div>}
 
         <RoleList
           roles={roles}
@@ -108,7 +95,7 @@ export default function RoleManagement() {
           onEdit={openEditModal}
           onDelete={setDeleteTarget}
         />
-        
+
         {selectedRole ? (
           <MemberPanel
             currentUserId={currentUserId}
@@ -125,18 +112,11 @@ export default function RoleManagement() {
           <div className={styles.selectRoleEmpty}>
             <h3>Chọn một role</h3>
 
-            <p>
-              Nhấn vào role phía trên để xem và quản lý
-              danh sách thành viên.
-            </p>
+            <p>Nhấn vào role phía trên để xem và quản lý danh sách thành viên.</p>
           </div>
         )}
 
-        {loading && (
-          <div className={styles.loading}>
-            Đang tải dữ liệu...
-          </div>
-        )}
+        {loading && <div className={styles.loading}>Đang tải dữ liệu...</div>}
       </main>
 
       {selectedRole && (

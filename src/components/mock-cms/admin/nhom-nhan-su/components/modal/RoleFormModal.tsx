@@ -38,28 +38,13 @@ export default function RoleFormModal({
   const isEdit = Boolean(editingRole);
 
   return (
-    <div
-      className={styles.modalOverlay}
-      onClick={onClose}
-    >
-      <form
-        onSubmit={onSubmit}
-        className={styles.modal}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <form onSubmit={onSubmit} className={styles.modal} onClick={(e) => e.stopPropagation()}>
         {/* HEADER */}
         <div className={styles.modalHeader}>
-          <h3>
-            {isEdit
-              ? 'Chỉnh sửa role'
-              : 'Thêm role mới'}
-          </h3>
+          <h3>{isEdit ? 'Chỉnh sửa role' : 'Thêm role mới'}</h3>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className={styles.closeBtn}
-          >
+          <button type="button" onClick={onClose} className={styles.closeBtn}>
             <X size={20} />
           </button>
         </div>
@@ -72,9 +57,7 @@ export default function RoleFormModal({
             <input
               required
               value={roleName}
-              onChange={(e) =>
-                onRoleNameChange(e.target.value)
-              }
+              onChange={(e) => onRoleNameChange(e.target.value)}
               placeholder="Ví dụ: Manager"
             />
           </div>
@@ -85,9 +68,7 @@ export default function RoleFormModal({
             <textarea
               rows={4}
               value={roleDescription}
-              onChange={(e) =>
-                onRoleDescriptionChange(e.target.value)
-              }
+              onChange={(e) => onRoleDescriptionChange(e.target.value)}
               placeholder="Nhập mô tả cho role..."
             />
           </div>
@@ -95,18 +76,11 @@ export default function RoleFormModal({
 
         {/* FOOTER */}
         <div className={styles.modalFooter}>
-          <button
-            type="button"
-            onClick={onClose}
-            className={styles.cancelBtn}
-          >
+          <button type="button" onClick={onClose} className={styles.cancelBtn}>
             Hủy
           </button>
 
-          <button
-            type="submit"
-            className={styles.saveBtn}
-          >
+          <button type="submit" className={styles.saveBtn}>
             <Save size={16} />
 
             {isEdit ? 'Cập nhật' : 'Tạo role'}

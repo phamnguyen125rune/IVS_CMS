@@ -33,10 +33,7 @@ export default function DeleteRoleModal({
         }
       }}
     >
-      <div
-        className={styles.deleteModal}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={styles.deleteModal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.deleteIcon}>
           <Trash2 size={24} />
         </div>
@@ -44,17 +41,11 @@ export default function DeleteRoleModal({
         <h3>Xóa role?</h3>
 
         <p>
-          Bạn có chắc chắn muốn xóa role{' '}
-          <strong>{role.roleName}</strong>?
+          Bạn có chắc chắn muốn xóa role <strong>{role.roleName}</strong>?
         </p>
 
         <div className={styles.modalFooter}>
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={saving}
-            className={styles.cancelBtn}
-          >
+          <button type="button" onClick={onCancel} disabled={saving} className={styles.cancelBtn}>
             Hủy
           </button>
 
