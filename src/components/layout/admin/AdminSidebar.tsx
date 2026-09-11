@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useParams, useRouter } from 'next/navigation';
+import { permissionService } from '@/services/permission.service';
 import {
   LayoutDashboard,
   Users,
@@ -19,72 +20,86 @@ import {
 } from 'lucide-react';
 
 import { localizePath } from '@/components/navigation/LocalizedLink';
+import { useEffect, useState } from 'react';
 
 interface AdminSidebarProps {
   sidebarOpen: boolean;
   onToggle: () => void;
 }
+const actionName = 'VIEW';
 
 const navItems = [
   {
     label: 'Tổng quan',
     icon: LayoutDashboard,
     path: '/admin/tong-quan',
+    apiLink: 'dashboard',
   },
   {
     label: 'Quản lý Nhân sự',
     icon: Users,
     path: '/admin/nhan-su',
+    apiLink: 'user',
   },
   {
     label: 'Quản lý Nhóm nhân sự',
     icon: GroupIcon,
     path: '/admin/nhom-nhan-su',
+    apiLink: 'role',
   },
   {
     label: 'Quản lý Phân quyền',
     icon: ShieldCheck,
     path: '/admin/phan-quyen',
+    apiLink: 'permission',
   },
   {
     label: 'Quản lý Bài viết',
     icon: FileText,
     path: '/admin/bai-viet',
+    apiLink: 'post',
   },
   {
     label: 'Quản lý Kiểm duyệt',
     icon: CheckSquare,
     path: '/admin/kiem-duyet',
+    apiLink: 'post-review',
   },
   {
     label: 'Quản lý Danh mục',
     icon: FolderTree,
     path: '/admin/danh-muc',
+    apiLink: 'category',
   },
   {
     label: 'Quản lý Media',
     icon: ImageIcon,
     path: '/admin/media',
+    apiLink: 'media',
   },
   {
     label: 'Quản lý Menu',
     icon: MenuIcon,
     path: '/admin/menu',
+    apiLink: 'menu',
   },
   {
     label: 'Quản lý Biểu mẫu',
     icon: Mail,
     path: '/admin/bieu-mau',
+    apiLink: 'form',
   },
   {
     label: 'Cài đặt',
     icon: Settings,
     path: '/admin/cai-dat',
+    apiLink: 'setting',
   },
   {
     label: 'Hồ sơ',
     icon: CircleUserRound,
     path: '/admin/ho-so',
+    apiLink: 'profile',
   },
 ];
 
@@ -94,6 +109,45 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
   const router = useRouter();
 
   const language = typeof params?.language === 'string' ? params.language : 'vi';
+  const EXCLUDED_PERMISSION_APIS = [
+    'dashboard',
+    'profile',
+    'setting',
+  ];
+  const [permissions, setPermissions] = useState<Record<string, boolean>>({});
+  const [checkingPermissions, setCheckingPermissions] = useState(true);
+
+  useEffect(() => {
+    const checkPermissions = async () => {
+      try {
+        const permissionItems = navItems.filter(
+          (item) =>
+            !EXCLUDED_PERMISSION_APIS.includes(item.apiLink)
+        );
+
+        const results = await Promise.all(
+          permissionItems.map(async (item) => {
+            try {
+              const allowed = await permissionService.checkPermission({
+                apiLink: item.apiLink,
+                actionName: actionName
+              });
+
+              return [item.path, allowed] as const;
+            } catch {
+              return [item.path, false] as const;
+            }
+          })
+        );
+
+        setPermissions(Object.fromEntries(results));
+      } finally {
+        setCheckingPermissions(false);
+      }
+    };
+
+    checkPermissions();
+  }, []);
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {
@@ -168,7 +222,7 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
+        {/* <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
           {navItems.map((item) => {
             const href = localizePath(item.path, language);
 
@@ -203,6 +257,61 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
               </Link>
             );
           })}
+        </nav> */}
+
+        <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
+          {!checkingPermissions &&
+            navItems.filter((item) =>
+                EXCLUDED_PERMISSION_APIS.includes(item.apiLink) ||
+                permissions[item.path] === true
+            ).map((item) => {
+                const href = localizePath(item.path, language);
+
+                const isActive =
+                  pathname === href ||
+                  pathname.startsWith(`${href}/`);
+
+                return (
+                  <Link
+                    key={item.path}
+                    href={href}
+                    title={!sidebarOpen ? item.label : undefined}
+                    className="
+                      flex
+                      items-center
+                      gap-3
+                      rounded-xl
+                      px-4
+                      py-3
+                      text-sm
+                      font-medium
+                      transition-all
+                      hover:text-[var(--dark-text)]
+                    "
+                    style={{
+                      background: isActive
+                        ? 'var(--primary)'
+                        : undefined,
+
+                      color: isActive
+                        ? 'var(--primary-foreground)'
+                        : 'var(--dark-text-secondary)',
+
+                      boxShadow: isActive
+                        ? '0 4px 6px -1px rgb(30 58 138 / 0.2)'
+                        : undefined,
+                    }}
+                  >
+                    <item.icon size={20} className="shrink-0" />
+
+                    {sidebarOpen && (
+                      <span className="truncate">
+                        {item.label}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
         </nav>
 
         {/* Logout */}

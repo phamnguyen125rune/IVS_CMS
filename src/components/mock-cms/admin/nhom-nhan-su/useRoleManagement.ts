@@ -91,7 +91,7 @@ export function useRoleManagement() {
   // =========================================================
   // MEMBER
   // =========================================================
-  
+
   useEffect(() => {
     const loadCurrentUser = async () => {
       try {
@@ -114,15 +114,9 @@ export function useRoleManagement() {
   }, [currentUserId]);
 
   const handleRemoveMember = (userId: number) => {
-    setMembers((prev) =>
-      prev.filter((user) => user.userId !== userId)
-    );
+    setMembers((prev) => prev.filter((user) => user.userId !== userId));
 
-    setRemovedUserIds((prev) =>
-      prev.includes(userId)
-        ? prev
-        : [...prev, userId]
-    );
+    setRemovedUserIds((prev) => (prev.includes(userId) ? prev : [...prev, userId]));
     setHasChanged(true);
   };
 
@@ -140,9 +134,7 @@ export function useRoleManagement() {
       setHasChanged(false);
 
       if (selectedRole) {
-        const updatedMembers = await fetchRoleMembers(
-          selectedRole.roleId
-        );
+        const updatedMembers = await fetchRoleMembers(selectedRole.roleId);
 
         setMembers(updatedMembers);
       }
