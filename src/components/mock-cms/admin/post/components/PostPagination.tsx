@@ -8,7 +8,11 @@ interface PostPaginationProps {
   onChange: (page: number) => void;
 }
 
-export default function PostPagination({ current, total, onChange }: PostPaginationProps) {
+export default function PostPagination({
+  current,
+  total,
+  onChange,
+}: PostPaginationProps) {
   if (total <= 1) return null;
 
   return (
@@ -17,8 +21,12 @@ export default function PostPagination({ current, total, onChange }: PostPaginat
         type="button"
         onClick={() => onChange(Math.max(1, current - 1))}
         disabled={current === 1}
-        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ borderColor: 'var(--border)' }}
+        className="rounded-lg border p-1.5 transition-colors hover:bg-[var(--hover)] hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-40"
+        style={{
+          borderColor: 'var(--border)',
+          color: 'var(--text-muted)',
+          background: 'var(--surface)',
+        }}
         aria-label="Trang trước"
       >
         <ChevronLeft size={16} />
@@ -26,7 +34,11 @@ export default function PostPagination({ current, total, onChange }: PostPaginat
 
       {paginationItems(current, total).map((item, index) =>
         item === 'ellipsis' ? (
-          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">
+          <span
+            key={`ellipsis-${index}`}
+            className="px-1 text-xs"
+            style={{ color: 'var(--text-muted)' }}
+          >
             …
           </span>
         ) : (
@@ -34,13 +46,22 @@ export default function PostPagination({ current, total, onChange }: PostPaginat
             type="button"
             key={item}
             onClick={() => onChange(item)}
-            className={`min-w-8 h-8 px-2 rounded-lg text-xs font-semibold border transition-colors ${
+            className={`min-w-8 h-8 rounded-lg border px-2 text-xs font-semibold transition-colors ${
               current === item
-                ? 'text-white border-transparent'
-                : 'text-slate-600 bg-white hover:text-blue-600'
+                ? 'border-transparent'
+                : 'hover:bg-[var(--hover)] hover:text-[var(--primary)]'
             }`}
             style={
-              current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }
+              current === item
+                ? {
+                    background: 'var(--primary)',
+                    color: 'var(--primary-foreground)',
+                  }
+                : {
+                    background: 'var(--surface)',
+                    borderColor: 'var(--border)',
+                    color: 'var(--text-secondary)',
+                  }
             }
             aria-current={current === item ? 'page' : undefined}
           >
@@ -53,8 +74,12 @@ export default function PostPagination({ current, total, onChange }: PostPaginat
         type="button"
         onClick={() => onChange(Math.min(total, current + 1))}
         disabled={current >= total}
-        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ borderColor: 'var(--border)' }}
+        className="rounded-lg border p-1.5 transition-colors hover:bg-[var(--hover)] hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-40"
+        style={{
+          borderColor: 'var(--border)',
+          color: 'var(--text-muted)',
+          background: 'var(--surface)',
+        }}
         aria-label="Trang sau"
       >
         <ChevronRight size={16} />

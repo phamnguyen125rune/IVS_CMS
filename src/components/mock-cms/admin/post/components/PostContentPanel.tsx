@@ -9,7 +9,14 @@ import type { ReqPostCreateDTO } from '@/types/post.type';
 const RichTextEditor = dynamic(() => import('@/config/RichTextEditor'), {
   ssr: false,
   loading: () => (
-    <div className="min-h-[500px] border rounded-xl bg-slate-50 animate-pulse flex flex-col items-center justify-center text-slate-400">
+    <div
+      className="flex min-h-[500px] flex-col items-center justify-center rounded-xl border animate-pulse"
+      style={{
+        background: 'var(--surface-secondary)',
+        borderColor: 'var(--border)',
+        color: 'var(--text-muted)',
+      }}
+    >
       <FileText size={32} className="mb-2 opacity-50" />
       <span>Đang tải trình soạn thảo...</span>
     </div>
@@ -57,49 +64,87 @@ export default function PostContentPanel({
     <div
       className={
         fullscreen
-          ? 'fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm p-4 sm:p-8 flex flex-col justify-center items-center'
-          : 'bg-white rounded-2xl border shadow-sm p-6 sm:p-8 relative'
+          ? 'fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm sm:p-8'
+          : 'relative rounded-2xl border p-6 shadow-sm sm:p-8'
       }
-      style={!fullscreen ? { borderColor: 'var(--border)' } : {}}
+      style={
+        fullscreen
+          ? {}
+          : {
+              background: 'var(--surface)',
+              borderColor: 'var(--border)',
+            }
+      }
     >
       <div
         className={
           fullscreen
-            ? 'bg-white w-full max-w-5xl h-full rounded-2xl shadow-2xl border flex flex-col overflow-hidden'
+            ? 'flex h-full w-full max-w-5xl flex-col overflow-hidden rounded-2xl border shadow-2xl'
             : 'w-full'
         }
-        style={fullscreen ? { borderColor: 'var(--border)' } : {}}
+        style={
+          fullscreen
+            ? {
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }
+            : {}
+        }
       >
         {fullscreen && (
           <div
-            className="px-6 py-3.5 border-b flex items-center justify-between bg-slate-50/80"
-            style={{ borderColor: 'var(--border)' }}
+            className="flex items-center justify-between border-b px-6 py-3.5"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
           >
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span
+              className="text-xs font-semibold uppercase tracking-wider"
+              style={{ color: 'var(--text-muted)' }}
+            >
               Chế độ tập trung soạn thảo
             </span>
+
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={onSaveDraft}
                 disabled={disabled}
-                className="px-3 py-1.5 rounded-lg border text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 shadow-sm disabled:opacity-50"
-                style={{ borderColor: 'var(--border)' }}
+                className="rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors hover:bg-[var(--hover)] disabled:opacity-50"
+                style={{
+                  borderColor: 'var(--border)',
+                  background: 'var(--surface)',
+                  color: 'var(--text-secondary)',
+                }}
               >
                 Lưu nháp
               </button>
+
               <button
                 type="button"
                 onClick={() => onFullscreenChange(false)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-xs font-semibold text-slate-700 transition-colors"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors"
+                style={{
+                  background: 'var(--surface-tertiary)',
+                  color: 'var(--text-secondary)',
+                }}
               >
-                <Minimize2 size={14} /> Thu nhỏ
+                <Minimize2 size={14} />
+                Thu nhỏ
               </button>
             </div>
           </div>
         )}
 
-        <div className={fullscreen ? 'flex-1 overflow-y-auto p-6 sm:p-10 space-y-4' : 'space-y-4'}>
+        <div
+          className={
+            fullscreen
+              ? 'flex-1 space-y-4 overflow-y-auto p-6 sm:p-10'
+              : 'space-y-4'
+          }
+        >
+          {/* ================= TITLE ================= */}
           <textarea
             ref={titleRef}
             name="title"
@@ -110,23 +155,36 @@ export default function PostContentPanel({
             }}
             rows={1}
             placeholder="Tiêu đề bài viết..."
-            className="w-full text-2xl sm:text-3xl font-extrabold text-slate-900 placeholder:text-slate-300 outline-none border-b pb-2 focus:border-blue-500 transition-colors resize-none overflow-hidden leading-snug block"
-            style={{ borderColor: 'var(--border)' }}
+            className="block w-full resize-none overflow-hidden border-b pb-2 text-2xl font-extrabold leading-snug outline-none transition-colors placeholder:text-[var(--text-placeholder)] focus:border-[var(--primary)] sm:text-3xl"
+            style={{
+              color: 'var(--text)',
+              borderColor: 'var(--border)',
+            }}
           />
 
-          <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+          {/* ================= SLUG ================= */}
+          <div
+            className="flex items-center gap-2 font-mono text-xs"
+            style={{ color: 'var(--text-muted)' }}
+          >
             <span>slug:</span>
+
             <input
               type="text"
               name="slug"
               value={formData.slug}
               onChange={onChange}
               placeholder="duong-dan-tinh"
-              className="flex-1 px-2.5 py-1 bg-slate-50 border rounded-lg text-slate-600 outline-none focus:bg-white focus:border-blue-500"
-              style={{ borderColor: 'var(--border)' }}
+              className="flex-1 rounded-lg border px-2.5 py-1 outline-none transition-colors focus:border-[var(--primary)] focus:bg-[var(--surface)]"
+              style={{
+                background: 'var(--surface-secondary)',
+                borderColor: 'var(--border)',
+                color: 'var(--text-secondary)',
+              }}
             />
           </div>
 
+          {/* ================= SUMMARY ================= */}
           {showSummary ? (
             <textarea
               ref={summaryRef}
@@ -138,33 +196,56 @@ export default function PostContentPanel({
               }}
               rows={2}
               placeholder="Tóm tắt ngắn bài viết..."
-              className="w-full px-4 py-2.5 border rounded-xl text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none overflow-hidden transition-all placeholder:text-slate-400 block leading-relaxed"
-              style={{ borderColor: 'var(--border)' }}
+              className="block w-full resize-none overflow-hidden rounded-xl border px-4 py-2.5 text-sm leading-relaxed outline-none transition-all placeholder:text-[var(--text-placeholder)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--text-secondary)',
+                background: 'var(--surface)',
+              }}
             />
           ) : null}
 
-          <div className={`sticky-editor-container ${fullscreen ? 'fullscreen-editor' : ''}`}>
+          {/* ================= RICH TEXT EDITOR ================= */}
+          <div
+            className={`sticky-editor-container ${
+              fullscreen ? 'fullscreen-editor' : ''
+            }`}
+          >
             <RichTextEditor
               onPendingChange={onPendingChange}
               value={formData.content}
               onChange={onContentChange}
               placeholder="Bắt đầu nội dung bài viết ở đây..."
             />
-            <p className="mt-2 text-sm text-slate-500" role="status">
+
+            <p
+              className="mt-2 text-sm"
+              role="status"
+              style={{ color: 'var(--text-muted)' }}
+            >
               {uploadingContentImage
                 ? 'Đang tải ảnh lên, vui lòng chờ trước khi lưu bài viết…'
                 : 'Chèn ảnh bằng nút tải ảnh trên thanh công cụ, kéo thả hoặc dán ảnh vào nội dung. Hỗ trợ JPEG, PNG, GIF, WebP; tối đa 10 MB/ảnh.'}
             </p>
           </div>
 
+          {/* ================= FULLSCREEN BUTTON ================= */}
           {!fullscreen && (
             <button
               type="button"
               onClick={() => onFullscreenChange(true)}
-              className="w-full mt-2 py-2.5 px-4 bg-slate-50 hover:bg-blue-50/60 border border-dashed hover:border-blue-300 text-slate-600 hover:text-blue-600 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all group"
-              style={{ borderColor: 'var(--border)' }}
+              className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed px-4 py-2.5 text-xs font-semibold transition-all hover:border-[var(--primary)] hover:bg-[var(--primary-light)] hover:text-[var(--primary-text)]"
+              style={{
+                background: 'var(--surface-secondary)',
+                borderColor: 'var(--border)',
+                color: 'var(--text-secondary)',
+              }}
             >
-              <Maximize2 size={14} className="group-hover:scale-110 transition-transform" />
+              <Maximize2
+                size={14}
+                className="transition-transform group-hover:scale-110"
+              />
+
               <span>Mở rộng trình soạn thảo (Toàn màn hình)</span>
             </button>
           )}

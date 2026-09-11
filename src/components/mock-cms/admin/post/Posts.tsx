@@ -1,6 +1,8 @@
 'use client';
 
-import { useLocalizedNavigate as useNavigate } from '@/components/navigation/LocalizedLink';
+import {
+  useLocalizedNavigate as useNavigate,
+} from '@/components/navigation/LocalizedLink';
 
 import PostDeleteDialog from './components/PostDeleteDialog';
 import PostTable from './components/PostTable';
@@ -12,14 +14,38 @@ export default function Posts() {
   const postList = usePostList();
 
   return (
-    <div className="p-6 relative">
+    <div
+      className="relative p-6"
+      style={{ color: 'var(--text)' }}
+    >
       {postList.errorMessage && (
         <div
           role="alert"
-          className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4"
+          className="
+            mb-4 flex
+            justify-between
+            gap-4
+            rounded-xl
+            p-4
+            text-sm
+          "
+          style={{
+            background: 'var(--error-light)',
+            color: 'var(--error)',
+          }}
         >
           <span>{postList.errorMessage}</span>
-          <button className="underline font-medium shrink-0" onClick={postList.fetchPosts}>
+
+          <button
+            className="
+              shrink-0
+              font-medium
+              underline
+              transition-opacity
+              hover:opacity-80
+            "
+            onClick={postList.fetchPosts}
+          >
             Tải lại
           </button>
         </div>
@@ -46,7 +72,9 @@ export default function Posts() {
         total={postList.total}
         totalPages={postList.totalPages}
         onPageChange={postList.setPage}
-        onEdit={(post) => navigate(`/admin/bai-viet/sua/${post.id}`)}
+        onEdit={(post) =>
+          navigate(`/admin/bai-viet/sua/${post.id}`)
+        }
         onDelete={postList.setDeletePost}
         onAction={postList.changePostStatus}
       />

@@ -19,33 +19,66 @@ export default function PostDeleteDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
       onClick={onCancel}
     >
       <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center"
+        className="w-full max-w-sm rounded-2xl p-6 text-center shadow-xl"
+        style={{ background: 'var(--surface)' }}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+        <div
+          className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full"
+          style={{
+            background: 'var(--error-light)',
+            color: 'var(--error)',
+          }}
+        >
           <Trash2 size={24} />
         </div>
-        <h3 className="font-display font-bold text-slate-900 text-lg mb-2">Xóa bài viết?</h3>
-        <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+
+        <h3
+          className="mb-2 font-display text-lg font-bold"
+          style={{ color: 'var(--text)' }}
+        >
+          Xóa bài viết?
+        </h3>
+
+        <p
+          className="mb-6 text-sm leading-relaxed"
+          style={{ color: 'var(--text-secondary)' }}
+        >
           Bạn có chắc chắn muốn xóa bài viết <br />
-          <span className="font-semibold text-slate-900">&quot;{post.title}&quot;</span>?
+          <span
+            className="font-semibold"
+            style={{ color: 'var(--text)' }}
+          >
+            &quot;{post.title}&quot;
+          </span>
+          ?
         </p>
+
         <div className="flex justify-center gap-3">
           <button
             onClick={onCancel}
-            className="px-5 py-2.5 rounded-xl border text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors w-full"
-            style={{ borderColor: 'var(--border)' }}
+            className="w-full rounded-xl border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--hover)]"
+            style={{
+              borderColor: 'var(--border)',
+              background: 'var(--surface)',
+              color: 'var(--text-secondary)',
+            }}
           >
             Hủy
           </button>
+
           <button
             disabled={busy}
             onClick={onConfirm}
-            className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold bg-red-500 hover:bg-red-600 shadow-sm transition-colors w-full disabled:opacity-50"
+            className="w-full rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
+            style={{
+              background: 'var(--error)',
+              color: 'var(--primary-foreground)',
+            }}
           >
             Xác nhận
           </button>

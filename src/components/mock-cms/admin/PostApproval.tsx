@@ -30,17 +30,33 @@ const APPROVAL_STATUS_OPTIONS: Array<{ value: ApprovalStatus; label: string }> =
   { value: 'REJECTED', label: 'Bị từ chối' },
 ];
 
-const statusConfig: Record<ApprovalStatus, { label: string; className: string }> = {
-  PENDING: { label: 'Chờ duyệt', className: 'bg-amber-100 text-amber-700' },
-  APPROVED: { label: 'Đã duyệt', className: 'bg-emerald-100 text-emerald-700' },
-  REJECTED: { label: 'Bị từ chối', className: 'bg-red-100 text-red-700' },
+const statusConfig: Record<
+  ApprovalStatus,
+  { label: string; className: string }
+> = {
+  PENDING: {
+    label: 'Chờ duyệt',
+    className:
+      'bg-[var(--warning-light)] text-[var(--warning)]',
+  },
+  APPROVED: {
+    label: 'Đã duyệt',
+    className:
+      'bg-[var(--success-light)] text-[var(--success)]',
+  },
+  REJECTED: {
+    label: 'Bị từ chối',
+    className:
+      'bg-[var(--error-light)] text-[var(--error)]',
+  },
 };
 
 export default function PostApproval() {
   const requestId = useRef(0);
 
   const [posts, setPosts] = useState<ResPostListDTO[]>([]);
-  const [activeStatus, setActiveStatus] = useState<ApprovalStatus>('PENDING');
+  const [activeStatus, setActiveStatus] =
+    useState<ApprovalStatus>('PENDING');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -56,7 +72,10 @@ export default function PostApproval() {
   const [rejectReason, setRejectReason] = useState('');
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -81,6 +100,7 @@ export default function PostApproval() {
       if (currentRequest !== requestId.current) return;
 
       const pages = response.meta?.pages || 0;
+
       if (pages > 0 && page > pages) {
         setPage(pages);
         return;
@@ -91,19 +111,25 @@ export default function PostApproval() {
       setTotalPages(pages);
     } catch (error) {
       if (currentRequest !== requestId.current) return;
+
       setPosts([]);
       setTotal(0);
       setTotalPages(0);
       setErrorMessage(
-        error instanceof Error ? error.message : 'Không thể tải danh sách kiểm duyệt.'
+        error instanceof Error
+          ? error.message
+          : 'Không thể tải danh sách kiểm duyệt.'
       );
     } finally {
-      if (currentRequest === requestId.current) setLoading(false);
+      if (currentRequest === requestId.current) {
+        setLoading(false);
+      }
     }
   }, [activeStatus, page, search]);
 
   useEffect(() => {
     const timer = window.setTimeout(fetchPosts, 350);
+
     return () => window.clearTimeout(timer);
   }, [fetchPosts]);
 
@@ -116,7 +142,9 @@ export default function PostApproval() {
       setModal({ type: 'preview', post: detailPost });
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : 'Không thể tải chi tiết bài viết.',
+        error instanceof Error
+          ? error.message
+          : 'Không thể tải chi tiết bài viết.',
         'error'
       );
     } finally {
@@ -130,13 +158,23 @@ export default function PostApproval() {
         action: 'APPROVED',
         comment: 'Bài viết đã được duyệt',
       });
+
       setModal({ type: null, post: null });
+
       showToast('Bài viết đã được duyệt.', 'success');
 
-      if (posts.length === 1 && page > 1) setPage((current) => current - 1);
-      else await fetchPosts();
+      if (posts.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await fetchPosts();
+      }
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Không thể duyệt bài viết.', 'error');
+      showToast(
+        error instanceof Error
+          ? error.message
+          : 'Không thể duyệt bài viết.',
+        'error'
+      );
     }
   };
 
@@ -148,14 +186,24 @@ export default function PostApproval() {
         action: 'REJECTED',
         comment: rejectReason.trim(),
       });
+
       setModal({ type: null, post: null });
       setRejectReason('');
+
       showToast('Bài viết đã bị từ chối.', 'success');
 
-      if (posts.length === 1 && page > 1) setPage((current) => current - 1);
-      else await fetchPosts();
+      if (posts.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await fetchPosts();
+      }
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Không thể từ chối bài viết.', 'error');
+      showToast(
+        error instanceof Error
+          ? error.message
+          : 'Không thể từ chối bài viết.',
+        'error'
+      );
     }
   };
 
@@ -166,47 +214,91 @@ export default function PostApproval() {
         ? 'Bài viết đã duyệt'
         : 'Bài viết bị từ chối';
 
-  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const from =
+    total === 0 ? 0 : (page - 1) * pageSize + 1;
+
   const to = Math.min(page * pageSize, total);
 
   return (
-    <div className="p-6 relative">
+    <div
+      className="relative p-6"
+      style={{ color: 'var(--text)' }}
+    >
+      {/* ================= TOAST ================= */}
       {toast && (
         <div
-          className={`fixed top-5 right-5 z-[100] flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-white text-sm font-medium ${
-            toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-500'
+          className={`fixed top-5 right-5 z-[100] flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium shadow-xl ${
+            toast.type === 'success'
+              ? 'bg-[var(--success)]'
+              : 'bg-[var(--error)]'
           }`}
+          style={{ color: 'var(--primary-foreground)' }}
         >
-          {toast.type === 'success' ? <CheckCircle size={16} /> : <XCircle size={16} />}
+          {toast.type === 'success' ? (
+            <CheckCircle size={16} />
+          ) : (
+            <XCircle size={16} />
+          )}
+
           {toast.message}
         </div>
       )}
 
+      {/* ================= ERROR ================= */}
       {errorMessage && (
         <div
           role="alert"
-          className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 flex justify-between gap-4"
+          className="mb-4 flex justify-between gap-4 rounded-xl p-4 text-sm"
+          style={{
+            background: 'var(--error-light)',
+            color: 'var(--error)',
+          }}
         >
           <span>{errorMessage}</span>
-          <button className="underline font-medium shrink-0" onClick={fetchPosts}>
+
+          <button
+            className="shrink-0 font-medium underline"
+            onClick={fetchPosts}
+          >
             Tải lại
           </button>
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-6">
+      {/* ================= HEADER ================= */}
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-xl font-bold text-slate-900">{pageTitle}</h1>
-          <p className="text-slate-500 text-sm mt-0.5">{total} bài viết phù hợp bộ lọc</p>
+          <h1
+            className="font-display text-xl font-bold"
+            style={{ color: 'var(--text)' }}
+          >
+            {pageTitle}
+          </h1>
+
+          <p
+            className="mt-0.5 text-sm"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            {total} bài viết phù hợp bộ lọc
+          </p>
         </div>
       </div>
 
+      {/* ================= FILTER ================= */}
       <div
-        className="bg-white rounded-xl border p-4 mb-5 flex flex-wrap gap-3 items-center"
-        style={{ borderColor: 'var(--border)' }}
+        className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border p-4"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
       >
-        <div className="flex-1 min-w-56 relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <div className="relative min-w-56 flex-1">
+          <Search
+            size={15}
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+            style={{ color: 'var(--text-placeholder)' }}
+          />
+
           <input
             value={search}
             onChange={(event) => {
@@ -214,8 +306,16 @@ export default function PostApproval() {
               setPage(1);
             }}
             placeholder="Tìm theo tiêu đề, slug hoặc tóm tắt..."
-            className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
-            style={{ borderColor: 'var(--border)' }}
+            className="
+              w-full rounded-lg border
+              py-2 pl-9 pr-3 text-sm outline-none
+              focus:border-[var(--primary)]
+            "
+            style={{
+              background: 'var(--surface)',
+              color: 'var(--text)',
+              borderColor: 'var(--border)',
+            }}
           />
         </div>
 
@@ -228,10 +328,21 @@ export default function PostApproval() {
                 setActiveStatus(option.value);
                 setPage(1);
               }}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                activeStatus === option.value ? 'text-white' : 'text-slate-500 hover:bg-slate-100'
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                activeStatus === option.value
+                  ? ''
+                  : 'hover:bg-[var(--hover)]'
               }`}
-              style={activeStatus === option.value ? { background: 'var(--primary)' } : undefined}
+              style={
+                activeStatus === option.value
+                  ? {
+                      background: 'var(--primary)',
+                      color: 'var(--primary-foreground)',
+                    }
+                  : {
+                      color: 'var(--text-muted)',
+                    }
+              }
             >
               {option.label}
             </button>
@@ -239,84 +350,178 @@ export default function PostApproval() {
         </div>
       </div>
 
+      {/* ================= TABLE ================= */}
       <div
-        className="bg-white rounded-xl border overflow-hidden"
-        style={{ borderColor: 'var(--border)' }}
+        className="overflow-hidden rounded-xl border"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
       >
         <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[900px]">
+          <table className="w-full min-w-[900px] text-sm">
             <thead>
-              <tr className="bg-slate-50 border-b" style={{ borderColor: 'var(--border)' }}>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+              <tr
+                className="border-b"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                <th
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Tiêu đề
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+
+                <th
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Danh mục
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+
+                <th
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Tác giả
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+
+                <th
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Ngày tạo
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+
+                <th
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Trạng thái
                 </th>
-                <th className="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+
+                <th
+                  className="px-5 py-3 text-right text-xs font-semibold uppercase"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   Hành động
                 </th>
               </tr>
             </thead>
+
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">
-                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <td
+                    colSpan={6}
+                    className="px-5 py-12 text-center"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    <div
+                      className="
+                        mx-auto mb-3 h-8 w-8 animate-spin
+                        rounded-full border-4
+                        border-[var(--primary)]
+                        border-t-transparent
+                      "
+                    />
+
                     Đang tải...
                   </td>
                 </tr>
               ) : posts.length > 0 ? (
                 posts.map((post) => {
-                  const currentStatus = post.status as ApprovalStatus;
-                  const currentStatusConfig = statusConfig[currentStatus];
+                  const currentStatus =
+                    post.status as ApprovalStatus;
+
+                  const currentStatusConfig =
+                    statusConfig[currentStatus];
 
                   return (
                     <tr
                       key={post.id}
-                      className="border-t hover:bg-slate-50"
-                      style={{ borderColor: 'var(--border)' }}
+                      className="border-t hover:bg-[var(--hover)]"
+                      style={{
+                        borderColor: 'var(--border)',
+                      }}
                     >
+                      {/* TITLE */}
                       <td className="px-5 py-3.5">
-                        <div className="font-medium text-slate-800 max-w-sm truncate">
+                        <div
+                          className="max-w-sm truncate font-medium"
+                          style={{ color: 'var(--text)' }}
+                        >
                           {post.title}
                         </div>
-                        <div className="text-xs text-slate-400 mt-1 max-w-sm truncate">
+
+                        <div
+                          className="mt-1 max-w-sm truncate text-xs"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
                           {post.summary || 'Không có tóm tắt'}
                         </div>
                       </td>
+
+                      {/* CATEGORY */}
                       <td className="px-5 py-3.5">
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                        <span
+                          className="
+                            rounded-full px-2.5 py-1 text-xs
+                          "
+                          style={{
+                            background: 'var(--surface-tertiary)',
+                            color: 'var(--text-secondary)',
+                          }}
+                        >
                           {post.category?.name || 'Không có'}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-600 text-xs">
+
+                      {/* AUTHOR */}
+                      <td
+                        className="px-5 py-3.5 text-xs"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
                         {post.author?.name || 'System'}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-600 text-xs">
-                        {post.createdAt ? formatDate(post.createdAt) : '---'}
+
+                      {/* CREATED DATE */}
+                      <td
+                        className="px-5 py-3.5 text-xs"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        {post.createdAt
+                          ? formatDate(post.createdAt)
+                          : '---'}
                       </td>
+
+                      {/* STATUS */}
                       <td className="px-5 py-3.5">
                         <span
-                          className={`text-xs font-medium px-2.5 py-1 rounded-full ${currentStatusConfig.className}`}
+                          className={`rounded-full px-2.5 py-1 text-xs font-medium ${currentStatusConfig.className}`}
                         >
                           {currentStatusConfig.label}
                         </span>
                       </td>
+
+                      {/* ACTION */}
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => handleOpenPreview(post)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600"
+                            onClick={() =>
+                              handleOpenPreview(post)
+                            }
+                            className="
+                              rounded-lg p-1.5
+                              transition-colors
+                              hover:text-[var(--primary)]
+                            "
+                            style={{
+                              color: 'var(--text-muted)',
+                            }}
                             title="Xem trước"
                           >
                             <Eye size={14} />
@@ -325,18 +530,38 @@ export default function PostApproval() {
                           {currentStatus === 'PENDING' && (
                             <>
                               <button
-                                onClick={() => approve(post.id)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600"
+                                onClick={() =>
+                                  approve(post.id)
+                                }
+                                className="
+                                  rounded-lg p-1.5
+                                  transition-colors
+                                  hover:text-[var(--success)]
+                                "
+                                style={{
+                                  color: 'var(--text-muted)',
+                                }}
                                 title="Duyệt bài"
                               >
                                 <CheckCircle size={14} />
                               </button>
+
                               <button
                                 onClick={() => {
-                                  setModal({ type: 'reject', post });
+                                  setModal({
+                                    type: 'reject',
+                                    post,
+                                  });
                                   setRejectReason('');
                                 }}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500"
+                                className="
+                                  rounded-lg p-1.5
+                                  transition-colors
+                                  hover:text-[var(--error)]
+                                "
+                                style={{
+                                  color: 'var(--text-muted)',
+                                }}
                                 title="Từ chối"
                               >
                                 <XCircle size={14} />
@@ -350,7 +575,11 @@ export default function PostApproval() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">
+                  <td
+                    colSpan={6}
+                    className="px-5 py-12 text-center"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
                     Không có bài viết ở trạng thái này
                   </td>
                 </tr>
@@ -359,126 +588,362 @@ export default function PostApproval() {
           </table>
         </div>
 
+        {/* ================= PAGINATION ================= */}
         {!loading && total > 0 && (
           <div
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-t bg-slate-50"
-            style={{ borderColor: 'var(--border)' }}
+            className="
+              flex flex-col justify-between gap-3
+              border-t px-5 py-4
+              sm:flex-row sm:items-center
+            "
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
           >
-            <div className="text-xs text-slate-500">
-              Hiển thị <span className="font-semibold text-slate-700">{from}</span> -{' '}
-              <span className="font-semibold text-slate-700">{to}</span> trong{' '}
-              <span className="font-semibold text-slate-700">{total}</span> bài viết
+            <div
+              className="text-xs"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Hiển thị{' '}
+              <span
+                className="font-semibold"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                {from}
+              </span>{' '}
+              -{' '}
+              <span
+                className="font-semibold"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                {to}
+              </span>{' '}
+              trong{' '}
+              <span
+                className="font-semibold"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                {total}
+              </span>{' '}
+              bài viết
             </div>
-            <Pagination current={page} total={totalPages} onChange={setPage} />
+
+            <Pagination
+              current={page}
+              total={totalPages}
+              onChange={setPage}
+            />
           </div>
         )}
       </div>
-      {/* ================= MODALS ================= */}
 
-      {/* MODAL 1: PREVIEW (DESKTOP VIEW) */}
+      {/* =========================================================
+          MODAL 1: PREVIEW
+          ========================================================= */}
       {modal.type === 'preview' && modal.post && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 sm:p-6"
-          onClick={() => setModal({ type: null, post: null })}
+          className="
+            fixed inset-0 z-50
+            flex items-center justify-center
+            bg-black/70 p-4 backdrop-blur-sm
+            sm:p-6
+          "
+          onClick={() =>
+            setModal({
+              type: null,
+              post: null,
+            })
+          }
         >
           <div
-            className="bg-slate-100 rounded-2xl shadow-2xl w-full max-w-[1400px] flex flex-col h-full max-h-[92vh] overflow-hidden"
+            className="
+              flex h-full max-h-[92vh]
+              w-full max-w-[1400px]
+              flex-col overflow-hidden
+              rounded-2xl shadow-2xl
+            "
+            style={{
+              background: 'var(--surface-tertiary)',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header Toolbar */}
+            {/* ================= PREVIEW HEADER ================= */}
             <div
-              className="flex items-center justify-between px-6 py-3 bg-white border-b shrink-0 z-10 shadow-sm"
-              style={{ borderColor: 'var(--border)' }}
+              className="
+                z-10 flex shrink-0
+                items-center justify-between
+                border-b px-6 py-3
+                shadow-sm
+              "
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
             >
               <div className="flex items-center gap-3">
-                <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5">
+                <span
+                  className="
+                    flex items-center gap-1.5
+                    rounded px-2.5 py-1.5
+                    text-xs font-semibold
+                  "
+                  style={{
+                    background: 'var(--warning-light)',
+                    color: 'var(--warning)',
+                  }}
+                >
                   <Clock size={14} />
+
                   <span>
-                    {statusConfig[(modal.post.status as ApprovalStatus) || 'PENDING']?.label ||
-                      'Đang kiểm duyệt'}
+                    {statusConfig[
+                      (modal.post.status as ApprovalStatus) ||
+                        'PENDING'
+                    ]?.label || 'Đang kiểm duyệt'}
                   </span>
                 </span>
-                <span className="text-xs font-medium text-slate-500 border-l pl-3">
+
+                <span
+                  className="
+                    border-l pl-3
+                    text-xs font-medium
+                  "
+                  style={{
+                    color: 'var(--text-muted)',
+                    borderColor: 'var(--border)',
+                  }}
+                >
                   Chế độ xem trước (Giao diện Desktop)
                 </span>
               </div>
+
               <button
-                onClick={() => setModal({ type: null, post: null })}
-                className="text-slate-400 hover:text-slate-700 p-1.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors"
+                onClick={() =>
+                  setModal({
+                    type: null,
+                    post: null,
+                  })
+                }
+                className="
+                  rounded-full p-1.5
+                  transition-colors
+                  hover:bg-[var(--hover)]
+                "
+                style={{
+                  color: 'var(--text-muted)',
+                  background: 'var(--surface-tertiary)',
+                }}
                 title="Đóng xem trước"
               >
                 <X size={18} />
               </button>
             </div>
 
-            {/* Container Preview Content */}
-            <div className="flex-1 overflow-y-auto w-full p-4 sm:p-6 bg-slate-100 flex justify-center">
-              <div className="bg-white rounded-xl shadow-xl border border-slate-200 h-full w-full max-w-[1280px] overflow-y-auto flex flex-col">
-                {/* Mockup Header Web */}
-                <div className="shrink-0 bg-white border-b border-slate-200 select-none pointer-events-none">
+            {/* ================= PREVIEW CONTENT ================= */}
+            <div
+              className="
+                flex w-full flex-1
+                justify-center
+                overflow-y-auto
+                p-4
+                sm:p-6
+              "
+              style={{
+                background: 'var(--surface-tertiary)',
+              }}
+            >
+              <div
+                className="
+                  flex h-full
+                  w-full max-w-[1280px]
+                  flex-col overflow-y-auto
+                  rounded-xl
+                  border
+                  shadow-xl
+                "
+                style={{
+                  background: 'var(--surface)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                {/* ================= MOCKUP HEADER ================= */}
+
+                <div
+                  className="
+                    shrink-0
+                    border-b
+                    select-none
+                    pointer-events-none
+                  "
+                  style={{
+                    background: 'var(--surface)',
+                    borderColor: 'var(--border)',
+                  }}
+                >
+                  {/* TOP BAR OF MOCKUP */}
                   <div
-                    className="flex items-center justify-end px-6 py-1 text-xs text-slate-400 border-b"
-                    style={{ background: '#0f172a', borderColor: '#1e293b' }}
+                    className="
+                      flex items-center
+                      justify-end
+                      border-b px-6 py-1
+                      text-xs
+                    "
+                    style={{
+                      background: '#0f172a',
+                      borderColor: '#1e293b',
+                      color: '#94a3b8',
+                    }}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="hover:text-white transition-colors cursor-pointer">
+                      <span className="cursor-pointer hover:text-white">
                         <Share2 size={12} />
                       </span>
-                      <span className="hover:text-white transition-colors cursor-pointer">
+
+                      <span className="cursor-pointer hover:text-white">
                         <ExternalLink size={12} />
                       </span>
                     </div>
                   </div>
 
+                  {/* MAIN NAV */}
                   <div className="flex items-center justify-between px-6 py-3">
                     <div className="flex items-center gap-2.5">
                       <div
-                        className="w-9 h-9 text-base rounded-xl flex items-center justify-center text-white font-bold"
-                        style={{ background: 'var(--primary, #2563eb)' }}
+                        className="
+                          flex h-9 w-9
+                          items-center justify-center
+                          rounded-xl
+                          text-base font-bold text-white
+                        "
+                        style={{
+                          background: 'var(--primary)',
+                        }}
                       >
                         C
                       </div>
-                      <span className="font-display font-bold text-slate-900 text-lg">CMS</span>
+
+                      <span
+                        className="
+                          font-display
+                          text-lg font-bold
+                        "
+                        style={{
+                          color: 'var(--text)',
+                        }}
+                      >
+                        CMS
+                      </span>
                     </div>
 
                     <nav className="flex items-center gap-1">
                       {[
-                        { label: 'Trang chủ', hasChildren: false, active: false },
-                        { label: 'Giới thiệu', hasChildren: false, active: false },
-                        { label: 'Bài viết', hasChildren: true, active: true },
-                        { label: 'Dự án', hasChildren: true, active: false },
-                        { label: 'Khách hàng', hasChildren: false, active: false },
-                        { label: 'Tuyển dụng', hasChildren: false, active: false },
-                        { label: 'Liên hệ', hasChildren: false, active: false },
+                        {
+                          label: 'Trang chủ',
+                          hasChildren: false,
+                          active: false,
+                        },
+                        {
+                          label: 'Giới thiệu',
+                          hasChildren: false,
+                          active: false,
+                        },
+                        {
+                          label: 'Bài viết',
+                          hasChildren: true,
+                          active: true,
+                        },
+                        {
+                          label: 'Dự án',
+                          hasChildren: true,
+                          active: false,
+                        },
+                        {
+                          label: 'Khách hàng',
+                          hasChildren: false,
+                          active: false,
+                        },
+                        {
+                          label: 'Tuyển dụng',
+                          hasChildren: false,
+                          active: false,
+                        },
+                        {
+                          label: 'Liên hệ',
+                          hasChildren: false,
+                          active: false,
+                        },
                       ].map((item) => (
                         <div
                           key={item.label}
-                          className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium ${
-                            item.active
-                              ? 'text-blue-600 font-semibold'
-                              : 'text-slate-600 hover:text-slate-900'
-                          }`}
+                          className={`
+                            flex items-center gap-1
+                            rounded-lg px-3 py-2
+                            text-sm font-medium
+                            ${
+                              item.active
+                                ? 'font-semibold text-blue-600'
+                                : 'text-slate-600 hover:text-slate-900'
+                            }
+                          `}
                         >
                           <span>{item.label}</span>
-                          {item.hasChildren && <ChevronDown size={13} className="text-slate-400" />}
+
+                          {item.hasChildren && (
+                            <ChevronDown
+                              size={13}
+                              className="text-slate-400"
+                            />
+                          )}
                         </div>
                       ))}
                     </nav>
 
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 border border-slate-200 bg-white">
-                        <Globe size={13} className="text-slate-500" />
+                      <div
+                        className="
+                          flex items-center gap-1.5
+                          rounded-lg border
+                          px-2.5 py-1.5
+                          text-xs font-medium
+                        "
+                        style={{
+                          color: '#475569',
+                          borderColor: '#e2e8f0',
+                          background: '#ffffff',
+                        }}
+                      >
+                        <Globe
+                          size={13}
+                          className="text-slate-500"
+                        />
+
                         <span>🇻🇳</span>
-                        <ChevronDown size={11} className="text-slate-400" />
+
+                        <ChevronDown
+                          size={11}
+                          className="text-slate-400"
+                        />
                       </div>
 
-                      <div className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-50">
+                      <div
+                        className="
+                          rounded-lg p-1.5
+                          text-slate-500
+                          hover:bg-slate-50
+                        "
+                      >
                         <Search size={17} />
                       </div>
 
                       <div
-                        className="flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white shadow-sm"
-                        style={{ background: 'var(--primary, #2563eb)' }}
+                        className="
+                          rounded-lg px-4 py-2
+                          text-sm font-semibold
+                          text-white shadow-sm
+                        "
+                        style={{
+                          background: 'var(--primary)',
+                        }}
                       >
                         Liên hệ ngay
                       </div>
@@ -486,55 +951,136 @@ export default function PostApproval() {
                   </div>
                 </div>
 
-                {/* Body Chi tiết bài viết */}
-                <div className="mx-auto w-full max-w-7xl px-8 py-8 grid grid-cols-12 gap-10">
+                {/* ================= POST BODY ================= */}
+                <div
+                  className="
+                    mx-auto grid
+                    w-full max-w-7xl
+                    grid-cols-12
+                    gap-10
+                    px-8 py-8
+                  "
+                >
+                  {/* MAIN COLUMN */}
                   <div className="col-span-8">
-                    <div className="flex items-center gap-2 text-slate-500 text-sm mb-6 hover:text-blue-600 cursor-pointer w-fit">
-                      <ArrowLeft size={16} /> Quay lại danh sách bài viết
+                    <div
+                      className="
+                        mb-6 flex w-fit
+                        cursor-pointer items-center gap-2
+                        text-sm
+                        hover:text-blue-600
+                      "
+                      style={{
+                        color: '#64748b',
+                      }}
+                    >
+                      <ArrowLeft size={16} />
+                      Quay lại danh sách bài viết
                     </div>
 
-                    <div className="flex gap-2 mb-4">
+                    <div className="mb-4 flex gap-2">
                       {modal.post.category?.name && (
-                        <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        <span
+                          className="
+                            rounded-full
+                            bg-blue-600
+                            px-3 py-1
+                            text-xs font-semibold
+                            text-white
+                          "
+                        >
                           {modal.post.category.name}
                         </span>
                       )}
                     </div>
 
-                    <h1 className="font-display font-bold text-slate-900 mb-6 leading-[1.3] text-[32px]">
+                    <h1
+                      className="
+                        mb-6
+                        font-display
+                        text-[32px]
+                        font-bold
+                        leading-[1.3]
+                      "
+                      style={{
+                        color: '#0f172a',
+                      }}
+                    >
                       {modal.post.title}
                     </h1>
 
-                    <div className="flex items-center justify-between py-4 border-b border-slate-100 mb-6">
+                    <div
+                      className="
+                        mb-6 flex
+                        items-center justify-between
+                        border-b py-4
+                      "
+                      style={{
+                        borderColor: '#f1f5f9',
+                      }}
+                    >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-sm">
-                          {modal.post.author?.name?.charAt(0) || 'A'}
+                        <div
+                          className="
+                            flex h-10 w-10
+                            items-center justify-center
+                            rounded-full
+                            bg-blue-100
+                            text-sm font-bold
+                            text-blue-600
+                          "
+                        >
+                          {modal.post.author?.name?.charAt(0) ||
+                            'A'}
                         </div>
+
                         <div>
                           <p className="text-sm font-bold text-slate-800">
-                            {modal.post.author?.name || 'Tác giả ẩn danh'}
+                            {modal.post.author?.name ||
+                              'Tác giả ẩn danh'}
                           </p>
-                          <p className="text-xs text-slate-500 mt-0.5">
-                            {modal.post.createdAt ? formatDate(modal.post.createdAt) : 'Vừa xong'}
+
+                          <p className="mt-0.5 text-xs text-slate-500">
+                            {modal.post.createdAt
+                              ? formatDate(modal.post.createdAt)
+                              : 'Vừa xong'}
                           </p>
                         </div>
                       </div>
+
                       <div className="flex items-center gap-2">
-                        <button className="p-2 border rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+                        <button
+                          className="
+                            rounded-full border
+                            p-2 text-slate-400
+                            transition-colors
+                            hover:text-slate-600
+                          "
+                        >
                           <Share2 size={16} />
                         </button>
-                        <button className="p-2 border rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+
+                        <button
+                          className="
+                            rounded-full border
+                            p-2 text-slate-400
+                            transition-colors
+                            hover:text-slate-600
+                          "
+                        >
                           <Bookmark size={16} />
                         </button>
                       </div>
                     </div>
 
-                    {/* Hiển thị ảnh đại diện */}
+                    {/* FEATURED IMAGE */}
                     {(() => {
                       const imageUrl =
-                        'featuredMedia' in modal.post && modal.post.featuredMedia
+                        'featuredMedia' in modal.post &&
+                        modal.post.featuredMedia
                           ? modal.post.featuredMedia
-                          : 'mediaList' in modal.post && modal.post.mediaList?.[0]?.filePath
+                          : 'mediaList' in modal.post &&
+                              modal.post.mediaList?.[0]?.filePath
                             ? modal.post.mediaList[0].filePath
                             : null;
 
@@ -542,72 +1088,159 @@ export default function PostApproval() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={imageUrl}
-                          className="w-full rounded-2xl mb-8 object-cover aspect-[16/9] bg-slate-100"
+                          className="
+                            mb-8 aspect-[16/9]
+                            w-full rounded-2xl
+                            bg-slate-100 object-cover
+                          "
                           alt={modal.post.title}
                         />
                       ) : null;
                     })()}
 
-                    <div className="text-slate-700 leading-relaxed space-y-5 pb-8 text-[16px]">
+                    {/* CONTENT */}
+                    <div className="space-y-5 pb-8 text-[16px] text-slate-700 leading-relaxed">
                       {modal.post.summary && (
-                        <p className="text-slate-900 font-medium text-lg">{modal.post.summary}</p>
+                        <p className="text-lg font-medium text-slate-900">
+                          {modal.post.summary}
+                        </p>
                       )}
 
-                      {/* Hiển thị nội dung chi tiết từ API hoặc Skeleton khi tải */}
                       {previewLoading ? (
                         <div className="py-10 text-center text-slate-400">
                           Đang tải toàn bộ nội dung bài viết...
                         </div>
-                      ) : 'content' in modal.post && modal.post.content ? (
+                      ) : 'content' in modal.post &&
+                        modal.post.content ? (
                         <div
-                          className="prose max-w-none text-slate-800 leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: modal.post.content }}
+                          className="
+                            prose max-w-none
+                            text-slate-800
+                            leading-relaxed
+                          "
+                          dangerouslySetInnerHTML={{
+                            __html: modal.post.content,
+                          }}
                         />
                       ) : (
-                        <p className="text-slate-500 italic">
+                        <p className="italic text-slate-500">
                           Nội dung chi tiết chưa được cung cấp.
                         </p>
                       )}
                     </div>
                   </div>
 
-                  {/* Sidebar bên phải */}
+                  {/* ================= SIDEBAR ================= */}
                   <div className="col-span-4 space-y-6">
-                    <div className="border border-slate-100 rounded-2xl p-6 flex flex-col items-center text-center bg-white shadow-sm">
-                      <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-xl mb-3">
-                        {modal.post.author?.name?.charAt(0) || 'A'}
+                    <div
+                      className="
+                        flex flex-col
+                        items-center
+                        rounded-2xl
+                        border
+                        p-6
+                        text-center
+                        shadow-sm
+                      "
+                      style={{
+                        background: 'var(--surface)',
+                        borderColor: 'var(--border)',
+                      }}
+                    >
+                      <div
+                        className="
+                          mb-3 flex
+                          h-16 w-16
+                          items-center justify-center
+                          rounded-full
+                          text-xl font-bold
+                        "
+                        style={{
+                          background: 'var(--primary-light)',
+                          color: 'var(--primary)',
+                        }}
+                      >
+                        {modal.post.author?.name?.charAt(0) ||
+                          'A'}
                       </div>
-                      <h4 className="font-bold text-slate-900 text-sm mb-1">
-                        {modal.post.author?.name || 'Tác giả ẩn danh'}
+
+                      <h4
+                        className="mb-1 text-sm font-bold"
+                        style={{
+                          color: 'var(--text)',
+                        }}
+                      >
+                        {modal.post.author?.name ||
+                          'Tác giả ẩn danh'}
                       </h4>
-                      <p className="text-xs text-slate-500 mb-2">Người đóng góp nội dung</p>
+
+                      <p
+                        className="mb-2 text-xs"
+                        style={{
+                          color: 'var(--text-muted)',
+                        }}
+                      >
+                        Người đóng góp nội dung
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Toolbar của Modal Preview */}
+            {/* ================= PREVIEW FOOTER ================= */}
             <div
-              className="flex items-center justify-end gap-3 px-6 py-4 bg-white shrink-0 border-t shadow-sm z-10"
-              style={{ borderColor: 'var(--border)' }}
+              className="
+                z-10 flex shrink-0
+                items-center justify-end
+                gap-3 border-t
+                px-6 py-4
+                shadow-sm
+              "
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
             >
               {modal.post.status === 'PENDING' && (
                 <>
                   <button
                     onClick={() => {
-                      setModal({ type: 'reject', post: modal.post });
+                      setModal({
+                        type: 'reject',
+                        post: modal.post,
+                      });
                       setRejectReason('');
                     }}
-                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 shadow-sm"
+                    className="
+                      flex items-center gap-1.5
+                      rounded-xl
+                      bg-[var(--error)]
+                      px-5 py-2.5
+                      text-sm font-medium
+                      text-[var(--primary-foreground)]
+                      shadow-sm
+                      hover:opacity-90
+                    "
                   >
                     <XCircle size={16} />
                     <span>Từ chối bài viết</span>
                   </button>
 
                   <button
-                    onClick={() => approve(modal.post!.id)}
-                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+                    onClick={() =>
+                      approve(modal.post!.id)
+                    }
+                    className="
+                      flex items-center gap-1.5
+                      rounded-xl
+                      bg-[var(--success)]
+                      px-5 py-2.5
+                      text-sm font-medium
+                      text-[var(--primary-foreground)]
+                      shadow-sm
+                      hover:opacity-90
+                    "
                   >
                     <CheckCircle size={16} />
                     <span>Duyệt bài viết</span>
@@ -619,10 +1252,17 @@ export default function PostApproval() {
         </div>
       )}
 
-      {/* MODAL 2: REJECT */}
+      {/* =========================================================
+          MODAL 2: REJECT
+          ========================================================= */}
       {modal.type === 'reject' && modal.post && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          className="
+            fixed inset-0 z-[60]
+            flex items-center justify-center
+            bg-black/40 p-4
+            backdrop-blur-sm
+          "
           onClick={() =>
             setModal({
               type: null,
@@ -631,11 +1271,38 @@ export default function PostApproval() {
           }
         >
           <div
-            className="bg-white rounded-2xl shadow-xl w-full max-w-md"
+            className="
+              w-full max-w-md
+              overflow-hidden
+              rounded-2xl
+              shadow-xl
+            "
+            style={{
+              background: 'var(--surface)',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h3 className="font-bold text-lg">Từ chối bài viết</h3>
+            {/* MODAL HEADER */}
+            <div
+              className="
+                flex items-center
+                justify-between
+                border-b
+                px-6 py-4
+              "
+              style={{
+                borderColor: 'var(--border)',
+              }}
+            >
+              <h3
+                className="text-lg font-bold"
+                style={{
+                  color: 'var(--text)',
+                }}
+              >
+                Từ chối bài viết
+              </h3>
+
               <button
                 onClick={() =>
                   setModal({
@@ -643,41 +1310,93 @@ export default function PostApproval() {
                     post: null,
                   })
                 }
-                className="text-slate-400 hover:text-slate-700"
+                className="transition-colors hover:text-[var(--text)]"
+                style={{
+                  color: 'var(--text-muted)',
+                }}
               >
                 <X size={18} />
               </button>
             </div>
 
+            {/* MODAL BODY */}
             <div className="p-6">
-              <p className="text-sm text-slate-600 mb-4">
-                Gửi lý do trả bài cho tác giả <strong>{modal.post.author?.name}</strong>.
+              <p
+                className="mb-4 text-sm"
+                style={{
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                Gửi lý do trả bài cho tác giả{' '}
+                <strong style={{ color: 'var(--text)' }}>
+                  {modal.post.author?.name}
+                </strong>
+                .
               </p>
 
               <textarea
                 rows={4}
                 value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
+                onChange={(e) =>
+                  setRejectReason(e.target.value)
+                }
                 placeholder="Nhập lý do chi tiết..."
-                className="w-full px-3 py-2.5 border rounded-xl text-sm outline-none focus:border-red-400 resize-none"
+                className="
+                  w-full resize-none
+                  rounded-xl border
+                  px-3 py-2.5
+                  text-sm outline-none
+                  focus:border-[var(--error)]
+                "
+                style={{
+                  background: 'var(--surface)',
+                  color: 'var(--text)',
+                  borderColor: 'var(--border)',
+                }}
               />
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {['Nội dung không phù hợp', 'Thiếu nguồn tham khảo', 'Hình ảnh lỗi'].map(
-                  (reason) => (
-                    <button
-                      key={reason}
-                      onClick={() => setRejectReason(reason)}
-                      className="text-xs px-3 py-1.5 rounded-full border hover:bg-slate-50"
-                    >
-                      {reason}
-                    </button>
-                  )
-                )}
+                {[
+                  'Nội dung không phù hợp',
+                  'Thiếu nguồn tham khảo',
+                  'Hình ảnh lỗi',
+                ].map((reason) => (
+                  <button
+                    key={reason}
+                    onClick={() =>
+                      setRejectReason(reason)
+                    }
+                    className="
+                      rounded-full
+                      border
+                      px-3 py-1.5
+                      text-xs
+                      transition-colors
+                      hover:bg-[var(--hover)]
+                    "
+                    style={{
+                      color: 'var(--text-secondary)',
+                      borderColor: 'var(--border)',
+                    }}
+                  >
+                    {reason}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 px-6 py-4 border-t bg-slate-50 rounded-b-2xl">
+            {/* MODAL FOOTER */}
+            <div
+              className="
+                flex justify-end
+                gap-3 rounded-b-2xl
+                border-t px-6 py-4
+              "
+              style={{
+                background: 'var(--surface-secondary)',
+                borderColor: 'var(--border)',
+              }}
+            >
               <button
                 onClick={() =>
                   setModal({
@@ -685,7 +1404,19 @@ export default function PostApproval() {
                     post: null,
                   })
                 }
-                className="px-4 py-2 border rounded-xl text-sm"
+                className="
+                  rounded-xl
+                  border
+                  px-4 py-2
+                  text-sm
+                  transition-colors
+                  hover:bg-[var(--hover)]
+                "
+                style={{
+                  color: 'var(--text-secondary)',
+                  borderColor: 'var(--border)',
+                  background: 'var(--surface)',
+                }}
               >
                 Hủy
               </button>
@@ -693,7 +1424,14 @@ export default function PostApproval() {
               <button
                 onClick={reject}
                 disabled={!rejectReason.trim()}
-                className="px-4 py-2 text-white bg-red-500 rounded-xl text-sm disabled:opacity-50"
+                className="
+                  rounded-xl
+                  bg-[var(--error)]
+                  px-4 py-2
+                  text-sm
+                  text-[var(--primary-foreground)]
+                  disabled:opacity-50
+                "
               >
                 Xác nhận
               </button>
@@ -715,16 +1453,33 @@ function Pagination({
   onChange: (page: number) => void;
 }) {
   if (total <= 1) return null;
+
   const items = paginationItems(current, total);
 
   return (
     <div className="flex items-center gap-1.5">
+      {/* PREVIOUS */}
       <button
         type="button"
-        onClick={() => onChange(Math.max(1, current - 1))}
+        onClick={() =>
+          onChange(Math.max(1, current - 1))
+        }
         disabled={current === 1}
-        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ borderColor: 'var(--border)' }}
+        className="
+          rounded-lg
+          border
+          p-1.5
+          transition-colors
+          hover:bg-[var(--hover)]
+          hover:text-[var(--primary)]
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+        "
+        style={{
+          color: 'var(--text-muted)',
+          borderColor: 'var(--border)',
+          background: 'var(--surface)',
+        }}
         aria-label="Trang trước"
       >
         <ChevronLeft size={16} />
@@ -732,7 +1487,13 @@ function Pagination({
 
       {items.map((item, index) =>
         item === 'ellipsis' ? (
-          <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400">
+          <span
+            key={`ellipsis-${index}`}
+            className="px-1 text-xs"
+            style={{
+              color: 'var(--text-placeholder)',
+            }}
+          >
             …
           </span>
         ) : (
@@ -740,27 +1501,63 @@ function Pagination({
             type="button"
             key={item}
             onClick={() => onChange(item)}
-            className={`min-w-8 h-8 px-2 rounded-lg text-xs font-semibold border transition-colors ${
-              current === item
-                ? 'text-white border-transparent'
-                : 'text-slate-600 bg-white hover:text-blue-600'
-            }`}
+            className={`
+              min-w-8 h-8
+              rounded-lg
+              border
+              px-2
+              text-xs font-semibold
+              transition-colors
+              ${
+                current !== item
+                  ? 'hover:text-[var(--primary)] hover:bg-[var(--hover)]'
+                  : ''
+              }
+            `}
             style={
-              current === item ? { background: 'var(--primary)' } : { borderColor: 'var(--border)' }
+              current === item
+                ? {
+                    background: 'var(--primary)',
+                    color: 'var(--primary-foreground)',
+                    borderColor: 'transparent',
+                  }
+                : {
+                    background: 'var(--surface)',
+                    color: 'var(--text-secondary)',
+                    borderColor: 'var(--border)',
+                  }
             }
-            aria-current={current === item ? 'page' : undefined}
+            aria-current={
+              current === item ? 'page' : undefined
+            }
           >
             {item}
           </button>
         )
       )}
 
+      {/* NEXT */}
       <button
         type="button"
-        onClick={() => onChange(Math.min(total, current + 1))}
+        onClick={() =>
+          onChange(Math.min(total, current + 1))
+        }
         disabled={current >= total}
-        className="p-1.5 rounded-lg border text-slate-500 hover:bg-white hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ borderColor: 'var(--border)' }}
+        className="
+          rounded-lg
+          border
+          p-1.5
+          transition-colors
+          hover:bg-[var(--hover)]
+          hover:text-[var(--primary)]
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+        "
+        style={{
+          color: 'var(--text-muted)',
+          borderColor: 'var(--border)',
+          background: 'var(--surface)',
+        }}
         aria-label="Trang sau"
       >
         <ChevronRight size={16} />
@@ -769,18 +1566,47 @@ function Pagination({
   );
 }
 
-function paginationItems(current: number, total: number): Array<number | 'ellipsis'> {
-  if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+function paginationItems(
+  current: number,
+  total: number
+): Array<number | 'ellipsis'> {
+  if (total <= 7) {
+    return Array.from(
+      { length: total },
+      (_, index) => index + 1
+    );
+  }
+
   const items: Array<number | 'ellipsis'> = [1];
+
   const start = Math.max(2, current - 1);
   const end = Math.min(total - 1, current + 1);
-  if (start > 2) items.push('ellipsis');
-  for (let value = start; value <= end; value += 1) items.push(value);
-  if (end < total - 1) items.push('ellipsis');
+
+  if (start > 2) {
+    items.push('ellipsis');
+  }
+
+  for (
+    let value = start;
+    value <= end;
+    value += 1
+  ) {
+    items.push(value);
+  }
+
+  if (end < total - 1) {
+    items.push('ellipsis');
+  }
+
   items.push(total);
+
   return items;
 }
 
 function formatDate(value: string) {
-  return value.slice(0, 10).split('-').reverse().join('/');
+  return value
+    .slice(0, 10)
+    .split('-')
+    .reverse()
+    .join('/');
 }
