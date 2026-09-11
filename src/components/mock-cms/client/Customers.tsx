@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+
 import { LocalizedLink as Link } from '@/components/navigation/LocalizedLink';
 import { apiFetch } from '@/utils/api-client';
+
 import '@/components/layout/client/customer_styles/Customers.css';
 
 interface Collaborator {
@@ -30,10 +32,14 @@ export default function Customers() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [collaboratorResult, settingResult] = await Promise.all([
-          apiFetch<Collaborator[] | { data?: Collaborator[] }>('/api/v1/collaborator'),
-          apiFetch<CollaboratorSetting>('/api/v1/collaborator-settings'),
-        ]);
+        /*
+         * Load collaborators first.
+         * Settings are optional because the page can still work
+         * with the default 3-column layout.
+         */
+        const collaboratorResult = await apiFetch<
+          Collaborator[] | { data?: Collaborator[] }
+        >('/api/v1/collaborator');
 
         const collaboratorData = Array.isArray(collaboratorResult)
           ? collaboratorResult
@@ -45,8 +51,27 @@ export default function Customers() {
             .sort((a, b) => a.position - b.position)
         );
 
-        if (settingResult.columnsPerRow >= 2 && settingResult.columnsPerRow <= 6) {
-          setColumnsPerRow(settingResult.columnsPerRow);
+        /*
+         * Collaborator settings are optional.
+         * If this API returns 500, keep the default value of 3
+         * instead of making the entire page fail.
+         */
+        try {
+          const settingResult = await apiFetch<CollaboratorSetting>(
+            '/api/v1/collaborator-settings'
+          );
+
+          if (
+            settingResult.columnsPerRow >= 2 &&
+            settingResult.columnsPerRow <= 6
+          ) {
+            setColumnsPerRow(settingResult.columnsPerRow);
+          }
+        } catch (settingError) {
+          console.warn(
+            'Không thể tải cấu hình hiển thị đối tác. Sử dụng mặc định 3 cột.',
+            settingError
+          );
         }
       } catch (error) {
         console.error('Load collaborators error:', error);
@@ -61,6 +86,7 @@ export default function Customers() {
 
   return (
     <div>
+      {/* Hero */}
       <section
         className="py-16 lg:py-24"
         style={{
@@ -71,30 +97,40 @@ export default function Customers() {
           )`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="text-sm font-semibold uppercase tracking-widest mb-3 text-blue-400">
+        <div className="mx-auto max-w-7xl px-6 text-center">
+          <div className="mb-3 text-sm font-semibold uppercase tracking-widest text-blue-400">
             Đối tác & Khách hàng
           </div>
 
-          <h1 className="font-display text-4xl lg:text-5xl font-bold text-white mb-6">
+          <h1 className="mb-6 font-display text-4xl font-bold text-white lg:text-5xl">
             Đồng hành cùng sự phát triển
           </h1>
 
-          <p className="text-blue-200 text-lg max-w-2xl mx-auto">
-            Hơn 500+ doanh nghiệp hàng đầu đã tin tưởng và lựa chọn CMS làm đối tác chiến lược trong
-            hành trình chuyển đổi số.
+          <p className="mx-auto max-w-2xl text-lg text-blue-200">
+            Hơn 500+ doanh nghiệp hàng đầu đã tin tưởng và lựa chọn CMS làm
+            đối tác chiến lược trong hành trình chuyển đổi số.
           </p>
         </div>
       </section>
 
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Collaborators */}
+      <section
+        className="py-20"
+        style={{ background: 'var(--surface-secondary)' }}
+      >
+        <div className="mx-auto max-w-7xl px-6">
           {loading ? (
-            <div className="flex justify-center py-16 text-slate-500">
+            <div
+              className="flex justify-center py-16"
+              style={{ color: 'var(--text-muted)' }}
+            >
               Đang tải danh sách đối tác...
             </div>
           ) : partners.length === 0 ? (
-            <div className="flex justify-center py-16 text-slate-500">
+            <div
+              className="flex justify-center py-16"
+              style={{ color: 'var(--text-muted)' }}
+            >
               Chưa có thông tin đối tác.
             </div>
           ) : (
@@ -107,7 +143,10 @@ export default function Customers() {
               }
             >
               {partners.map((partner) => (
-                <div key={partner.collabId} className="customer-card">
+                <div
+                  key={partner.collabId}
+                  className="customer-card"
+                >
                   <div className="customer-logo">
                     <img
                       src={partner.companyImage}
@@ -118,9 +157,13 @@ export default function Customers() {
 
                   {partner.description && (
                     <div className="customer-tooltip">
-                      <div className="customer-tooltip-name">{partner.collabName}</div>
+                      <div className="customer-tooltip-name">
+                        {partner.collabName}
+                      </div>
 
-                      <div className="customer-tooltip-description">{partner.description}</div>
+                      <div className="customer-tooltip-description">
+                        {partner.description}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -130,23 +173,37 @@ export default function Customers() {
         </div>
       </section>
 
-      <section className="py-16 bg-white border-t" style={{ borderColor: 'var(--border)' }}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="font-display text-3xl font-bold mb-4" style={{ color: 'var(--text)' }}>
+      {/* Contact CTA */}
+      <section
+        className="border-t py-16"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
+      >
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <h2
+            className="mb-4 font-display text-3xl font-bold"
+            style={{ color: 'var(--text)' }}
+          >
             Trở thành đối tác của chúng tôi
           </h2>
 
-          <p className="text-slate-500 mb-8">
-            Cùng nhau xây dựng những giải pháp công nghệ mang tính đột phá và tạo ra giá trị bền
-            vững cho doanh nghiệp.
+          <p
+            className="mb-8"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Cùng nhau xây dựng những giải pháp công nghệ mang tính đột phá và
+            tạo ra giá trị bền vững cho doanh nghiệp.
           </p>
 
           <Link
             to="/lien-he"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-white hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 font-semibold text-white transition-opacity hover:opacity-90"
             style={{ background: 'var(--primary)' }}
           >
-            Liên hệ hợp tác <ArrowRight size={16} />
+            Liên hệ hợp tác
+            <ArrowRight size={16} />
           </Link>
         </div>
       </section>
