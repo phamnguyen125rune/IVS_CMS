@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 
 import Blog from '@/components/mock-cms/client/Blog';
+import { RECRUITMENT_CATEGORY_ID } from '@/config/post-sections';
 import { categoryService } from '@/services/category.service';
 import { postService } from '@/services/post.service';
 import { getSiteUrl } from '@/utils/post-seo';
@@ -40,19 +41,24 @@ export default async function BlogPage({ params, searchParams }: PageProps) {
   const page = parsePositiveInt(query.page) || 1;
   const categoryId = query.category ? parsePositiveInt(query.category) : undefined;
   if (query.category && !categoryId) notFound();
+  if (categoryId === RECRUITMENT_CATEGORY_ID) notFound();
 
-  const [data, categories] = await Promise.all([
-    postService.getPosts(
+  const [data, allCategories] = await Promise.all([
+    postService.getPublicPostsExcludingCategory(
       {
-        status: 'PUBLISHED',
         keyword: query.q?.trim() || undefined,
         categoryId,
       },
+      RECRUITMENT_CATEGORY_ID,
       page,
       10
     ),
     categoryService.getAllCategories(),
   ]);
+
+  const categories = allCategories.filter(
+    (category) => category.categoryId !== RECRUITMENT_CATEGORY_ID
+  );
 
   if (page > Math.max(1, data.meta.pages)) notFound();
 
