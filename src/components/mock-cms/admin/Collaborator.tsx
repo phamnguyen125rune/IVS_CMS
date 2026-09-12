@@ -5,11 +5,7 @@ import { Plus } from 'lucide-react';
 
 import '@/components/layout/admin/collaborator_styles/Collaborator.css';
 
-import type {
-  Collaborator,
-  CollaboratorForm,
-  Media,
-} from '@/types/collaborator.type';
+import type { Collaborator, CollaboratorForm, Media } from '@/types/collaborator.type';
 
 import { initialForm } from '@/types/collaborator.type';
 
@@ -63,7 +59,6 @@ export default function Collaborator() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCollaborators();
   }, []);
 
@@ -82,8 +77,7 @@ export default function Collaborator() {
 
       const images = (Array.isArray(data) ? data : []).filter(
         (media: Media) =>
-          media.mimeType?.startsWith('image/') ||
-          media.fileType?.toLowerCase() === 'image'
+          media.mimeType?.startsWith('image/') || media.fileType?.toLowerCase() === 'image'
       );
 
       setMediaList(images);
@@ -127,9 +121,7 @@ export default function Collaborator() {
     setForm(initialForm);
   };
 
-  const handleFileSelect = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -206,9 +198,7 @@ export default function Collaborator() {
     try {
       setLoading(true);
 
-      const url = editingId
-        ? `/api/v1/collaborator/${editingId}`
-        : '/api/v1/collaborator';
+      const url = editingId ? `/api/v1/collaborator/${editingId}` : '/api/v1/collaborator';
 
       const currentCollaborator = editingId
         ? collaborators.find((item) => item.collabId === editingId)
@@ -222,13 +212,9 @@ export default function Collaborator() {
         body: JSON.stringify({
           collabName: form.collabName,
           description: form.description,
-          position: editingId
-            ? form.position
-            : collaborators.length + 1,
+          position: editingId ? form.position : collaborators.length + 1,
           companyImage: form.companyImage,
-          visible: editingId
-            ? (currentCollaborator?.visible ?? true)
-            : true,
+          visible: editingId ? (currentCollaborator?.visible ?? true) : true,
         }),
       });
 
@@ -275,28 +261,23 @@ export default function Collaborator() {
     }
   };
 
-  const handleToggleVisible = async (
-    collaborator: Collaborator
-  ) => {
+  const handleToggleVisible = async (collaborator: Collaborator) => {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `/api/v1/collaborator/${collaborator.collabId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            collabName: collaborator.collabName,
-            description: collaborator.description ?? '',
-            position: collaborator.position,
-            companyImage: collaborator.companyImage,
-            visible: !collaborator.visible,
-          }),
-        }
-      );
+      const response = await fetch(`/api/v1/collaborator/${collaborator.collabId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          collabName: collaborator.collabName,
+          description: collaborator.description ?? '',
+          position: collaborator.position,
+          companyImage: collaborator.companyImage,
+          visible: !collaborator.visible,
+        }),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -315,27 +296,19 @@ export default function Collaborator() {
     }
   };
 
-  const handleDragStart = (
-    e: React.DragEvent<HTMLTableRowElement>,
-    id: number
-  ) => {
+  const handleDragStart = (e: React.DragEvent<HTMLTableRowElement>, id: number) => {
     setDraggedId(id);
 
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', String(id));
   };
 
-  const handleDragOver = (
-    e: React.DragEvent<HTMLTableRowElement>
-  ) => {
+  const handleDragOver = (e: React.DragEvent<HTMLTableRowElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = async (
-    e: React.DragEvent<HTMLTableRowElement>,
-    targetId: number
-  ) => {
+  const handleDrop = async (e: React.DragEvent<HTMLTableRowElement>, targetId: number) => {
     e.preventDefault();
 
     if (draggedId === null || draggedId === targetId) {
@@ -343,13 +316,9 @@ export default function Collaborator() {
       return;
     }
 
-    const oldIndex = collaborators.findIndex(
-      (item) => item.collabId === draggedId
-    );
+    const oldIndex = collaborators.findIndex((item) => item.collabId === draggedId);
 
-    const newIndex = collaborators.findIndex(
-      (item) => item.collabId === targetId
-    );
+    const newIndex = collaborators.findIndex((item) => item.collabId === targetId);
 
     if (oldIndex === -1 || newIndex === -1) {
       setDraggedId(null);
@@ -386,9 +355,7 @@ export default function Collaborator() {
             }),
           }).then((response) => {
             if (!response.ok) {
-              throw new Error(
-                `Không thể cập nhật vị trí ${item.collabName}`
-              );
+              throw new Error(`Không thể cập nhật vị trí ${item.collabName}`);
             }
           })
         )
@@ -405,15 +372,10 @@ export default function Collaborator() {
   };
 
   return (
-    <div
-      className="collaborator-page"
-      style={{ color: 'var(--text)' }}
-    >
+    <div className="collaborator-page" style={{ color: 'var(--text)' }}>
       <div className="collaborator-header">
         <div>
-          <h1 style={{ color: 'var(--text)' }}>
-            Quản lý Đối tác
-          </h1>
+          <h1 style={{ color: 'var(--text)' }}>Quản lý Đối tác</h1>
 
           <p style={{ color: 'var(--text-secondary)' }}>
             Quản lý danh sách đối tác và cộng tác viên
@@ -422,29 +384,19 @@ export default function Collaborator() {
 
         <div className="collaborator-header-actions">
           <div className="preview-setting">
-            <span style={{ color: 'var(--text-secondary)' }}>
-              Review
-            </span>
+            <span style={{ color: 'var(--text-secondary)' }}>Review</span>
 
             <button
               type="button"
-              className={`preview-toggle ${
-                showPreview ? 'active' : ''
-              }`}
-              onClick={() =>
-                setShowPreview((prev) => !prev)
-              }
+              className={`preview-toggle ${showPreview ? 'active' : ''}`}
+              onClick={() => setShowPreview((prev) => !prev)}
               aria-label="Bật tắt review"
             >
               <span className="preview-toggle-dot" />
             </button>
           </div>
 
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={openCreateModal}
-          >
+          <button type="button" className="btn-primary" onClick={openCreateModal}>
             <Plus size={18} />
             Thêm đối tác
           </button>

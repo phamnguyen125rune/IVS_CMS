@@ -37,9 +37,9 @@ export default function Customers() {
          * Settings are optional because the page can still work
          * with the default 3-column layout.
          */
-        const collaboratorResult = await apiFetch<
-          Collaborator[] | { data?: Collaborator[] }
-        >('/api/v1/collaborator');
+        const collaboratorResult = await apiFetch<Collaborator[] | { data?: Collaborator[] }>(
+          '/api/v1/collaborator'
+        );
 
         const collaboratorData = Array.isArray(collaboratorResult)
           ? collaboratorResult
@@ -61,10 +61,7 @@ export default function Customers() {
             '/api/v1/collaborator-settings'
           );
 
-          if (
-            settingResult.columnsPerRow >= 2 &&
-            settingResult.columnsPerRow <= 6
-          ) {
+          if (settingResult.columnsPerRow >= 2 && settingResult.columnsPerRow <= 6) {
             setColumnsPerRow(settingResult.columnsPerRow);
           }
         } catch (settingError) {
@@ -107,30 +104,21 @@ export default function Customers() {
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg text-blue-200">
-            Hơn 500+ doanh nghiệp hàng đầu đã tin tưởng và lựa chọn CMS làm
-            đối tác chiến lược trong hành trình chuyển đổi số.
+            Hơn 500+ doanh nghiệp hàng đầu đã tin tưởng và lựa chọn CMS làm đối tác chiến lược trong
+            hành trình chuyển đổi số.
           </p>
         </div>
       </section>
 
       {/* Collaborators */}
-      <section
-        className="py-20"
-        style={{ background: 'var(--surface-secondary)' }}
-      >
+      <section className="py-20" style={{ background: 'var(--surface-secondary)' }}>
         <div className="mx-auto max-w-7xl px-6">
           {loading ? (
-            <div
-              className="flex justify-center py-16"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <div className="flex justify-center py-16" style={{ color: 'var(--text-muted)' }}>
               Đang tải danh sách đối tác...
             </div>
           ) : partners.length === 0 ? (
-            <div
-              className="flex justify-center py-16"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <div className="flex justify-center py-16" style={{ color: 'var(--text-muted)' }}>
               Chưa có thông tin đối tác.
             </div>
           ) : (
@@ -143,10 +131,7 @@ export default function Customers() {
               }
             >
               {partners.map((partner) => (
-                <div
-                  key={partner.collabId}
-                  className="customer-card"
-                >
+                <div key={partner.collabId} className="customer-card">
                   <div className="customer-logo">
                     <img
                       src={partner.companyImage}
@@ -157,13 +142,9 @@ export default function Customers() {
 
                   {partner.description && (
                     <div className="customer-tooltip">
-                      <div className="customer-tooltip-name">
-                        {partner.collabName}
-                      </div>
+                      <div className="customer-tooltip-name">{partner.collabName}</div>
 
-                      <div className="customer-tooltip-description">
-                        {partner.description}
-                      </div>
+                      <div className="customer-tooltip-description">{partner.description}</div>
                     </div>
                   )}
                 </div>
@@ -182,19 +163,13 @@ export default function Customers() {
         }}
       >
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <h2
-            className="mb-4 font-display text-3xl font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h2 className="mb-4 font-display text-3xl font-bold" style={{ color: 'var(--text)' }}>
             Trở thành đối tác của chúng tôi
           </h2>
 
-          <p
-            className="mb-8"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Cùng nhau xây dựng những giải pháp công nghệ mang tính đột phá và
-            tạo ra giá trị bền vững cho doanh nghiệp.
+          <p className="mb-8" style={{ color: 'var(--text-secondary)' }}>
+            Cùng nhau xây dựng những giải pháp công nghệ mang tính đột phá và tạo ra giá trị bền
+            vững cho doanh nghiệp.
           </p>
 
           <Link

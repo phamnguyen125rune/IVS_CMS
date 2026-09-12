@@ -143,9 +143,7 @@ export function usePostEditor() {
     setFormData((previous) => ({
       ...previous,
       [name]: nextValue,
-      ...(name === 'categoryId' && nextValue === RECRUITMENT_CATEGORY_ID
-        ? { summary: '' }
-        : {}),
+      ...(name === 'categoryId' && nextValue === RECRUITMENT_CATEGORY_ID ? { summary: '' } : {}),
     }));
   };
 
@@ -201,7 +199,8 @@ export function usePostEditor() {
         method: 'POST',
         body: uploadData,
       });
-      const result = response && typeof response === 'object' && 'data' in response ? response.data : response;
+      const result =
+        response && typeof response === 'object' && 'data' in response ? response.data : response;
       if (!result?.mediaId) throw new Error('Máy chủ không trả về ID ảnh hợp lệ.');
 
       setFormData((previous) => ({

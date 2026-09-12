@@ -70,15 +70,9 @@ export default function PostSidebar({
           className="mb-4 flex items-center gap-2 border-b pb-2"
           style={{ borderColor: 'var(--border)' }}
         >
-          <LayoutList
-            size={16}
-            style={{ color: 'var(--text-secondary)' }}
-          />
+          <LayoutList size={16} style={{ color: 'var(--text-secondary)' }} />
 
-          <h2
-            className="text-sm font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h2 className="text-sm font-bold" style={{ color: 'var(--text)' }}>
             Phân loại
           </h2>
         </div>
@@ -109,10 +103,7 @@ export default function PostSidebar({
               </option>
 
               {categories.map((category) => (
-                <option
-                  key={category.categoryId}
-                  value={category.categoryId}
-                >
+                <option key={category.categoryId} value={category.categoryId}>
                   {category.categoryName}
                 </option>
               ))}
@@ -161,16 +152,9 @@ export default function PostSidebar({
               <input
                 type="text"
                 value={tagSearch}
-                onChange={(event) =>
-                  onTagSearchChange(event.target.value)
-                }
+                onChange={(event) => onTagSearchChange(event.target.value)}
                 onFocus={() => onTagDropdownChange(true)}
-                onBlur={() =>
-                  window.setTimeout(
-                    () => onTagDropdownChange(false),
-                    200
-                  )
-                }
+                onBlur={() => window.setTimeout(() => onTagDropdownChange(false), 200)}
                 placeholder="Tìm và chọn thẻ..."
                 className="w-full rounded-xl border px-3.5 py-2 text-sm outline-none transition-colors placeholder:text-[var(--text-placeholder)] focus:border-[var(--primary)]"
                 style={{
@@ -193,9 +177,7 @@ export default function PostSidebar({
                       <button
                         key={tag.tagId}
                         type="button"
-                        onMouseDown={(event) =>
-                          event.preventDefault()
-                        }
+                        onMouseDown={(event) => event.preventDefault()}
                         onClick={() => {
                           onToggleTag(tag.tagId);
                           onTagSearchChange('');
@@ -243,15 +225,9 @@ export default function PostSidebar({
           style={{ borderColor: 'var(--border)' }}
         >
           <div className="flex items-center gap-2">
-            <ImageIcon
-              size={16}
-              style={{ color: 'var(--text-secondary)' }}
-            />
+            <ImageIcon size={16} style={{ color: 'var(--text-secondary)' }} />
 
-            <h2
-              className="text-sm font-bold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="text-sm font-bold" style={{ color: 'var(--text)' }}>
               Ảnh đại diện
             </h2>
           </div>
@@ -283,15 +259,9 @@ export default function PostSidebar({
               borderColor: 'var(--border)',
             }}
           >
-            <UploadCloud
-              size={24}
-              style={{ color: 'var(--text-muted)' }}
-            />
+            <UploadCloud size={24} style={{ color: 'var(--text-muted)' }} />
 
-            <span
-              className="text-xs font-medium"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
               Chọn ảnh cho bài viết
             </span>
 
@@ -304,7 +274,6 @@ export default function PostSidebar({
                 }}
               >
                 Tải lên
-
                 <input
                   type="file"
                   accept="image/*"
@@ -352,15 +321,9 @@ export default function PostSidebar({
           className="mb-3 flex items-center gap-2 border-b pb-2"
           style={{ borderColor: 'var(--border)' }}
         >
-          <Share2
-            size={16}
-            className="text-violet-600"
-          />
+          <Share2 size={16} className="text-violet-600" />
 
-          <h2
-            className="text-sm font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h2 className="text-sm font-bold" style={{ color: 'var(--text)' }}>
             Mạng xã hội (OG)
           </h2>
         </div>

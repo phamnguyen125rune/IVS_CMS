@@ -6,15 +6,15 @@ export class CommentService {
     return apiFetch<ResCommentDTO[]>(`/api/v1/posts/${postId}/comments?status=${status}`);
   }
 
-  async createComment(payload: ReqCommentCreateDTO): Promise<any> {
-    return apiFetch('/api/v1/comments', {
+  async createComment(payload: ReqCommentCreateDTO): Promise<ResCommentDTO> {
+    return apiFetch<ResCommentDTO>('/api/v1/comments', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
   }
 
-  async updateComment(id: number, payload: ReqCommentUpdateDTO): Promise<any> {
-    return apiFetch(`/api/v1/comments/${id}`, {
+  async updateComment(id: number, payload: ReqCommentUpdateDTO): Promise<ResCommentDTO> {
+    return apiFetch<ResCommentDTO>(`/api/v1/comments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(payload),
     });

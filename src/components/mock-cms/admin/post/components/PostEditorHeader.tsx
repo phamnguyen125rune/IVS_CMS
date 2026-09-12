@@ -42,10 +42,7 @@ export default function PostEditorHeader({
             {isEditMode ? 'Chỉnh sửa bài viết' : 'Soạn thảo bài viết'}
           </h1>
 
-          <p
-            className="mt-1 text-xs"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <p className="mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
             {isEditMode ? `ID: #${id}` : 'Tập trung sáng tạo nội dung'}
           </p>
         </div>

@@ -137,13 +137,7 @@ export default function PostContentPanel({
           </div>
         )}
 
-        <div
-          className={
-            fullscreen
-              ? 'flex-1 space-y-4 overflow-y-auto p-6 sm:p-10'
-              : 'space-y-4'
-          }
-        >
+        <div className={fullscreen ? 'flex-1 space-y-4 overflow-y-auto p-6 sm:p-10' : 'space-y-4'}>
           {/* ================= TITLE ================= */}
           <textarea
             ref={titleRef}
@@ -206,11 +200,7 @@ export default function PostContentPanel({
           ) : null}
 
           {/* ================= RICH TEXT EDITOR ================= */}
-          <div
-            className={`sticky-editor-container ${
-              fullscreen ? 'fullscreen-editor' : ''
-            }`}
-          >
+          <div className={`sticky-editor-container ${fullscreen ? 'fullscreen-editor' : ''}`}>
             <RichTextEditor
               onPendingChange={onPendingChange}
               value={formData.content}
@@ -218,11 +208,7 @@ export default function PostContentPanel({
               placeholder="Bắt đầu nội dung bài viết ở đây..."
             />
 
-            <p
-              className="mt-2 text-sm"
-              role="status"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <p className="mt-2 text-sm" role="status" style={{ color: 'var(--text-muted)' }}>
               {uploadingContentImage
                 ? 'Đang tải ảnh lên, vui lòng chờ trước khi lưu bài viết…'
                 : 'Chèn ảnh bằng nút tải ảnh trên thanh công cụ, kéo thả hoặc dán ảnh vào nội dung. Hỗ trợ JPEG, PNG, GIF, WebP; tối đa 10 MB/ảnh.'}
@@ -241,10 +227,7 @@ export default function PostContentPanel({
                 color: 'var(--text-secondary)',
               }}
             >
-              <Maximize2
-                size={14}
-                className="transition-transform group-hover:scale-110"
-              />
+              <Maximize2 size={14} className="transition-transform group-hover:scale-110" />
 
               <span>Mở rộng trình soạn thảo (Toàn màn hình)</span>
             </button>

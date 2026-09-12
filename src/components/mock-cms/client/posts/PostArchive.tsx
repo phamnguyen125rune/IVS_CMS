@@ -147,7 +147,6 @@ export default function PostArchive({
           hrefForPage={(nextPage) => listHref(nextPage)}
           ariaLabel={`Phân trang ${section.eyebrow.toLowerCase()}`}
         />
-
       </div>
     </div>
   );

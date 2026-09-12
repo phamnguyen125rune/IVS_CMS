@@ -3,8 +3,6 @@
 import { CheckCircle, Loader2, Save } from 'lucide-react';
 import { useState } from 'react';
 
-import type { GeneralInfo } from '@/types/setting.type';
-
 import { type SettingsTabKey } from './constants/settings.constants';
 
 import GeneralSettings from './GeneralSettings';

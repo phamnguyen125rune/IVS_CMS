@@ -48,9 +48,7 @@ export default function MenuForm({
 
   const level2Menus = availableParents.filter((menu) => menu.level === 2);
 
-  const filteredLevel2Menus = level2Menus.filter(
-    (menu) => menu.parentId === selectedLevel1Id,
-  );
+  const filteredLevel2Menus = level2Menus.filter((menu) => menu.parentId === selectedLevel1Id);
 
   const handleLevelChange = (value: string) => {
     const newLevel = Number(value);
@@ -123,9 +121,7 @@ export default function MenuForm({
     <div className="menu-form-wrapper">
       <div className="menu-card">
         <div className="menu-card-header">
-          <h3>
-            {editingId ? 'Chỉnh sửa Menu' : 'Tạo Menu mới'}
-          </h3>
+          <h3>{editingId ? 'Chỉnh sửa Menu' : 'Tạo Menu mới'}</h3>
 
           {editingId && (
             <button
@@ -204,11 +200,7 @@ export default function MenuForm({
 
             <select
               id="menu-parent-level-2"
-              value={
-                form.level === 3 && form.parentId !== null
-                  ? form.parentId
-                  : ''
-              }
+              value={form.level === 3 && form.parentId !== null ? form.parentId : ''}
               onChange={(e) => handleLevel2Change(e.target.value)}
               disabled={form.level !== 3 || selectedLevel1Id === null}
             >
@@ -233,19 +225,10 @@ export default function MenuForm({
           </label>
         </div>
 
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={saving}
-          className="menu-submit-btn"
-        >
+        <button type="button" onClick={onSubmit} disabled={saving} className="menu-submit-btn">
           <Plus size={16} />
 
-          {saving
-            ? 'Đang lưu...'
-            : editingId
-              ? 'Lưu thay đổi'
-              : 'Tạo Menu'}
+          {saving ? 'Đang lưu...' : editingId ? 'Lưu thay đổi' : 'Tạo Menu'}
         </button>
       </div>
     </div>

@@ -8,11 +8,7 @@ interface PostPaginationProps {
   onChange: (page: number) => void;
 }
 
-export default function PostPagination({
-  current,
-  total,
-  onChange,
-}: PostPaginationProps) {
+export default function PostPagination({ current, total, onChange }: PostPaginationProps) {
   if (total <= 1) return null;
 
   return (

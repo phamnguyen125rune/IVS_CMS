@@ -1,8 +1,6 @@
 'use client';
 
-import {
-  useLocalizedNavigate as useNavigate,
-} from '@/components/navigation/LocalizedLink';
+import { useLocalizedNavigate as useNavigate } from '@/components/navigation/LocalizedLink';
 
 import PostDeleteDialog from './components/PostDeleteDialog';
 import PostTable from './components/PostTable';
@@ -14,10 +12,7 @@ export default function Posts() {
   const postList = usePostList();
 
   return (
-    <div
-      className="relative p-6"
-      style={{ color: 'var(--text)' }}
-    >
+    <div className="relative p-6" style={{ color: 'var(--text)' }}>
       {postList.errorMessage && (
         <div
           role="alert"
@@ -72,9 +67,7 @@ export default function Posts() {
         total={postList.total}
         totalPages={postList.totalPages}
         onPageChange={postList.setPage}
-        onEdit={(post) =>
-          navigate(`/admin/bai-viet/sua/${post.id}`)
-        }
+        onEdit={(post) => navigate(`/admin/bai-viet/sua/${post.id}`)}
         onDelete={postList.setDeletePost}
         onAction={postList.changePostStatus}
       />

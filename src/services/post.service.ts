@@ -69,9 +69,7 @@ export class PostService {
       chunks.push(nextChunk.result || []);
     }
 
-    const filtered = chunks
-      .flat()
-      .filter((post) => post.category?.id !== excludedCategoryId);
+    const filtered = chunks.flat().filter((post) => post.category?.id !== excludedCategoryId);
 
     const total = filtered.length;
     const pages = total === 0 ? 0 : Math.ceil(total / size);
@@ -120,7 +118,10 @@ export class PostService {
     const total = filtered.length;
     const pages = total === 0 ? 0 : Math.ceil(total / size);
     const start = (page - 1) * size;
-    return { meta: { page, pageSize: size, pages, total }, result: filtered.slice(start, start + size) };
+    return {
+      meta: { page, pageSize: size, pages, total },
+      result: filtered.slice(start, start + size),
+    };
   }
 
   createPost(payload: ReqPostCreateDTO): Promise<ResPostDTO> {

@@ -61,11 +61,7 @@ export default function RecruitmentDetailView({
         <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-10 lg:p-12">
           {heroImage ? (
             <div className="mb-9 overflow-hidden rounded-2xl border border-slate-100 bg-slate-100">
-              <img
-                src={heroImage}
-                alt={post.title}
-                className="max-h-[520px] w-full object-cover"
-              />
+              <img src={heroImage} alt={post.title} className="max-h-[520px] w-full object-cover" />
             </div>
           ) : null}
 
@@ -82,7 +78,10 @@ export default function RecruitmentDetailView({
                 <p className="mb-1 text-sm font-semibold uppercase tracking-wider text-blue-600">
                   Tuyển dụng
                 </p>
-                <h2 id="related-jobs-title" className="text-2xl font-bold text-slate-900 font-display">
+                <h2
+                  id="related-jobs-title"
+                  className="text-2xl font-bold text-slate-900 font-display"
+                >
                   {section.relatedTitle}
                 </h2>
               </div>
@@ -114,7 +113,10 @@ export default function RecruitmentDetailView({
                       </p>
                     ) : null}
                   </div>
-                  <ArrowRight size={18} className="shrink-0 text-slate-300 group-hover:text-blue-600" />
+                  <ArrowRight
+                    size={18}
+                    className="shrink-0 text-slate-300 group-hover:text-blue-600"
+                  />
                 </Link>
               ))}
             </div>

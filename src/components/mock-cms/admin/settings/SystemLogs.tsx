@@ -85,7 +85,7 @@ export default function SystemLogs() {
   const [toTime, setToTime] = useState<string>('');
 
   const [statusGroup, setStatusGroup] = useState('ALL');
-  const [entityType, setEntityType] = useState('');
+  const [entityType] = useState('');
   const anonymousOnly = false;
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -877,9 +877,7 @@ export default function SystemLogs() {
               {/* Old Value */}
               <div className="flex flex-col">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-rose-500">
-                    Request
-                  </span>
+                  <span className="text-xs font-semibold text-rose-500">Request</span>
                   {selectedLog.oldValue != null && (
                     <button
                       type="button"
@@ -907,9 +905,7 @@ export default function SystemLogs() {
               {/* New Value */}
               <div className="flex flex-col">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-emerald-500">
-                    Response
-                  </span>
+                  <span className="text-xs font-semibold text-emerald-500">Response</span>
                   {selectedLog.newValue != null && (
                     <button
                       type="button"

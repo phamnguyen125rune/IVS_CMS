@@ -37,22 +37,13 @@ export default function PostDeleteDialog({
           <Trash2 size={24} />
         </div>
 
-        <h3
-          className="mb-2 font-display text-lg font-bold"
-          style={{ color: 'var(--text)' }}
-        >
+        <h3 className="mb-2 font-display text-lg font-bold" style={{ color: 'var(--text)' }}>
           Xóa bài viết?
         </h3>
 
-        <p
-          className="mb-6 text-sm leading-relaxed"
-          style={{ color: 'var(--text-secondary)' }}
-        >
+        <p className="mb-6 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
           Bạn có chắc chắn muốn xóa bài viết <br />
-          <span
-            className="font-semibold"
-            style={{ color: 'var(--text)' }}
-          >
+          <span className="font-semibold" style={{ color: 'var(--text)' }}>
             &quot;{post.title}&quot;
           </span>
           ?

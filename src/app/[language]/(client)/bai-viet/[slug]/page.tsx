@@ -94,18 +94,9 @@ export default async function SinglePostPage({ params }: PageProps) {
   try {
     const recruitmentCategoryId = RECRUITMENT_POST_SECTION.categoryId;
     const recentData = post.category?.id
-      ? await postService.getPublicPosts(
-        { categoryId: post.category.id },
-        1,
-        6
-      )
+      ? await postService.getPublicPosts({ categoryId: post.category.id }, 1, 6)
       : recruitmentCategoryId
-        ? await postService.getPublicPostsExcludingCategory(
-          {},
-          recruitmentCategoryId,
-          1,
-          6
-        )
+        ? await postService.getPublicPostsExcludingCategory({}, recruitmentCategoryId, 1, 6)
         : await postService.getPublicPosts({}, 1, 6);
     recentPosts = recentData.result || [];
   } catch {

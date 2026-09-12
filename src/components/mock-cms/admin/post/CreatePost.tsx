@@ -13,16 +13,10 @@ export default function PostEditor() {
   const editor = usePostEditor();
 
   const disabled =
-    editor.loading ||
-    editor.loadingPost ||
-    editor.uploadingImage ||
-    editor.uploadingContentImage;
+    editor.loading || editor.loadingPost || editor.uploadingImage || editor.uploadingContentImage;
 
   return (
-    <div
-      className="relative mx-auto max-w-[1400px] p-6 pb-24"
-      style={{ color: 'var(--text)' }}
-    >
+    <div className="relative mx-auto max-w-[1400px] p-6 pb-24" style={{ color: 'var(--text)' }}>
       {/* ================= ERROR ================= */}
       {editor.formError && (
         <div
@@ -133,28 +127,19 @@ export default function PostEditor() {
             fullscreen={editor.isFullscreen}
             disabled={disabled}
             uploadingContentImage={editor.uploadingContentImage}
-            showSummary={
-              editor.formData.categoryId !==
-              RECRUITMENT_CATEGORY_ID
-            }
+            showSummary={editor.formData.categoryId !== RECRUITMENT_CATEGORY_ID}
             onFullscreenChange={editor.setIsFullscreen}
-            onSaveDraft={() =>
-              void editor.submit('DRAFT')
-            }
+            onSaveDraft={() => void editor.submit('DRAFT')}
             onTitleChange={editor.handleTitleChange}
             onChange={editor.handleChange}
             onContentChange={editor.setContent}
-            onPendingChange={
-              editor.setUploadingContentImage
-            }
+            onPendingChange={editor.setUploadingContentImage}
           />
 
           <PostSeoPanel
             formData={editor.formData}
             open={editor.showSeo}
-            onToggle={() =>
-              editor.setShowSeo(!editor.showSeo)
-            }
+            onToggle={() => editor.setShowSeo(!editor.showSeo)}
             onChange={editor.handleChange}
             onCheckbox={editor.handleCheckbox}
           />
@@ -173,9 +158,7 @@ export default function PostEditor() {
           uploadingImage={editor.uploadingImage}
           onChange={editor.handleChange}
           onTagSearchChange={editor.setTagSearch}
-          onTagDropdownChange={
-            editor.setShowTagDropdown
-          }
+          onTagDropdownChange={editor.setShowTagDropdown}
           onToggleTag={editor.toggleTag}
           onImageUpload={editor.handleImageUpload}
           onOpenMedia={editor.openMediaLibrary}

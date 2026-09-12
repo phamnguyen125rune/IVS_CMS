@@ -17,10 +17,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const posts: MetadataRoute.Sitemap = data.result.map((post) => {
       const isRecruitment = post.category?.id === RECRUITMENT_POST_SECTION.categoryId;
       return {
-        url: `${siteUrl}${isRecruitment
+        url: `${siteUrl}${
+          isRecruitment
             ? postSectionPath(post.slug, RECRUITMENT_POST_SECTION.basePath)
             : postPath(post.slug)
-          }`,
+        }`,
         lastModified: post.updatedAt || post.publishedAt || post.createdAt,
       };
     });

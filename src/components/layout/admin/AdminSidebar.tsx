@@ -116,11 +116,7 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
   const router = useRouter();
 
   const language = typeof params?.language === 'string' ? params.language : 'vi';
-  const EXCLUDED_PERMISSION_APIS = [
-    'dashboard',
-    'profile',
-    'setting',
-  ];
+  const EXCLUDED_PERMISSION_APIS = ['dashboard', 'profile', 'setting'];
   const [permissions, setPermissions] = useState<Record<string, boolean>>({});
   const [checkingPermissions, setCheckingPermissions] = useState(true);
 
@@ -128,8 +124,7 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
     const checkPermissions = async () => {
       try {
         const permissionItems = navItems.filter(
-          (item) =>
-            !EXCLUDED_PERMISSION_APIS.includes(item.apiLink)
+          (item) => !EXCLUDED_PERMISSION_APIS.includes(item.apiLink)
         );
 
         const results = await Promise.all(
@@ -137,7 +132,7 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
             try {
               const allowed = await permissionService.checkPermission({
                 apiLink: item.apiLink,
-                actionName: actionName
+                actionName: actionName,
               });
 
               return [item.path, allowed] as const;
@@ -268,15 +263,15 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
           {!checkingPermissions &&
-            navItems.filter((item) =>
-                EXCLUDED_PERMISSION_APIS.includes(item.apiLink) ||
-                permissions[item.path] === true
-            ).map((item) => {
+            navItems
+              .filter(
+                (item) =>
+                  EXCLUDED_PERMISSION_APIS.includes(item.apiLink) || permissions[item.path] === true
+              )
+              .map((item) => {
                 const href = localizePath(item.path, language);
 
-                const isActive =
-                  pathname === href ||
-                  pathname.startsWith(`${href}/`);
+                const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
                 return (
                   <Link
@@ -296,26 +291,16 @@ export default function AdminSidebar({ sidebarOpen, onToggle }: AdminSidebarProp
                       hover:text-[var(--dark-text)]
                     "
                     style={{
-                      background: isActive
-                        ? 'var(--primary)'
-                        : undefined,
+                      background: isActive ? 'var(--primary)' : undefined,
 
-                      color: isActive
-                        ? 'var(--primary-foreground)'
-                        : 'var(--dark-text-secondary)',
+                      color: isActive ? 'var(--primary-foreground)' : 'var(--dark-text-secondary)',
 
-                      boxShadow: isActive
-                        ? '0 4px 6px -1px rgb(30 58 138 / 0.2)'
-                        : undefined,
+                      boxShadow: isActive ? '0 4px 6px -1px rgb(30 58 138 / 0.2)' : undefined,
                     }}
                   >
                     <item.icon size={20} className="shrink-0" />
 
-                    {sidebarOpen && (
-                      <span className="truncate">
-                        {item.label}
-                      </span>
-                    )}
+                    {sidebarOpen && <span className="truncate">{item.label}</span>}
                   </Link>
                 );
               })}

@@ -56,37 +56,43 @@ export default function PostTable({
                 borderColor: 'var(--border)',
               }}
             >
-              <th className="w-[35%] px-5 py-3 text-left text-xs font-semibold uppercase"
+              <th
+                className="w-[35%] px-5 py-3 text-left text-xs font-semibold uppercase"
                 style={{ color: 'var(--text-muted)' }}
               >
                 Bài viết
               </th>
 
-              <th className="w-[15%] px-5 py-3 text-left text-xs font-semibold uppercase"
+              <th
+                className="w-[15%] px-5 py-3 text-left text-xs font-semibold uppercase"
                 style={{ color: 'var(--text-muted)' }}
               >
                 Danh mục
               </th>
 
-              <th className="w-[15%] px-5 py-3 text-left text-xs font-semibold uppercase"
+              <th
+                className="w-[15%] px-5 py-3 text-left text-xs font-semibold uppercase"
                 style={{ color: 'var(--text-muted)' }}
               >
                 Tác giả
               </th>
 
-              <th className="w-[15%] px-5 py-3 text-left text-xs font-semibold uppercase"
+              <th
+                className="w-[15%] px-5 py-3 text-left text-xs font-semibold uppercase"
                 style={{ color: 'var(--text-muted)' }}
               >
                 Thời gian
               </th>
 
-              <th className="w-[10%] px-5 py-3 text-left text-xs font-semibold uppercase"
+              <th
+                className="w-[10%] px-5 py-3 text-left text-xs font-semibold uppercase"
                 style={{ color: 'var(--text-muted)' }}
               >
                 Trạng thái
               </th>
 
-              <th className="w-[10%] px-5 py-3 text-right text-xs font-semibold uppercase"
+              <th
+                className="w-[10%] px-5 py-3 text-right text-xs font-semibold uppercase"
                 style={{ color: 'var(--text-muted)' }}
               >
                 Thao tác
@@ -187,15 +193,9 @@ export default function PostTable({
                     <td className="whitespace-nowrap px-5 py-4 text-xs">
                       <div>
                         <span
-                          className={
-                            post.publishedAt
-                              ? 'font-semibold'
-                              : 'italic'
-                          }
+                          className={post.publishedAt ? 'font-semibold' : 'italic'}
                           style={{
-                            color: post.publishedAt
-                              ? 'var(--text-secondary)'
-                              : 'var(--text-muted)',
+                            color: post.publishedAt ? 'var(--text-secondary)' : 'var(--text-muted)',
                           }}
                         >
                           {post.publishedAt
@@ -207,10 +207,7 @@ export default function PostTable({
                           className="mt-0.5 block text-[11px]"
                           style={{ color: 'var(--text-muted)' }}
                         >
-                          Tạo:{' '}
-                          {post.createdAt
-                            ? formatPostDate(post.createdAt)
-                            : '---'}
+                          Tạo: {post.createdAt ? formatPostDate(post.createdAt) : '---'}
                         </span>
                       </div>
                     </td>
@@ -227,10 +224,7 @@ export default function PostTable({
                     {/* ================= THAO TÁC ================= */}
                     <td className="whitespace-nowrap px-5 py-4">
                       <div className="flex items-center justify-end gap-1.5">
-                        {(
-                          post.status === 'DRAFT' ||
-                          post.status === 'REJECTED'
-                        ) && (
+                        {(post.status === 'DRAFT' || post.status === 'REJECTED') && (
                           <button
                             disabled={busy}
                             title="Gửi duyệt"
@@ -238,12 +232,10 @@ export default function PostTable({
                             className="rounded-lg p-1.5 transition-colors disabled:opacity-50"
                             style={{ color: 'var(--primary)' }}
                             onMouseEnter={(event) => {
-                              event.currentTarget.style.background =
-                                'var(--primary-light)';
+                              event.currentTarget.style.background = 'var(--primary-light)';
                             }}
                             onMouseLeave={(event) => {
-                              event.currentTarget.style.background =
-                                'transparent';
+                              event.currentTarget.style.background = 'transparent';
                             }}
                           >
                             <Send size={16} />
@@ -258,12 +250,10 @@ export default function PostTable({
                             className="rounded-lg p-1.5 transition-colors disabled:opacity-50"
                             style={{ color: 'var(--success)' }}
                             onMouseEnter={(event) => {
-                              event.currentTarget.style.background =
-                                'var(--success-light)';
+                              event.currentTarget.style.background = 'var(--success-light)';
                             }}
                             onMouseLeave={(event) => {
-                              event.currentTarget.style.background =
-                                'transparent';
+                              event.currentTarget.style.background = 'transparent';
                             }}
                           >
                             <Globe size={16} />
@@ -278,12 +268,10 @@ export default function PostTable({
                             className="rounded-lg p-1.5 transition-colors disabled:opacity-50"
                             style={{ color: 'var(--warning)' }}
                             onMouseEnter={(event) => {
-                              event.currentTarget.style.background =
-                                'var(--warning-light)';
+                              event.currentTarget.style.background = 'var(--warning-light)';
                             }}
                             onMouseLeave={(event) => {
-                              event.currentTarget.style.background =
-                                'transparent';
+                              event.currentTarget.style.background = 'transparent';
                             }}
                           >
                             <EyeOff size={16} />
@@ -296,16 +284,12 @@ export default function PostTable({
                           style={{ color: 'var(--text-muted)' }}
                           title="Chỉnh sửa"
                           onMouseEnter={(event) => {
-                            event.currentTarget.style.color =
-                              'var(--primary)';
-                            event.currentTarget.style.background =
-                              'var(--primary-light)';
+                            event.currentTarget.style.color = 'var(--primary)';
+                            event.currentTarget.style.background = 'var(--primary-light)';
                           }}
                           onMouseLeave={(event) => {
-                            event.currentTarget.style.color =
-                              'var(--text-muted)';
-                            event.currentTarget.style.background =
-                              'transparent';
+                            event.currentTarget.style.color = 'var(--text-muted)';
+                            event.currentTarget.style.background = 'transparent';
                           }}
                         >
                           <Edit size={16} />
@@ -317,16 +301,12 @@ export default function PostTable({
                           style={{ color: 'var(--text-muted)' }}
                           title="Xóa bài viết"
                           onMouseEnter={(event) => {
-                            event.currentTarget.style.color =
-                              'var(--error)';
-                            event.currentTarget.style.background =
-                              'var(--error-light)';
+                            event.currentTarget.style.color = 'var(--error)';
+                            event.currentTarget.style.background = 'var(--error-light)';
                           }}
                           onMouseLeave={(event) => {
-                            event.currentTarget.style.color =
-                              'var(--text-muted)';
-                            event.currentTarget.style.background =
-                              'transparent';
+                            event.currentTarget.style.color = 'var(--text-muted)';
+                            event.currentTarget.style.background = 'transparent';
                           }}
                         >
                           <Trash2 size={16} />
@@ -359,39 +339,23 @@ export default function PostTable({
             borderColor: 'var(--border)',
           }}
         >
-          <div
-            className="text-xs"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
             Hiển thị{' '}
-            <span
-              className="font-semibold"
-              style={{ color: 'var(--text-secondary)' }}
-            >
+            <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
               {from}
             </span>{' '}
             -{' '}
-            <span
-              className="font-semibold"
-              style={{ color: 'var(--text-secondary)' }}
-            >
+            <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
               {to}
             </span>{' '}
             trong{' '}
-            <span
-              className="font-semibold"
-              style={{ color: 'var(--text-secondary)' }}
-            >
+            <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
               {total}
             </span>{' '}
             bài viết
           </div>
 
-          <PostPagination
-            current={page}
-            total={totalPages}
-            onChange={onPageChange}
-          />
+          <PostPagination current={page} total={totalPages} onChange={onPageChange} />
         </div>
       )}
     </div>

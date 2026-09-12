@@ -34,37 +34,22 @@ export default function PostSeoPanel({
         style={{ background: 'var(--surface-secondary)' }}
       >
         <div className="flex items-center gap-2">
-          <Globe
-            size={18}
-            style={{ color: 'var(--success)' }}
-          />
+          <Globe size={18} style={{ color: 'var(--success)' }} />
 
-          <span
-            className="font-display text-sm font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <span className="font-display text-sm font-bold" style={{ color: 'var(--text)' }}>
             Cấu hình SEO & Máy chủ tìm kiếm
           </span>
         </div>
 
         {open ? (
-          <ChevronUp
-            size={16}
-            style={{ color: 'var(--text-muted)' }}
-          />
+          <ChevronUp size={16} style={{ color: 'var(--text-muted)' }} />
         ) : (
-          <ChevronDown
-            size={16}
-            style={{ color: 'var(--text-muted)' }}
-          />
+          <ChevronDown size={16} style={{ color: 'var(--text-muted)' }} />
         )}
       </button>
 
       {open && (
-        <div
-          className="space-y-4 border-t p-6"
-          style={{ borderColor: 'var(--border)' }}
-        >
+        <div className="space-y-4 border-t p-6" style={{ borderColor: 'var(--border)' }}>
           {/* ================= META TITLE ================= */}
           <div>
             <label
@@ -77,9 +62,7 @@ export default function PostSeoPanel({
                 className="text-xs"
                 style={{
                   color:
-                    (formData.metaTitle?.length ?? 0) > 60
-                      ? 'var(--error)'
-                      : 'var(--text-muted)',
+                    (formData.metaTitle?.length ?? 0) > 60 ? 'var(--error)' : 'var(--text-muted)',
                 }}
               >
                 {formData.metaTitle?.length ?? 0} / 60

@@ -37,15 +37,9 @@ export default function PostMediaLibraryModal({
           style={{ borderColor: 'var(--border)' }}
         >
           <div className="flex items-center gap-2">
-            <FolderOpen
-              size={20}
-              style={{ color: 'var(--primary)' }}
-            />
+            <FolderOpen size={20} style={{ color: 'var(--primary)' }} />
 
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--text)' }}
-            >
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text)' }}>
               Thư viện Media
             </h2>
           </div>
@@ -79,9 +73,7 @@ export default function PostMediaLibraryModal({
                 style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }}
               />
 
-              <span className="text-sm font-medium">
-                Đang tải thư viện...
-              </span>
+              <span className="text-sm font-medium">Đang tải thư viện...</span>
             </div>
           ) : items.length > 0 ? (
             <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">

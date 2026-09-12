@@ -15,78 +15,67 @@ interface NavPermission {
  * - Không cần kiểm tra permission
  * - Không được tính vào hasAnyPermission
  */
-const EXCLUDED_PERMISSION_APIS = [
-  'dashboard',
-  'profile',
-  'setting',
-];
+const EXCLUDED_PERMISSION_APIS = ['dashboard', 'profile', 'setting'];
 
 const actionName = 'VIEW';
 
 const protectedRoutes: NavPermission[] = [
   {
     path: '/admin/tong-quan',
-    apiLink: 'dashboard'
+    apiLink: 'dashboard',
   },
   {
     path: '/admin/nhan-su',
-    apiLink: 'user'
+    apiLink: 'user',
   },
   {
     path: '/admin/nhom-nhan-su',
-    apiLink: 'role'
+    apiLink: 'role',
   },
   {
     path: '/admin/phan-quyen',
-    apiLink: 'permission'
+    apiLink: 'permission',
   },
   {
     path: '/admin/bai-viet',
-    apiLink: 'post'
+    apiLink: 'post',
   },
   {
     path: '/admin/kiem-duyet',
-    apiLink: 'post-review'
+    apiLink: 'post-review',
   },
   {
     path: '/admin/danh-muc',
-    apiLink: 'category'
+    apiLink: 'category',
   },
   {
     path: '/admin/media',
-    apiLink: 'media'
+    apiLink: 'media',
   },
   {
     path: '/admin/menu',
-    apiLink: 'menu'
+    apiLink: 'menu',
   },
   {
     path: '/admin/bieu-mau',
-    apiLink: 'form'
+    apiLink: 'form',
   },
   {
     path: '/admin/cai-dat',
-    apiLink: 'setting'
+    apiLink: 'setting',
   },
   {
     path: '/admin/ho-so',
-    apiLink: 'profile'
+    apiLink: 'profile',
   },
 ];
 
-export default function AdminRouteGuard({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminRouteGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
 
-  const language =
-    typeof params?.language === 'string'
-      ? params.language
-      : 'vi';
+  const language = typeof params?.language === 'string' ? params.language : 'vi';
 
   const [checking, setChecking] = useState(true);
 
@@ -103,10 +92,7 @@ export default function AdminRouteGuard({
         const currentRoute = protectedRoutes.find((route) => {
           const href = localizePath(route.path, language);
 
-          return (
-            pathname === href ||
-            pathname.startsWith(`${href}/`)
-          );
+          return pathname === href || pathname.startsWith(`${href}/`);
         });
 
         /**
@@ -131,11 +117,7 @@ export default function AdminRouteGuard({
          *
          * Không cần kiểm tra permission.
          */
-        if (
-          EXCLUDED_PERMISSION_APIS.includes(
-            currentRoute.apiLink
-          )
-        ) {
+        if (EXCLUDED_PERMISSION_APIS.includes(currentRoute.apiLink)) {
           if (!cancelled) {
             setChecking(false);
           }
@@ -150,16 +132,12 @@ export default function AdminRouteGuard({
         let currentPermission = false;
 
         try {
-          currentPermission =
-            await permissionService.checkPermission({
-              apiLink: currentRoute.apiLink,
-              actionName: actionName,
-            });
+          currentPermission = await permissionService.checkPermission({
+            apiLink: currentRoute.apiLink,
+            actionName: actionName,
+          });
         } catch (error) {
-          console.error(
-            'Check current route permission failed:',
-            error
-          );
+          console.error('Check current route permission failed:', error);
 
           currentPermission = false;
         }
@@ -189,10 +167,7 @@ export default function AdminRouteGuard({
          * bị loại khỏi danh sách này.
          */
         const permissionRoutes = protectedRoutes.filter(
-          (route) =>
-            !EXCLUDED_PERMISSION_APIS.includes(
-              route.apiLink
-            )
+          (route) => !EXCLUDED_PERMISSION_APIS.includes(route.apiLink)
         );
 
         const permissions = await Promise.all(
@@ -200,13 +175,10 @@ export default function AdminRouteGuard({
             try {
               return await permissionService.checkPermission({
                 apiLink: route.apiLink,
-                actionName: actionName
+                actionName: actionName,
               });
             } catch (error) {
-              console.error(
-                `Check permission failed: ${route.apiLink}`,
-                error
-              );
+              console.error(`Check permission failed: ${route.apiLink}`, error);
 
               return false;
             }
@@ -216,9 +188,7 @@ export default function AdminRouteGuard({
         /**
          * User có ít nhất 1 quyền feature
          */
-        const hasAnyPermission = permissions.some(
-          (permission) => permission === true
-        );
+        const hasAnyPermission = permissions.some((permission) => permission === true);
 
         if (cancelled) {
           return;
@@ -229,12 +199,7 @@ export default function AdminRouteGuard({
          * -> chuyển sang Hồ sơ
          */
         if (hasAnyPermission) {
-          router.replace(
-            localizePath(
-              '/admin/ho-so',
-              language
-            )
-          );
+          router.replace(localizePath('/admin/ho-so', language));
 
           return;
         }
@@ -245,10 +210,7 @@ export default function AdminRouteGuard({
          */
         router.replace('/');
       } catch (error) {
-        console.error(
-          'Permission check failed:',
-          error
-        );
+        console.error('Permission check failed:', error);
 
         if (!cancelled) {
           router.replace('/');
@@ -272,9 +234,7 @@ export default function AdminRouteGuard({
    */
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        Đang kiểm tra quyền...
-      </div>
+      <div className="flex min-h-screen items-center justify-center">Đang kiểm tra quyền...</div>
     );
   }
 

@@ -32,17 +32,11 @@ export default function PostToolbar({
     <>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1
-            className="font-display text-xl font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h1 className="font-display text-xl font-bold" style={{ color: 'var(--text)' }}>
             Quản lý bài viết
           </h1>
 
-          <p
-            className="mt-0.5 text-sm"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <p className="mt-0.5 text-sm" style={{ color: 'var(--text-muted)' }}>
             {total} bài viết phù hợp bộ lọc
           </p>
         </div>
@@ -92,11 +86,7 @@ export default function PostToolbar({
         <select
           value={categoryId ?? ''}
           onChange={(event) =>
-            onCategoryChange(
-              event.target.value
-                ? Number(event.target.value)
-                : undefined
-            )
+            onCategoryChange(event.target.value ? Number(event.target.value) : undefined)
           }
           className="rounded-lg border bg-transparent px-3 py-2 text-xs font-medium outline-none transition-colors focus:border-[var(--primary)]"
           style={{
@@ -109,10 +99,7 @@ export default function PostToolbar({
           <option value="">Tất cả danh mục</option>
 
           {categories.map((category) => (
-            <option
-              key={category.categoryId}
-              value={category.categoryId}
-            >
+            <option key={category.categoryId} value={category.categoryId}>
               {category.categoryName}
             </option>
           ))}
@@ -141,18 +128,14 @@ export default function PostToolbar({
                 }
                 onMouseEnter={(event) => {
                   if (!isActive) {
-                    event.currentTarget.style.background =
-                      'var(--hover)';
-                    event.currentTarget.style.color =
-                      'var(--text-secondary)';
+                    event.currentTarget.style.background = 'var(--hover)';
+                    event.currentTarget.style.color = 'var(--text-secondary)';
                   }
                 }}
                 onMouseLeave={(event) => {
                   if (!isActive) {
-                    event.currentTarget.style.background =
-                      'transparent';
-                    event.currentTarget.style.color =
-                      'var(--text-muted)';
+                    event.currentTarget.style.background = 'transparent';
+                    event.currentTarget.style.color = 'var(--text-muted)';
                   }
                 }}
               >

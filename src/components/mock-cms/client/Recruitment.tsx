@@ -48,8 +48,7 @@ const benefits = [
     icon: Coffee,
     iconClassName: 'text-orange-600',
     title: 'Môi trường năng động',
-    description:
-      'Không gian làm việc cởi mở, đề cao tinh thần hợp tác, chủ động và sáng tạo.',
+    description: 'Không gian làm việc cởi mở, đề cao tinh thần hợp tác, chủ động và sáng tạo.',
   },
 ] as const;
 
@@ -71,8 +70,7 @@ export default function Recruitment({ data, keyword, page }: RecruitmentProps) {
         className="border-b"
         style={{
           borderColor: 'var(--border)',
-          background:
-            'linear-gradient(135deg, var(--hero-start) 0%, var(--hero-middle) 100%)',
+          background: 'linear-gradient(135deg, var(--hero-start) 0%, var(--hero-middle) 100%)',
         }}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-center px-6 py-20 text-center lg:py-24">
@@ -92,10 +90,7 @@ export default function Recruitment({ data, keyword, page }: RecruitmentProps) {
           </p>
 
           <form action={listPath} method="get" className="relative w-full max-w-2xl">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              size={20}
-            />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input
               type="search"
               name="q"
@@ -144,10 +139,7 @@ export default function Recruitment({ data, keyword, page }: RecruitmentProps) {
                   <h3 className="mb-3 text-lg font-bold" style={{ color: 'var(--text)' }}>
                     {benefit.title}
                   </h3>
-                  <p
-                    className="text-sm leading-relaxed"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                     {benefit.description}
                   </p>
                 </article>

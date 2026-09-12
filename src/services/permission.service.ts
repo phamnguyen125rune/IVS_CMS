@@ -1,6 +1,10 @@
 import { apiFetch } from '@/utils/api-client';
-import { Api, UpdatePermissionByIdPayload, UpdatePermissionByLinkPayload, PermissionLinkPayload } from '@/types';
-
+import {
+  Api,
+  UpdatePermissionByIdPayload,
+  UpdatePermissionByLinkPayload,
+  PermissionLinkPayload,
+} from '@/types';
 
 const permissionApiLink = '/api/v1/permissions';
 
@@ -9,7 +13,10 @@ export interface IPermissionService {
 
   updateRolePermissionsById(roleId: number, payload: UpdatePermissionByIdPayload): Promise<string>;
 
-  updateRolePermissionsByApiLink(roleId: number,payload: UpdatePermissionByLinkPayload): Promise<string>;
+  updateRolePermissionsByApiLink(
+    roleId: number,
+    payload: UpdatePermissionByLinkPayload
+  ): Promise<string>;
 
   checkPermission(payload: PermissionLinkPayload): Promise<boolean>;
 }
@@ -41,8 +48,8 @@ export class PermissionService implements IPermissionService {
     });
   }
 
-  async checkPermission(payload: PermissionLinkPayload): Promise<boolean>{
-    return apiFetch<boolean>(`${permissionApiLink}/check`,{
+  async checkPermission(payload: PermissionLinkPayload): Promise<boolean> {
+    return apiFetch<boolean>(`${permissionApiLink}/check`, {
       method: 'POST',
       body: JSON.stringify(payload),
     });

@@ -30,24 +30,18 @@ const APPROVAL_STATUS_OPTIONS: Array<{ value: ApprovalStatus; label: string }> =
   { value: 'REJECTED', label: 'Bị từ chối' },
 ];
 
-const statusConfig: Record<
-  ApprovalStatus,
-  { label: string; className: string }
-> = {
+const statusConfig: Record<ApprovalStatus, { label: string; className: string }> = {
   PENDING: {
     label: 'Chờ duyệt',
-    className:
-      'bg-[var(--warning-light)] text-[var(--warning)]',
+    className: 'bg-[var(--warning-light)] text-[var(--warning)]',
   },
   APPROVED: {
     label: 'Đã duyệt',
-    className:
-      'bg-[var(--success-light)] text-[var(--success)]',
+    className: 'bg-[var(--success-light)] text-[var(--success)]',
   },
   REJECTED: {
     label: 'Bị từ chối',
-    className:
-      'bg-[var(--error-light)] text-[var(--error)]',
+    className: 'bg-[var(--error-light)] text-[var(--error)]',
   },
 };
 
@@ -55,8 +49,7 @@ export default function PostApproval() {
   const requestId = useRef(0);
 
   const [posts, setPosts] = useState<ResPostListDTO[]>([]);
-  const [activeStatus, setActiveStatus] =
-    useState<ApprovalStatus>('PENDING');
+  const [activeStatus, setActiveStatus] = useState<ApprovalStatus>('PENDING');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -116,9 +109,7 @@ export default function PostApproval() {
       setTotal(0);
       setTotalPages(0);
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Không thể tải danh sách kiểm duyệt.'
+        error instanceof Error ? error.message : 'Không thể tải danh sách kiểm duyệt.'
       );
     } finally {
       if (currentRequest === requestId.current) {
@@ -142,9 +133,7 @@ export default function PostApproval() {
       setModal({ type: 'preview', post: detailPost });
     } catch (error) {
       showToast(
-        error instanceof Error
-          ? error.message
-          : 'Không thể tải chi tiết bài viết.',
+        error instanceof Error ? error.message : 'Không thể tải chi tiết bài viết.',
         'error'
       );
     } finally {
@@ -169,12 +158,7 @@ export default function PostApproval() {
         await fetchPosts();
       }
     } catch (error) {
-      showToast(
-        error instanceof Error
-          ? error.message
-          : 'Không thể duyệt bài viết.',
-        'error'
-      );
+      showToast(error instanceof Error ? error.message : 'Không thể duyệt bài viết.', 'error');
     }
   };
 
@@ -198,12 +182,7 @@ export default function PostApproval() {
         await fetchPosts();
       }
     } catch (error) {
-      showToast(
-        error instanceof Error
-          ? error.message
-          : 'Không thể từ chối bài viết.',
-        'error'
-      );
+      showToast(error instanceof Error ? error.message : 'Không thể từ chối bài viết.', 'error');
     }
   };
 
@@ -214,31 +193,21 @@ export default function PostApproval() {
         ? 'Bài viết đã duyệt'
         : 'Bài viết bị từ chối';
 
-  const from =
-    total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
 
   const to = Math.min(page * pageSize, total);
 
   return (
-    <div
-      className="relative p-6"
-      style={{ color: 'var(--text)' }}
-    >
+    <div className="relative p-6" style={{ color: 'var(--text)' }}>
       {/* ================= TOAST ================= */}
       {toast && (
         <div
           className={`fixed top-5 right-5 z-[100] flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium shadow-xl ${
-            toast.type === 'success'
-              ? 'bg-[var(--success)]'
-              : 'bg-[var(--error)]'
+            toast.type === 'success' ? 'bg-[var(--success)]' : 'bg-[var(--error)]'
           }`}
           style={{ color: 'var(--primary-foreground)' }}
         >
-          {toast.type === 'success' ? (
-            <CheckCircle size={16} />
-          ) : (
-            <XCircle size={16} />
-          )}
+          {toast.type === 'success' ? <CheckCircle size={16} /> : <XCircle size={16} />}
 
           {toast.message}
         </div>
@@ -256,10 +225,7 @@ export default function PostApproval() {
         >
           <span>{errorMessage}</span>
 
-          <button
-            className="shrink-0 font-medium underline"
-            onClick={fetchPosts}
-          >
+          <button className="shrink-0 font-medium underline" onClick={fetchPosts}>
             Tải lại
           </button>
         </div>
@@ -268,17 +234,11 @@ export default function PostApproval() {
       {/* ================= HEADER ================= */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1
-            className="font-display text-xl font-bold"
-            style={{ color: 'var(--text)' }}
-          >
+          <h1 className="font-display text-xl font-bold" style={{ color: 'var(--text)' }}>
             {pageTitle}
           </h1>
 
-          <p
-            className="mt-0.5 text-sm"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <p className="mt-0.5 text-sm" style={{ color: 'var(--text-secondary)' }}>
             {total} bài viết phù hợp bộ lọc
           </p>
         </div>
@@ -329,9 +289,7 @@ export default function PostApproval() {
                 setPage(1);
               }}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                activeStatus === option.value
-                  ? ''
-                  : 'hover:bg-[var(--hover)]'
+                activeStatus === option.value ? '' : 'hover:bg-[var(--hover)]'
               }`}
               style={
                 activeStatus === option.value
@@ -428,17 +386,14 @@ export default function PostApproval() {
                         border-t-transparent
                       "
                     />
-
                     Đang tải...
                   </td>
                 </tr>
               ) : posts.length > 0 ? (
                 posts.map((post) => {
-                  const currentStatus =
-                    post.status as ApprovalStatus;
+                  const currentStatus = post.status as ApprovalStatus;
 
-                  const currentStatusConfig =
-                    statusConfig[currentStatus];
+                  const currentStatusConfig = statusConfig[currentStatus];
 
                   return (
                     <tr
@@ -493,9 +448,7 @@ export default function PostApproval() {
                         className="px-5 py-3.5 text-xs"
                         style={{ color: 'var(--text-secondary)' }}
                       >
-                        {post.createdAt
-                          ? formatDate(post.createdAt)
-                          : '---'}
+                        {post.createdAt ? formatDate(post.createdAt) : '---'}
                       </td>
 
                       {/* STATUS */}
@@ -511,9 +464,7 @@ export default function PostApproval() {
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() =>
-                              handleOpenPreview(post)
-                            }
+                            onClick={() => handleOpenPreview(post)}
                             className="
                               rounded-lg p-1.5
                               transition-colors
@@ -530,9 +481,7 @@ export default function PostApproval() {
                           {currentStatus === 'PENDING' && (
                             <>
                               <button
-                                onClick={() =>
-                                  approve(post.id)
-                                }
+                                onClick={() => approve(post.id)}
                                 className="
                                   rounded-lg p-1.5
                                   transition-colors
@@ -601,39 +550,23 @@ export default function PostApproval() {
               borderColor: 'var(--border)',
             }}
           >
-            <div
-              className="text-xs"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
               Hiển thị{' '}
-              <span
-                className="font-semibold"
-                style={{ color: 'var(--text-secondary)' }}
-              >
+              <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
                 {from}
               </span>{' '}
               -{' '}
-              <span
-                className="font-semibold"
-                style={{ color: 'var(--text-secondary)' }}
-              >
+              <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
                 {to}
               </span>{' '}
               trong{' '}
-              <span
-                className="font-semibold"
-                style={{ color: 'var(--text-secondary)' }}
-              >
+              <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
                 {total}
               </span>{' '}
               bài viết
             </div>
 
-            <Pagination
-              current={page}
-              total={totalPages}
-              onChange={setPage}
-            />
+            <Pagination current={page} total={totalPages} onChange={setPage} />
           </div>
         )}
       </div>
@@ -696,10 +629,8 @@ export default function PostApproval() {
                   <Clock size={14} />
 
                   <span>
-                    {statusConfig[
-                      (modal.post.status as ApprovalStatus) ||
-                        'PENDING'
-                    ]?.label || 'Đang kiểm duyệt'}
+                    {statusConfig[(modal.post.status as ApprovalStatus) || 'PENDING']?.label ||
+                      'Đang kiểm duyệt'}
                   </span>
                 </span>
 
@@ -888,12 +819,7 @@ export default function PostApproval() {
                         >
                           <span>{item.label}</span>
 
-                          {item.hasChildren && (
-                            <ChevronDown
-                              size={13}
-                              className="text-slate-400"
-                            />
-                          )}
+                          {item.hasChildren && <ChevronDown size={13} className="text-slate-400" />}
                         </div>
                       ))}
                     </nav>
@@ -912,17 +838,11 @@ export default function PostApproval() {
                           background: '#ffffff',
                         }}
                       >
-                        <Globe
-                          size={13}
-                          className="text-slate-500"
-                        />
+                        <Globe size={13} className="text-slate-500" />
 
                         <span>🇻🇳</span>
 
-                        <ChevronDown
-                          size={11}
-                          className="text-slate-400"
-                        />
+                        <ChevronDown size={11} className="text-slate-400" />
                       </div>
 
                       <div
@@ -1030,20 +950,16 @@ export default function PostApproval() {
                             text-blue-600
                           "
                         >
-                          {modal.post.author?.name?.charAt(0) ||
-                            'A'}
+                          {modal.post.author?.name?.charAt(0) || 'A'}
                         </div>
 
                         <div>
                           <p className="text-sm font-bold text-slate-800">
-                            {modal.post.author?.name ||
-                              'Tác giả ẩn danh'}
+                            {modal.post.author?.name || 'Tác giả ẩn danh'}
                           </p>
 
                           <p className="mt-0.5 text-xs text-slate-500">
-                            {modal.post.createdAt
-                              ? formatDate(modal.post.createdAt)
-                              : 'Vừa xong'}
+                            {modal.post.createdAt ? formatDate(modal.post.createdAt) : 'Vừa xong'}
                           </p>
                         </div>
                       </div>
@@ -1076,11 +992,9 @@ export default function PostApproval() {
                     {/* FEATURED IMAGE */}
                     {(() => {
                       const imageUrl =
-                        'featuredMedia' in modal.post &&
-                        modal.post.featuredMedia
+                        'featuredMedia' in modal.post && modal.post.featuredMedia
                           ? modal.post.featuredMedia
-                          : 'mediaList' in modal.post &&
-                              modal.post.mediaList?.[0]?.filePath
+                          : 'mediaList' in modal.post && modal.post.mediaList?.[0]?.filePath
                             ? modal.post.mediaList[0].filePath
                             : null;
 
@@ -1101,17 +1015,14 @@ export default function PostApproval() {
                     {/* CONTENT */}
                     <div className="space-y-5 pb-8 text-[16px] text-slate-700 leading-relaxed">
                       {modal.post.summary && (
-                        <p className="text-lg font-medium text-slate-900">
-                          {modal.post.summary}
-                        </p>
+                        <p className="text-lg font-medium text-slate-900">{modal.post.summary}</p>
                       )}
 
                       {previewLoading ? (
                         <div className="py-10 text-center text-slate-400">
                           Đang tải toàn bộ nội dung bài viết...
                         </div>
-                      ) : 'content' in modal.post &&
-                        modal.post.content ? (
+                      ) : 'content' in modal.post && modal.post.content ? (
                         <div
                           className="
                             prose max-w-none
@@ -1160,8 +1071,7 @@ export default function PostApproval() {
                           color: 'var(--primary)',
                         }}
                       >
-                        {modal.post.author?.name?.charAt(0) ||
-                          'A'}
+                        {modal.post.author?.name?.charAt(0) || 'A'}
                       </div>
 
                       <h4
@@ -1170,8 +1080,7 @@ export default function PostApproval() {
                           color: 'var(--text)',
                         }}
                       >
-                        {modal.post.author?.name ||
-                          'Tác giả ẩn danh'}
+                        {modal.post.author?.name || 'Tác giả ẩn danh'}
                       </h4>
 
                       <p
@@ -1228,9 +1137,7 @@ export default function PostApproval() {
                   </button>
 
                   <button
-                    onClick={() =>
-                      approve(modal.post!.id)
-                    }
+                    onClick={() => approve(modal.post!.id)}
                     className="
                       flex items-center gap-1.5
                       rounded-xl
@@ -1328,18 +1235,13 @@ export default function PostApproval() {
                 }}
               >
                 Gửi lý do trả bài cho tác giả{' '}
-                <strong style={{ color: 'var(--text)' }}>
-                  {modal.post.author?.name}
-                </strong>
-                .
+                <strong style={{ color: 'var(--text)' }}>{modal.post.author?.name}</strong>.
               </p>
 
               <textarea
                 rows={4}
                 value={rejectReason}
-                onChange={(e) =>
-                  setRejectReason(e.target.value)
-                }
+                onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="Nhập lý do chi tiết..."
                 className="
                   w-full resize-none
@@ -1356,17 +1258,12 @@ export default function PostApproval() {
               />
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {[
-                  'Nội dung không phù hợp',
-                  'Thiếu nguồn tham khảo',
-                  'Hình ảnh lỗi',
-                ].map((reason) => (
-                  <button
-                    key={reason}
-                    onClick={() =>
-                      setRejectReason(reason)
-                    }
-                    className="
+                {['Nội dung không phù hợp', 'Thiếu nguồn tham khảo', 'Hình ảnh lỗi'].map(
+                  (reason) => (
+                    <button
+                      key={reason}
+                      onClick={() => setRejectReason(reason)}
+                      className="
                       rounded-full
                       border
                       px-3 py-1.5
@@ -1374,14 +1271,15 @@ export default function PostApproval() {
                       transition-colors
                       hover:bg-[var(--hover)]
                     "
-                    style={{
-                      color: 'var(--text-secondary)',
-                      borderColor: 'var(--border)',
-                    }}
-                  >
-                    {reason}
-                  </button>
-                ))}
+                      style={{
+                        color: 'var(--text-secondary)',
+                        borderColor: 'var(--border)',
+                      }}
+                    >
+                      {reason}
+                    </button>
+                  )
+                )}
               </div>
             </div>
 
@@ -1461,9 +1359,7 @@ function Pagination({
       {/* PREVIOUS */}
       <button
         type="button"
-        onClick={() =>
-          onChange(Math.max(1, current - 1))
-        }
+        onClick={() => onChange(Math.max(1, current - 1))}
         disabled={current === 1}
         className="
           rounded-lg
@@ -1508,11 +1404,7 @@ function Pagination({
               px-2
               text-xs font-semibold
               transition-colors
-              ${
-                current !== item
-                  ? 'hover:text-[var(--primary)] hover:bg-[var(--hover)]'
-                  : ''
-              }
+              ${current !== item ? 'hover:text-[var(--primary)] hover:bg-[var(--hover)]' : ''}
             `}
             style={
               current === item
@@ -1527,9 +1419,7 @@ function Pagination({
                     borderColor: 'var(--border)',
                   }
             }
-            aria-current={
-              current === item ? 'page' : undefined
-            }
+            aria-current={current === item ? 'page' : undefined}
           >
             {item}
           </button>
@@ -1539,9 +1429,7 @@ function Pagination({
       {/* NEXT */}
       <button
         type="button"
-        onClick={() =>
-          onChange(Math.min(total, current + 1))
-        }
+        onClick={() => onChange(Math.min(total, current + 1))}
         disabled={current >= total}
         className="
           rounded-lg
@@ -1566,15 +1454,9 @@ function Pagination({
   );
 }
 
-function paginationItems(
-  current: number,
-  total: number
-): Array<number | 'ellipsis'> {
+function paginationItems(current: number, total: number): Array<number | 'ellipsis'> {
   if (total <= 7) {
-    return Array.from(
-      { length: total },
-      (_, index) => index + 1
-    );
+    return Array.from({ length: total }, (_, index) => index + 1);
   }
 
   const items: Array<number | 'ellipsis'> = [1];
@@ -1586,11 +1468,7 @@ function paginationItems(
     items.push('ellipsis');
   }
 
-  for (
-    let value = start;
-    value <= end;
-    value += 1
-  ) {
+  for (let value = start; value <= end; value += 1) {
     items.push(value);
   }
 
@@ -1604,9 +1482,5 @@ function paginationItems(
 }
 
 function formatDate(value: string) {
-  return value
-    .slice(0, 10)
-    .split('-')
-    .reverse()
-    .join('/');
+  return value.slice(0, 10).split('-').reverse().join('/');
 }

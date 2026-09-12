@@ -15,11 +15,7 @@ interface PostDetailViewProps {
   recentPosts?: ResPostListDTO[];
 }
 
-export default function PostDetailView({
-  post,
-  section,
-  recentPosts = [],
-}: PostDetailViewProps) {
+export default function PostDetailView({ post, section, recentPosts = [] }: PostDetailViewProps) {
   const displayTags = getPostDisplayTags(post);
   const heroImage = post.metadata?.openGraph?.imageUrl || post.mediaList?.[0]?.filePath;
   const authorInitial = (post.author?.name || 'S').trim().charAt(0).toUpperCase();
