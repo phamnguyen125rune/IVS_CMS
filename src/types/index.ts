@@ -10,24 +10,8 @@
 // ============================================================
 
 // ----------------------------
-// Auth / User
+// Auth
 // ----------------------------
-
-export interface User {
-  id: number;
-  fullname: string;
-  email: string;
-  role: Role;
-  employeeCode?: string;
-  avatarUrl?: string;
-  createdAt: string;
-}
-
-export interface Role {
-  id: number;
-  name: string; // VD: 'ADMIN', 'EDITOR', 'VIEWER'
-  permissions: string[]; // VD: ['post:create', 'post:publish']
-}
 
 export interface RoleLogin {
   id: number;
@@ -49,28 +33,77 @@ export interface AuthResponse {
   user: UserLogin;
 }
 
-export interface RoleUser {
-  id: number;
-  name: string;
+// ----------------------------
+// Role (Nhóm người dùng)
+// ----------------------------
+export interface RoleUser2 {
+  userId: number;
+  roleId: number;
+  employeeCode: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  gender: string;
+  dateOfBirth: string;
+  isActive: boolean;
 }
 
-export interface ResUserDTO {
-  id: number;
-  fullname: string;
-  email: string;
-  avatarUrl?: string | null;
-  phone?: string | null;
-  age?: number;
-  address?: string | null;
-  gender?: string | null;
-  employeeCode?: string | null;
-  dateOfBirth?: string | null;
-  status: string;
-  role?: RoleUser | null;
-  createdAt?: string;
-  createdBy?: string;
-  updatedAt?: string;
-  updatedBy?: string;
+export interface CreateRolePayload {
+  roleName: string;
+  roleDescription: string;
+}
+
+export interface UpdateRolePayload {
+  roleName: string;
+  roleDescription: string;
+}
+
+// ----------------------------
+// Permission (Phân quyền)
+// ----------------------------
+export interface Action {
+  actionId: number;
+  actionName: string;
+}
+
+export interface Api {
+  apiId: number;
+  apiLink: string;
+  apiDescription: string;
+  actions: Action[];
+}
+
+export interface PermissionIdPayload {
+  apiId: number;
+  actionId: number;
+}
+
+export interface UpdatePermissionByIdPayload {
+  permissions: PermissionIdPayload[];
+}
+
+export interface PermissionLinkPayload {
+  apiLink: string;
+  actionName: string;
+}
+
+export interface UpdatePermissionByLinkPayload {
+  permissions: PermissionLinkPayload[];
+}
+
+export interface PermissionLink {
+  apiLink: string;
+  actionName: string;
+}
+
+export interface RolePermissions {
+  roleId: number;
+  roleName: string;
+  roleDescription: string;
+  isActive: boolean;
+  isSystem: boolean;
+  memmberCount: number;
+  permissions: PermissionLink[];
 }
 
 // ----------------------------
@@ -107,7 +140,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  parentId?: string; // hỗ trợ danh mục lồng nhau
+  parentId?: string;
   locale: string;
 }
 

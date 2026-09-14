@@ -1,0 +1,1242 @@
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.container {
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.createRoleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  color: var(--primary-foreground);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  background: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.createRoleBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* =========================================================
+   ROLE CARDS
+========================================================= */
+
+.roleSection {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.roleCard {
+  position: relative;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.roleCard:hover {
+  border-color: var(--primary-soft);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+
+.roleCardActive {
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 3px var(--primary-soft),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.roleCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.roleIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.roleActions {
+  display: flex;
+  gap: 4px;
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted);
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.iconBtn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.deleteBtn:hover {
+  color: var(--error);
+  background: var(--error-light);
+}
+
+.roleName {
+  margin: 16px 0 0;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.roleDescription {
+  min-height: 44px;
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.memberCount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  padding-top: 16px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-light);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   MEMBER PANEL
+========================================================= */
+
+.memberPanel {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.memberPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.memberLabel {
+  margin-bottom: 4px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.memberTitle {
+  margin: 0;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.memberDescription {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.addMemberHeaderBtn,
+.resetBtn,
+.saveBtn,
+.searchBtn,
+.addMemberBtn,
+.cancelBtn,
+.confirmDeleteBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.addMemberHeaderBtn {
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.addMemberHeaderBtn:hover {
+  background: var(--hover);
+}
+
+.resetBtn {
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.resetBtn:hover {
+  background: var(--hover);
+}
+
+.saveBtn {
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.2);
+}
+
+.saveBtn:hover {
+  background: var(--primary-hover);
+}
+
+.saveBtn:disabled,
+.resetBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.searchSection {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-secondary);
+}
+
+.searchInputWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: var(--text-placeholder);
+  transform: translateY(-50%);
+}
+
+.searchInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 16px 11px 44px;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.searchBtn {
+  flex-shrink: 0;
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  background: var(--primary);
+}
+
+.searchBtn:hover {
+  background: var(--primary-hover);
+}
+
+/* =========================================================
+   SEARCH RESULTS
+========================================================= */
+
+.searchResults {
+  margin: 0 24px 20px;
+  overflow: hidden;
+  border: 1px solid var(--primary-soft);
+  border-radius: 12px;
+  background: var(--primary-light);
+}
+
+.searchResultTitle {
+  padding: 12px 16px;
+  color: var(--primary-text);
+  border-bottom: 1px solid var(--primary-soft);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.searchResultItem:first-of-type {
+  border-top: none;
+}
+
+.searchUserName {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.searchUserInfo {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.addMemberBtn {
+  padding: 8px 12px;
+  color: var(--primary);
+  border: 1px solid var(--primary-soft);
+  border-radius: 8px;
+  background: var(--primary-light);
+}
+
+.addMemberBtn:hover {
+  background: var(--primary-soft);
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+}
+
+.table thead tr {
+  background: var(--surface-secondary);
+}
+
+.table th {
+  padding: 16px 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 18px 20px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-light);
+  font-size: 14px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--hover);
+}
+
+.userName {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.removeMemberBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  color: var(--error);
+  border: 1px solid var(--error-light);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.removeMemberBtn:hover {
+  background: var(--error-light);
+}
+
+.emptyCell {
+  padding: 48px !important;
+  color: var(--text-placeholder) !important;
+  text-align: center;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.selectRoleEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72px 24px;
+  color: var(--text-placeholder);
+  border: 1px dashed var(--border-strong);
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.selectRoleEmpty h3 {
+  margin: 16px 0 6px;
+  color: var(--text-secondary);
+  font-size: 18px;
+}
+
+.selectRoleEmpty p {
+  max-width: 420px;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* =========================================================
+   MODAL OVERLAY
+========================================================= */
+
+.modalOverlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
+}
+
+/* =========================================================
+   NORMAL ROLE MODAL
+========================================================= */
+
+.modal,
+.deleteModal {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.25);
+}
+
+.deleteModal {
+  max-width: 420px;
+  padding: 28px;
+  text-align: center;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modalHeader h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--text-muted);
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  color: var(--text);
+  background: var(--surface-tertiary);
+}
+
+.modalBody {
+  padding: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.formGroup:last-child {
+  margin-bottom: 0;
+}
+
+.formGroup label {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  font: inherit;
+  outline: none;
+}
+
+.formGroup textarea {
+  resize: vertical;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-secondary);
+  border-radius: 0 0 16px 16px;
+}
+
+.cancelBtn {
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.cancelBtn:hover {
+  background: var(--surface-tertiary);
+}
+
+.deleteIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  color: var(--error);
+  border-radius: 50%;
+  background: var(--error-light);
+}
+
+.deleteModal h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.deleteModal p {
+  margin: 12px 0 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.confirmDeleteBtn {
+  color: var(--primary-foreground);
+  border: 1px solid var(--error);
+  background: var(--error);
+}
+
+.confirmDeleteBtn:hover {
+  background: var(--error);
+}
+
+/* =========================================================
+   ADD MEMBER MODAL
+   QUAN TRỌNG:
+   PHẦN NÀY PHẢI NẰM NGOÀI @media
+========================================================= */
+
+.addMemberModal {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 1000px);
+  max-height: 90vh;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow:
+    0 24px 64px rgba(15, 23, 42, 0.25),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* =========================================================
+   ADD MEMBER - HEADER
+========================================================= */
+
+.addMemberModal .modalHeader {
+  flex-shrink: 0;
+  padding: 20px 24px;
+  background: var(--surface);
+}
+
+.addMemberModal .modalHeader h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.addMemberModal .modalHeader p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.addMemberModal .modalHeader strong {
+  color: var(--primary);
+}
+
+/* =========================================================
+   ADD MEMBER - CLOSE
+========================================================= */
+
+.closeModalBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.closeModalBtn:hover {
+  color: var(--text);
+  background: var(--surface-tertiary);
+}
+
+/* =========================================================
+   ADD MEMBER - TWO COLUMNS
+========================================================= */
+
+.addMemberContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 460px;
+  max-height: 60vh;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* =========================================================
+   LEFT PANEL
+========================================================= */
+
+.availableMembersPanel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* =========================================================
+   PANEL TITLE
+========================================================= */
+
+.panelTitle {
+  flex-shrink: 0;
+  padding: 16px 20px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   ADD MEMBER SEARCH
+========================================================= */
+
+.addMemberSearch {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface);
+}
+
+.addMemberSearch .searchInputWrapper {
+  min-width: 0;
+}
+
+.addMemberSearch .searchInput {
+  padding: 10px 12px 10px 40px;
+  font-size: 13px;
+}
+
+.addMemberSearch .searchIcon {
+  left: 12px;
+}
+
+.addMemberSearch .searchBtn {
+  flex-shrink: 0;
+  padding: 10px 14px;
+}
+
+/* =========================================================
+   LEFT - USER LIST
+========================================================= */
+
+.availableMembersList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* Scrollbar */
+
+.availableMembersList::-webkit-scrollbar,
+.selectedMembersList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.availableMembersList::-webkit-scrollbar-track,
+.selectedMembersList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.availableMembersList::-webkit-scrollbar-thumb,
+.selectedMembersList::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--border-strong);
+}
+
+.availableMembersList::-webkit-scrollbar-thumb:hover,
+.selectedMembersList::-webkit-scrollbar-thumb:hover {
+  background: var(--text-placeholder);
+}
+
+/* =========================================================
+   AVAILABLE USER
+========================================================= */
+
+.availableUserItem {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 13px 14px;
+  color: inherit;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.availableUserItem:last-child {
+  margin-bottom: 0;
+}
+
+.availableUserItem:hover {
+  border-color: var(--primary-soft);
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.availableUserEmployeeCode {
+  margin-bottom: 3px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.availableUserName {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.availableUserRole {
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* =========================================================
+   LEFT - EMPTY SEARCH
+========================================================= */
+
+.emptySearchResult {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 24px;
+  color: var(--text-placeholder);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =========================================================
+   RIGHT PANEL
+========================================================= */
+
+.selectedMembersPanel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--surface-secondary);
+}
+
+/* =========================================================
+   RIGHT - MEMBER LIST
+========================================================= */
+
+.selectedMembersList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* =========================================================
+   SELECTED MEMBER ITEM
+========================================================= */
+
+.selectedMemberItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.selectedMemberItem:last-child {
+  margin-bottom: 0;
+}
+
+.selectedMemberItem:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+}
+
+.memberEmployeeCode {
+  margin-bottom: 3px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.memberFullName {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.memberEmail {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  word-break: break-word;
+}
+
+/* =========================================================
+   CANCEL PENDING MEMBER
+========================================================= */
+
+.cancelAddBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 7px 10px;
+  color: var(--error);
+  border: 1px solid var(--error-light);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.cancelAddBtn:hover {
+  border-color: var(--error);
+  background: var(--error-light);
+}
+
+/* =========================================================
+   RIGHT - EMPTY
+========================================================= */
+
+.emptyMemberList {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 24px;
+  color: var(--text-placeholder);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =========================================================
+   ADD MEMBER FOOTER
+========================================================= */
+
+.addMemberModal .modalFooter {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  background: var(--surface-secondary);
+  border-radius: 0 0 18px 18px;
+}
+
+.completeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  padding: 10px 18px;
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  background: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.2);
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.completeBtn:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 7px 18px rgba(37, 99, 235, 0.25);
+  transform: translateY(-1px);
+}
+
+.completeBtn:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   TABLE ACTIONS
+========================================================= */
+
+.tableActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.viewDetailBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewDetailBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.loading {
+  padding: 40px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.errorBox {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  color: var(--error);
+  border: 1px solid var(--error-light);
+  border-radius: 10px;
+  background: var(--error-light);
+  font-size: 14px;
+}
+
+/* =========================================================
+   RESPONSIVE - GENERAL
+========================================================= */
+
+@media (max-width: 1000px) {
+  .roleSection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .headerContent,
+  .memberPanelHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE - TABLET / MOBILE
+========================================================= */
+
+@media (max-width: 800px) {
+  .addMemberModal {
+    max-width: 700px;
+  }
+
+  .addMemberContent {
+    grid-template-columns: 1fr;
+    max-height: 65vh;
+  }
+
+  .availableMembersPanel {
+    min-height: 300px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .selectedMembersPanel {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 700px) {
+  .headerSection {
+    padding: 36px 20px;
+  }
+
+  .main {
+    padding: 28px 16px;
+  }
+
+  .headerTitle {
+    font-size: 28px;
+  }
+
+  .roleSection {
+    grid-template-columns: 1fr;
+  }
+
+  .searchSection {
+    flex-direction: column;
+  }
+
+  .searchBtn {
+    width: 100%;
+  }
+
+  .memberPanelHeader,
+  .searchSection {
+    padding: 18px;
+  }
+
+  .searchResults {
+    margin: 0 18px 18px;
+  }
+
+  .modalFooter {
+    padding: 16px;
+  }
+
+  .addMemberModal {
+    max-height: 94vh;
+    border-radius: 14px;
+  }
+
+  .addMemberModal .modalHeader {
+    padding: 16px;
+  }
+
+  .addMemberContent {
+    max-height: 68vh;
+  }
+
+  .addMemberSearch {
+    flex-direction: column;
+  }
+
+  .addMemberSearch .searchBtn {
+    width: 100%;
+  }
+
+  .addMemberModal .modalFooter {
+    padding: 14px 16px;
+  }
+
+  .addMemberModal .modalFooter button {
+    flex: 1;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .modalOverlay {
+    padding: 12px;
+  }
+
+  .addMemberModal {
+    max-height: 94vh;
+  }
+
+  .addMemberContent {
+    max-height: 68vh;
+  }
+}

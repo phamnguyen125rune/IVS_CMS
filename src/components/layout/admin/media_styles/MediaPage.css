@@ -1,0 +1,39 @@
+.media-page {
+  min-height: 100vh;
+  background: var(--background);
+  padding: 32px;
+}
+
+.media-page__status {
+  width: 100%;
+  padding: 48px;
+  background: var(--surface);
+  border-radius: 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.media-page__status--empty {
+  padding: 64px;
+}
+
+@media (max-width: 1024px) {
+  .media-page {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .media-page {
+    padding: 16px;
+  }
+
+  .media-page__status {
+    padding: 36px 20px;
+  }
+
+  .media-page__status--empty {
+    padding: 48px 20px;
+  }
+}
