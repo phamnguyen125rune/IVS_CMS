@@ -24,7 +24,7 @@ const EXCLUDED_PERMISSION_APIS = [
 const actionName = 'VIEW';
 
 const protectedRoutes: NavPermission[] = [
-  {
+  { 
     path: '/admin/tong-quan',
     apiLink: 'dashboard'
   },
@@ -57,8 +57,8 @@ const protectedRoutes: NavPermission[] = [
     apiLink: 'media'
   },
   {
-    path: '/admin/menu',
-    apiLink: 'menu'
+    path: '/admin/doi-tac',
+    apiLink: 'collaborator'
   },
   {
     path: '/admin/bieu-mau',
