@@ -20,7 +20,7 @@ const EXCLUDED_PERMISSION_APIS = ['dashboard', 'profile', 'setting'];
 const actionName = 'VIEW';
 
 const protectedRoutes: NavPermission[] = [
-  {
+  { 
     path: '/admin/tong-quan',
     apiLink: 'dashboard',
   },
@@ -55,6 +55,10 @@ const protectedRoutes: NavPermission[] = [
   {
     path: '/admin/menu',
     apiLink: 'menu',
+  },
+  {
+    path: '/admin/doi-tac',
+    apiLink: 'collaborator',
   },
   {
     path: '/admin/bieu-mau',
