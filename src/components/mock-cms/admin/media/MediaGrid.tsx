@@ -10,9 +10,10 @@ interface MediaGridProps {
   onPreview: (item: Media) => void;
   onDownload: (item: Media) => void;
   onDelete: (id: number) => void;
+  onResize: (item: Media) => void;
 }
 
-export default function MediaGrid({ groups, onPreview, onDownload, onDelete }: MediaGridProps) {
+export default function MediaGrid({ groups, onPreview, onDownload, onDelete, onResize }: MediaGridProps) {
   return (
     <div className="media-grid">
       {groups.map(([date, items]) => (
@@ -27,6 +28,7 @@ export default function MediaGrid({ groups, onPreview, onDownload, onDelete }: M
                 onPreview={onPreview}
                 onDownload={onDownload}
                 onDelete={onDelete}
+                onResize={onResize}
               />
             ))}
           </div>

@@ -165,3 +165,11 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.media-card__dimensions {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1rem;
+}

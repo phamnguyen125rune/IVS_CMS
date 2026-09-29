@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, Eye, Trash2 } from 'lucide-react';
+import { Download, Eye, Trash2, Maximize2 } from 'lucide-react';
 
 import { Media } from '@/types/media.type';
 
@@ -22,46 +22,23 @@ interface MediaCardProps {
   onPreview: (item: Media) => void;
   onDownload: (item: Media) => void;
   onDelete: (id: number) => void;
+  onResize: (item: Media) => void;
 }
 
-export default function MediaCard({ item, onPreview, onDownload, onDelete }: MediaCardProps) {
+export default function MediaCard({ item, onPreview, onDownload, onDelete, onResize }: MediaCardProps) {
   const getFileIcon = (size = 90) => {
     const ext = getFileExtension(item);
 
     if (ext === 'pdf') {
-      return (
-        <img
-          src="/media_icons/pdf.png"
-          alt="PDF"
-          width={size}
-          height={size}
-          className="media-card__file-image"
-        />
-      );
+      return <img src="/media_icons/pdf.png" alt="PDF" width={size} height={size} className="media-card__file-image" />;
     }
 
     if (ext === 'doc' || ext === 'docx') {
-      return (
-        <img
-          src="/media_icons/docx.png"
-          alt="Word"
-          width={size}
-          height={size}
-          className="media-card__file-image"
-        />
-      );
+      return <img src="/media_icons/docx.png" alt="Word" width={size} height={size} className="media-card__file-image" />;
     }
 
     if (ext === 'xls' || ext === 'xlsx' || ext === 'xlsm' || ext === 'csv') {
-      return (
-        <img
-          src="/media_icons/xlsx.png"
-          alt="Excel"
-          width={size}
-          height={size}
-          className="media-card__file-image"
-        />
-      );
+      return <img src="/media_icons/xlsx.png" alt="Excel" width={size} height={size} className="media-card__file-image" />;
     }
 
     return null;
@@ -92,6 +69,17 @@ export default function MediaCard({ item, onPreview, onDownload, onDelete }: Med
             <Eye size={16} />
           </button>
 
+          {isImage(item) && (
+            <button
+              type="button"
+              onClick={() => onResize(item)}
+              className="media-card__action media-card__action--resize"
+              title="Resize ảnh"
+            >
+              <Maximize2 size={16} />
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => onDownload(item)}
@@ -119,9 +107,14 @@ export default function MediaCard({ item, onPreview, onDownload, onDelete }: Med
 
         <div className="media-card__meta">
           <p className="media-card__size">{formatFileSize(item.fileSize)}</p>
-
           <span className="media-card__type">{getFileTypeLabel(item)}</span>
         </div>
+
+        {isImage(item) && item.mediaWidth && item.mediaHeight && (
+          <p className="media-card__dimensions">
+            {item.mediaWidth} × {item.mediaHeight}px
+          </p>
+        )}
       </div>
     </div>
   );

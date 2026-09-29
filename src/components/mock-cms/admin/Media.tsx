@@ -8,6 +8,7 @@ import MediaToolbar, { MediaFilter } from './media/MediaToolbar';
 import MediaGrid from './media/MediaGrid';
 import MediaList from './media/MediaList';
 import MediaPreview from './media/preview/MediaPreview';
+import MediaResizeModal from './media/MediaResizeModal';
 
 import { useMedia } from './media/hooks/useMedia';
 import { Media, ViewMode } from '@/types/media.type';
@@ -28,10 +29,9 @@ export default function MediaPage() {
   } = useMedia();
 
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-
   const [fileFilter, setFileFilter] = useState<MediaFilter>('all');
-
   const [previewFile, setPreviewFile] = useState<Media | null>(null);
+  const [resizeFile, setResizeFile] = useState<Media | null>(null);
 
   const groupedMedia = useMemo(() => {
     const groups: Record<string, Media[]> = {};
@@ -45,10 +45,7 @@ export default function MediaPage() {
           })
         : 'Không xác định';
 
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-
+      if (!groups[key]) groups[key] = [];
       groups[key].push(item);
     });
 
@@ -57,16 +54,40 @@ export default function MediaPage() {
 
   const handleDownload = (item: Media) => {
     const link = document.createElement('a');
-
     link.href = `/api/v1/media/${item.mediaId}/download`;
-
     link.download = item.fileName;
-
     document.body.appendChild(link);
-
     link.click();
-
     document.body.removeChild(link);
+  };
+
+  const handleResize = (item: Media) => {
+    setResizeFile(item);
+  };
+
+  const handleResizeSubmit = async (width: number, height: number) => {
+    if (!resizeFile) return;
+
+    try {
+      const response = await fetch(`/api/v1/media/${resizeFile.mediaId}/resize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ width, height }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(data?.message || 'Không thể resize ảnh');
+      }
+
+      setResizeFile(null);
+      await searchAndFilter(search, fileFilter);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Không thể resize ảnh');
+    }
   };
 
   const handleSearch = (value: string) => {
@@ -75,7 +96,6 @@ export default function MediaPage() {
 
   const handleFilterChange = (value: MediaFilter) => {
     setFileFilter(value);
-
     searchAndFilter(search, value);
   };
 
@@ -104,6 +124,7 @@ export default function MediaPage() {
           onPreview={setPreviewFile}
           onDownload={handleDownload}
           onDelete={deleteMedia}
+          onResize={handleResize}
         />
       ) : (
         <MediaList
@@ -121,6 +142,14 @@ export default function MediaPage() {
           file={previewFile}
           onClose={() => setPreviewFile(null)}
           onDownload={handleDownload}
+        />
+      )}
+
+      {resizeFile && (
+        <MediaResizeModal
+          file={resizeFile}
+          onClose={() => setResizeFile(null)}
+          onResize={handleResizeSubmit}
         />
       )}
     </div>

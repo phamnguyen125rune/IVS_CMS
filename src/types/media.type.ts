@@ -7,6 +7,8 @@ export interface Media {
   fileSize?: number;
   uploadedAt?: string;
   uploadedBy?: string;
+  mediaWidth: number | null;
+  mediaHeight: number | null;
 }
 
 export type MediaResponse =
