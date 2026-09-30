@@ -5,6 +5,8 @@
 import { useState, useEffect } from 'react';
 import { LocalizedLink as Link } from '@/components/navigation/LocalizedLink';
 import { ArrowRight, ChevronLeft, ChevronRight, Star, Play, CheckCircle2 } from 'lucide-react';
+import { bannerService } from '@/services/banner.service';
+import type { Banner, StatsItem } from '@/types/banner.type';
 
 const services = [
   {
@@ -139,6 +141,30 @@ const news = [
 export default function Home() {
   const [testimonialIdx, setTestimonialIdx] = useState(0);
   const [projectIdx, setProjectIdx] = useState(0);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [currentBannerIdx, setCurrentBannerIdx] = useState(0);
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const res = await bannerService.getPublicBanners('HOME_HERO');
+        if (res?.data && res.data.length > 0) {
+          setBanners(res.data);
+        }
+      } catch (err) {
+        console.warn('Lỗi tải banner trang chủ, sử dụng dữ liệu mặc định:', err);
+      }
+    };
+    fetchBanners();
+  }, []);
+
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentBannerIdx((prev) => (prev + 1) % banners.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
 
   useEffect(() => {
     const timer = setInterval(
@@ -148,6 +174,36 @@ export default function Home() {
 
     return () => clearInterval(timer);
   }, []);
+
+  const activeBanner = banners[currentBannerIdx] || {
+    title: 'Kiến tạo tương lai số',
+    highlightText: 'cho doanh nghiệp của bạn',
+    subtitle: 'Đã phục vụ 500+ doanh nghiệp trên toàn quốc',
+    description:
+      'CMS cung cấp giải pháp công nghệ toàn diện — từ phát triển phần mềm đến chuyển đổi số — giúp doanh nghiệp tăng trưởng bền vững trong kỷ nguyên số.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=560&h=420&fit=crop&auto=format',
+    primaryBtnText: 'Tư vấn miễn phí',
+    primaryBtnUrl: '/lien-he',
+    secondaryBtnText: 'Xem dự án',
+    secondaryBtnUrl: '/du-an',
+    floatingBadgeText: 'Đã phục vụ 500+ doanh nghiệp',
+    statsJson:
+      '[{"num": "500+", "label": "Khách hàng"}, {"num": "200+", "label": "Dự án hoàn thành"}, {"num": "10+", "label": "Năm kinh nghiệm"}]',
+  };
+
+  let heroStats: StatsItem[] = [];
+  try {
+    if (activeBanner.statsJson) {
+      heroStats = JSON.parse(activeBanner.statsJson);
+    }
+  } catch {
+    heroStats = [
+      { num: '500+', label: 'Khách hàng' },
+      { num: '200+', label: 'Dự án hoàn thành' },
+      { num: '10+', label: 'Năm kinh nghiệm' },
+    ];
+  }
 
   return (
     <div>
@@ -177,94 +233,143 @@ export default function Home() {
 
         <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32 flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white/80 text-sm mb-6">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Đã phục vụ 500+ doanh nghiệp trên toàn quốc
-            </div>
+            {activeBanner.subtitle && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white/80 text-sm mb-6">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                {activeBanner.subtitle}
+              </div>
+            )}
 
             <h1 className="font-display font-bold text-4xl lg:text-6xl text-white leading-tight mb-6">
-              Kiến tạo tương lai số
-              <br />
-              <span style={{ color: '#60a5fa' }}>cho doanh nghiệp</span>
-              <br />
-              của bạn
+              {activeBanner.title}
+              {activeBanner.highlightText && (
+                <>
+                  <br />
+                  <span style={{ color: '#60a5fa' }}>{activeBanner.highlightText}</span>
+                </>
+              )}
             </h1>
 
-            <p
-              className="text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
-              style={{ color: 'var(--dark-text-secondary)' }}
-            >
-              CMS cung cấp giải pháp công nghệ toàn diện — từ phát triển phần mềm đến chuyển đổi số
-              — giúp doanh nghiệp tăng trưởng bền vững trong kỷ nguyên số.
-            </p>
+            {activeBanner.description && (
+              <p
+                className="text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
+                style={{ color: 'var(--dark-text-secondary)' }}
+              >
+                {activeBanner.description}
+              </p>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-              <Link
-                to="/lien-he"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white"
-                style={{ background: 'var(--primary)' }}
-              >
-                Tư vấn miễn phí <ArrowRight size={16} />
-              </Link>
+              {activeBanner.primaryBtnText && (
+                <Link
+                  to={activeBanner.primaryBtnUrl || '/lien-he'}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white shadow-lg shadow-blue-500/20 hover:opacity-95 transition-opacity"
+                  style={{ background: 'var(--primary)' }}
+                >
+                  {activeBanner.primaryBtnText} <ArrowRight size={16} />
+                </Link>
+              )}
 
-              <Link
-                to="/du-an"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white border border-white/30 hover:bg-white/10"
-              >
-                <Play size={15} />
-                Xem dự án
-              </Link>
+              {activeBanner.secondaryBtnText && (
+                <Link
+                  to={activeBanner.secondaryBtnUrl || '/du-an'}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white border border-white/30 hover:bg-white/10 transition-colors"
+                >
+                  <Play size={15} />
+                  {activeBanner.secondaryBtnText}
+                </Link>
+              )}
             </div>
 
-            <div className="flex items-center gap-8 mt-10 justify-center lg:justify-start">
-              {[
-                ['500+', 'Khách hàng'],
-                ['200+', 'Dự án hoàn thành'],
-                ['10+', 'Năm kinh nghiệm'],
-              ].map(([num, label]) => (
-                <div key={label} className="text-center lg:text-left">
-                  <div className="text-2xl font-bold font-display text-white">{num}</div>
-
-                  <div className="text-xs" style={{ color: 'var(--dark-text-secondary)' }}>
-                    {label}
+            {heroStats.length > 0 && (
+              <div className="flex items-center gap-8 mt-10 justify-center lg:justify-start">
+                {heroStats.map((item, idx) => (
+                  <div key={idx} className="text-center lg:text-left">
+                    <div className="text-2xl font-bold font-display text-white">{item.num}</div>
+                    <div className="text-xs" style={{ color: 'var(--dark-text-secondary)' }}>
+                      {item.label}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex-1 flex items-center justify-center">
-            <div className="relative">
+            <div className="relative w-full max-w-[560px]">
               <img
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=560&h=420&fit=crop&auto=format"
-                alt="Dashboard analytics"
-                className="rounded-2xl shadow-2xl border border-white/10"
+                src={activeBanner.imageUrl}
+                alt={activeBanner.title}
+                className="rounded-2xl shadow-2xl border border-white/10 w-full aspect-[4/3] object-cover"
               />
 
-              <div
-                className="absolute -bottom-4 -left-6 rounded-xl shadow-xl p-4 flex items-center gap-3"
-                style={{ background: 'var(--surface)' }}
-              >
+              {activeBanner.floatingBadgeText && (
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: 'var(--success-light)' }}
+                  className="absolute -bottom-4 -left-6 rounded-xl shadow-xl p-4 flex items-center gap-3"
+                  style={{ background: 'var(--surface)' }}
                 >
-                  <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
-                </div>
-
-                <div>
-                  <div className="text-xs" style={{ color: 'var(--text-placeholder)' }}>
-                    Dự án hoàn thành
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: 'var(--success-light)' }}
+                  >
+                    <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
                   </div>
 
-                  <div className="font-bold" style={{ color: 'var(--text)' }}>
-                    +18 tháng này
+                  <div>
+                    <div
+                      className="font-semibold text-xs sm:text-sm"
+                      style={{ color: 'var(--text)' }}
+                    >
+                      {activeBanner.floatingBadgeText}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Carousel Slide Indicators & Controls if multiple banners */}
+        {banners.length > 1 && (
+          <div className="relative max-w-7xl mx-auto px-6 pb-6 flex items-center justify-between z-20">
+            <div className="flex items-center gap-2">
+              {banners.map((_, bIdx) => (
+                <button
+                  key={bIdx}
+                  type="button"
+                  onClick={() => setCurrentBannerIdx(bIdx)}
+                  className={`h-2 rounded-full transition-all ${
+                    currentBannerIdx === bIdx
+                      ? 'w-8 bg-blue-500'
+                      : 'w-2 bg-white/30 hover:bg-white/50'
+                  }`}
+                  aria-label={`Chuyển sang banner ${bIdx + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentBannerIdx((prev) => (prev - 1 + banners.length) % banners.length)
+                }
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors border border-white/10"
+                aria-label="Banner trước"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentBannerIdx((prev) => (prev + 1) % banners.length)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors border border-white/10"
+                aria-label="Banner tiếp theo"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* =========================================================

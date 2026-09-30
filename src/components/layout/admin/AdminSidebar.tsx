@@ -18,6 +18,7 @@ import {
   Settings,
   LogOut,
   Handshake,
+  LayoutTemplate,
 } from 'lucide-react';
 
 import { localizePath } from '@/components/navigation/LocalizedLink';
@@ -77,6 +78,12 @@ const navItems = [
     icon: ImageIcon,
     path: '/admin/media',
     apiLink: 'media',
+  },
+  {
+    label: 'Quản lý Banner',
+    icon: LayoutTemplate,
+    path: '/admin/banner',
+    apiLink: 'banner',
   },
   {
     label: 'Quản lý Menu',

@@ -1,14 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import {
-  FolderOpen,
-  Image as ImageIcon,
-  LayoutList,
-  Share2,
-  Tags,
-  UploadCloud,
-  X,
-} from 'lucide-react';
+import { Image as ImageIcon, LayoutList, Share2, Tags, UploadCloud, X } from 'lucide-react';
 
 import type { PostCategory } from '@/types/category.type';
 import type { ReqPostCreateDTO } from '@/types/post.type';

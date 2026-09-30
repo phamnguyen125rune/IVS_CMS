@@ -62,7 +62,7 @@ export function useGeneralInfo() {
   /**
    * Update field trong info.
    */
-  const handleChange = (key: keyof GeneralInfo, value: string) => {
+  const handleChange = <K extends keyof GeneralInfo>(key: K, value: GeneralInfo[K]) => {
     setInfo((prev) => ({
       ...prev,
       [key]: value,
@@ -168,6 +168,21 @@ export function useGeneralInfo() {
         mapEmbedUrl: data.mapEmbedUrl?.trim() || '',
 
         footerLinks: data.footerLinks?.trim() || '',
+
+        showTopbar: data.showTopbar ?? true,
+        topbarAnnouncementText: data.topbarAnnouncementText?.trim() || '',
+        topbarAnnouncementUrl: data.topbarAnnouncementUrl?.trim() || '',
+        headerCtaText: data.headerCtaText?.trim() || '',
+        headerCtaUrl: data.headerCtaUrl?.trim() || '',
+        showHeaderSearch: data.showHeaderSearch ?? true,
+        showThemeToggle: data.showThemeToggle ?? true,
+        showLanguageSwitch: data.showLanguageSwitch ?? true,
+
+        footerCopyright: data.footerCopyright?.trim() || '',
+        showNewsletter: data.showNewsletter ?? true,
+        newsletterTitle: data.newsletterTitle?.trim() || '',
+        newsletterDesc: data.newsletterDesc?.trim() || '',
+        footerColumnsJson: data.footerColumnsJson || '',
       };
 
       const response = await settingService.updateGeneralInfo(payload);

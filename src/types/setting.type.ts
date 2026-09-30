@@ -23,6 +23,23 @@ export interface GeneralInfo {
 
   footerLinks?: string;
 
+  // Header customization
+  showTopbar?: boolean;
+  topbarAnnouncementText?: string;
+  topbarAnnouncementUrl?: string;
+  headerCtaText?: string;
+  headerCtaUrl?: string;
+  showHeaderSearch?: boolean;
+  showThemeToggle?: boolean;
+  showLanguageSwitch?: boolean;
+
+  // Footer customization
+  footerCopyright?: string;
+  showNewsletter?: boolean;
+  newsletterTitle?: string;
+  newsletterDesc?: string;
+  footerColumnsJson?: string;
+
   createdAt?: string;
   createdBy?: number;
 
