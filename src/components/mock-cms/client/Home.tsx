@@ -341,7 +341,10 @@ export default function Home() {
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all text-sm group"
                   >
                     <span>{activeBanner.primaryBtnText}</span>
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight
+                      size={16}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
                   </Link>
                 )}
 
@@ -364,9 +367,7 @@ export default function Home() {
                       <div className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">
                         {item.num}
                       </div>
-                      <div className="text-xs font-medium text-slate-400">
-                        {item.label}
-                      </div>
+                      <div className="text-xs font-medium text-slate-400">{item.label}</div>
                     </div>
                   ))}
                 </div>
@@ -446,7 +447,10 @@ export default function Home() {
       {/* =========================================================
           2. About Snippet Section
           ========================================================= */}
-      <section className="py-20 border-b" style={{ background: 'var(--background)', borderColor: 'var(--border)' }}>
+      <section
+        className="py-20 border-b"
+        style={{ background: 'var(--background)', borderColor: 'var(--border)' }}
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -464,7 +468,10 @@ export default function Home() {
                 Đối tác công nghệ đáng tin cậy của doanh nghiệp Việt
               </h2>
 
-              <p className="text-base leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
+              <p
+                className="text-base leading-relaxed mb-6"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 {generalInfo?.websiteDescription ||
                   'Thành lập từ năm 2014, CMS đã trở thành một trong những công ty công nghệ hàng đầu Việt Nam, chuyên cung cấp giải pháp phần mềm tùy chỉnh và dịch vụ chuyển đổi số.'}
               </p>
@@ -535,7 +542,10 @@ export default function Home() {
                     {stat.num}
                   </div>
 
-                  <div className="text-xs sm:text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                  <div
+                    className="text-xs sm:text-sm font-medium"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
                     {stat.label}
                   </div>
                 </div>
@@ -565,8 +575,12 @@ export default function Home() {
               Giải pháp công nghệ toàn diện
             </h2>
 
-            <p className="mt-3 max-w-2xl mx-auto text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>
-              Chúng tôi cung cấp đầy đủ các dịch vụ công nghệ giúp doanh nghiệp phát triển vượt trội trong kỷ nguyên số
+            <p
+              className="mt-3 max-w-2xl mx-auto text-sm sm:text-base"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Chúng tôi cung cấp đầy đủ các dịch vụ công nghệ giúp doanh nghiệp phát triển vượt trội
+              trong kỷ nguyên số
             </p>
           </div>
 
@@ -586,7 +600,10 @@ export default function Home() {
                   <service.icon size={22} />
                 </div>
 
-                <h3 className="font-display font-semibold text-lg mb-2.5" style={{ color: 'var(--text)' }}>
+                <h3
+                  className="font-display font-semibold text-lg mb-2.5"
+                  style={{ color: 'var(--text)' }}
+                >
                   {service.title}
                 </h3>
 
@@ -741,7 +758,9 @@ export default function Home() {
               <div
                 key={i}
                 className={`transition-all duration-500 ${
-                  i === testimonialIdx ? 'opacity-100' : 'opacity-0 absolute inset-0 pointer-events-none'
+                  i === testimonialIdx
+                    ? 'opacity-100'
+                    : 'opacity-0 absolute inset-0 pointer-events-none'
                 }`}
               >
                 <div className="flex justify-center gap-1 mb-4">
@@ -922,7 +941,8 @@ export default function Home() {
             Sẵn sàng chuyển đổi cùng {generalInfo?.companyName || 'doanh nghiệp chúng tôi'}?
           </h2>
           <p className="text-blue-100 text-sm sm:text-base mb-8 max-w-xl mx-auto">
-            Liên hệ ngay hôm nay để nhận tư vấn miễn phí giải pháp công nghệ toàn diện từ đội ngũ chuyên gia.
+            Liên hệ ngay hôm nay để nhận tư vấn miễn phí giải pháp công nghệ toàn diện từ đội ngũ
+            chuyên gia.
           </p>
 
           <Link

@@ -26,7 +26,9 @@ export default function BannerLivePreview({ banner }: BannerLivePreviewProps) {
       <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-xs text-slate-400">
         <div className="flex items-center gap-2">
           <Eye size={14} className="text-blue-400" />
-          <span className="font-semibold text-slate-300">Xem trước Banner Trang chủ (Live Preview)</span>
+          <span className="font-semibold text-slate-300">
+            Xem trước Banner Trang chủ (Live Preview)
+          </span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
