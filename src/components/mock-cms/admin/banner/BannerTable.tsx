@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import React from 'react';
-import { Edit2, Trash2, Eye } from 'lucide-react';
+import { Edit2, Trash2, Eye, LayoutTemplate } from 'lucide-react';
 import type { Banner } from '@/types/banner.type';
 
 interface BannerTableProps {
@@ -25,21 +25,45 @@ export default function BannerTable({
 }: BannerTableProps) {
   if (loading) {
     return (
-      <div className="w-full py-16 flex flex-col items-center justify-center text-slate-400">
-        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
-        <span className="text-sm">Đang tải danh sách banner...</span>
+      <div
+        className="w-full py-16 flex flex-col items-center justify-center rounded-2xl border"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+          color: 'var(--text-muted)',
+        }}
+      >
+        <div
+          className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mb-3"
+          style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }}
+        />
+        <span className="text-sm font-medium">Đang tải danh sách banner...</span>
       </div>
     );
   }
 
   if (banners.length === 0) {
     return (
-      <div className="w-full py-16 flex flex-col items-center justify-center text-slate-400 bg-slate-900/40 rounded-2xl border border-slate-800">
-        <div className="w-12 h-12 rounded-2xl bg-slate-800/80 flex items-center justify-center text-slate-500 mb-3">
-          🖼️
+      <div
+        className="w-full py-16 flex flex-col items-center justify-center rounded-2xl border text-center p-6"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
+      >
+        <div
+          className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
+          style={{
+            background: 'var(--primary-light)',
+            color: 'var(--primary-text)',
+          }}
+        >
+          <LayoutTemplate size={24} />
         </div>
-        <h4 className="text-sm font-semibold text-slate-300 mb-1">Chưa có banner nào</h4>
-        <p className="text-xs text-slate-500">
+        <h4 className="text-sm font-semibold mb-1" style={{ color: 'var(--text)' }}>
+          Chưa có banner nào
+        </h4>
+        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
           Hãy nhấn nút &ldquo;+ Thêm Banner mới&rdquo; để tạo banner đầu tiên cho trang chính.
         </p>
       </div>
@@ -47,9 +71,22 @@ export default function BannerTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/60 shadow-xl">
-      <table className="w-full text-left text-sm text-slate-300">
-        <thead className="bg-slate-900/90 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+    <div
+      className="overflow-x-auto rounded-2xl border shadow-sm"
+      style={{
+        background: 'var(--surface)',
+        borderColor: 'var(--border)',
+      }}
+    >
+      <table className="w-full text-left text-sm">
+        <thead
+          className="text-xs font-semibold uppercase tracking-wider border-b"
+          style={{
+            background: 'var(--surface-secondary)',
+            borderColor: 'var(--border)',
+            color: 'var(--text-secondary)',
+          }}
+        >
           <tr>
             <th className="py-3.5 px-4">Banner</th>
             <th className="py-3.5 px-4">Vị trí</th>
@@ -59,13 +96,25 @@ export default function BannerTable({
             <th className="py-3.5 px-4 text-right">Thao tác</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-800/60">
+        <tbody className="divide-y" style={{ borderColor: 'var(--border-light)' }}>
           {banners.map((item) => (
-            <tr key={item.bannerId} className="hover:bg-slate-800/40 transition-colors">
+            <tr
+              key={item.bannerId}
+              className="transition-colors hover:opacity-90"
+              style={{
+                borderBottom: '1px solid var(--border-light)',
+              }}
+            >
               {/* Thumbnail & Title */}
               <td className="py-4 px-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="relative w-20 h-14 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 shrink-0 group">
+                  <div
+                    className="relative w-20 h-14 rounded-xl overflow-hidden border shrink-0 group"
+                    style={{
+                      background: 'var(--surface-secondary)',
+                      borderColor: 'var(--border)',
+                    }}
+                  >
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -75,20 +124,32 @@ export default function BannerTable({
 
                   <div className="space-y-1 max-w-sm">
                     {item.subtitle && (
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                      <span
+                        className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium border"
+                        style={{
+                          background: 'var(--primary-light)',
+                          color: 'var(--primary-text)',
+                          borderColor: 'var(--primary-soft)',
+                        }}
+                      >
                         {item.subtitle}
                       </span>
                     )}
-                    <div className="font-semibold text-white text-sm line-clamp-1">
+                    <div
+                      className="font-semibold text-sm line-clamp-1"
+                      style={{ color: 'var(--text)' }}
+                    >
                       {item.title}
                       {item.highlightText && (
-                        <span className="text-blue-400 ml-1.5 font-normal">
+                        <span className="ml-1.5 font-normal" style={{ color: 'var(--primary)' }}>
                           [{item.highlightText}]
                         </span>
                       )}
                     </div>
                     {item.description && (
-                      <p className="text-xs text-slate-400 line-clamp-1">{item.description}</p>
+                      <p className="text-xs line-clamp-1" style={{ color: 'var(--text-muted)' }}>
+                        {item.description}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -96,14 +157,27 @@ export default function BannerTable({
 
               {/* Position */}
               <td className="py-4 px-4">
-                <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                <span
+                  className="px-2.5 py-1 rounded-lg text-xs font-medium border"
+                  style={{
+                    background: 'var(--surface-secondary)',
+                    color: 'var(--text-secondary)',
+                    borderColor: 'var(--border)',
+                  }}
+                >
                   {item.position || 'HOME_HERO'}
                 </span>
               </td>
 
               {/* Order */}
               <td className="py-4 px-4 text-center">
-                <span className="font-mono text-xs font-semibold px-2 py-1 rounded bg-slate-800/60 text-slate-300">
+                <span
+                  className="font-mono text-xs font-semibold px-2 py-1 rounded"
+                  style={{
+                    background: 'var(--surface-secondary)',
+                    color: 'var(--text)',
+                  }}
+                >
                   {item.displayOrder}
                 </span>
               </td>
@@ -112,12 +186,14 @@ export default function BannerTable({
               <td className="py-4 px-4 text-center">
                 <div className="flex flex-col items-center gap-1 text-[11px]">
                   {item.primaryBtnText ? (
-                    <span className="text-emerald-400 font-medium">✓ {item.primaryBtnText}</span>
+                    <span className="font-medium" style={{ color: 'var(--success)' }}>
+                      ✓ {item.primaryBtnText}
+                    </span>
                   ) : (
-                    <span className="text-slate-500">-</span>
+                    <span style={{ color: 'var(--text-muted)' }}>-</span>
                   )}
                   {item.secondaryBtnText && (
-                    <span className="text-blue-300">✓ {item.secondaryBtnText}</span>
+                    <span style={{ color: 'var(--primary-text)' }}>✓ {item.secondaryBtnText}</span>
                   )}
                 </div>
               </td>
@@ -127,16 +203,26 @@ export default function BannerTable({
                 <button
                   type="button"
                   onClick={() => onToggleStatus(item.bannerId, item.isActive)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors border"
+                  style={
                     item.isActive
-                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25'
-                      : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
-                  }`}
+                      ? {
+                          background: 'var(--success-light)',
+                          color: 'var(--success)',
+                          borderColor: 'var(--success)',
+                        }
+                      : {
+                          background: 'var(--surface-secondary)',
+                          color: 'var(--text-muted)',
+                          borderColor: 'var(--border)',
+                        }
+                  }
                 >
                   <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      item.isActive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'
-                    }`}
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{
+                      background: item.isActive ? 'var(--success)' : 'var(--text-muted)',
+                    }}
                   />
                   {item.isActive ? 'Đang bật' : 'Đã ẩn'}
                 </button>
@@ -148,7 +234,11 @@ export default function BannerTable({
                   <button
                     type="button"
                     onClick={() => onPreview(item)}
-                    className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    className="p-2 rounded-lg transition-colors hover:opacity-80"
+                    style={{
+                      background: 'var(--surface-secondary)',
+                      color: 'var(--text-secondary)',
+                    }}
                     title="Xem trước"
                   >
                     <Eye size={16} />
@@ -156,7 +246,11 @@ export default function BannerTable({
                   <button
                     type="button"
                     onClick={() => onEdit(item)}
-                    className="p-2 rounded-lg text-blue-400 hover:bg-blue-500/10 transition-colors"
+                    className="p-2 rounded-lg transition-colors hover:opacity-80"
+                    style={{
+                      background: 'var(--primary-light)',
+                      color: 'var(--primary-text)',
+                    }}
                     title="Chỉnh sửa"
                   >
                     <Edit2 size={16} />
@@ -164,7 +258,11 @@ export default function BannerTable({
                   <button
                     type="button"
                     onClick={() => onDelete(item.bannerId)}
-                    className="p-2 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors"
+                    className="p-2 rounded-lg transition-colors hover:opacity-80"
+                    style={{
+                      background: 'var(--error-light)',
+                      color: 'var(--error)',
+                    }}
                     title="Xóa banner"
                   >
                     <Trash2 size={16} />

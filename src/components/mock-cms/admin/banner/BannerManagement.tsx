@@ -64,35 +64,25 @@ export default function BannerManagement() {
     fetchBanners();
   }, [fetchBanners]);
 
-  const handleCreateOrUpdate = async (dto: ReqCreateBannerDTO | ReqUpdateBannerDTO) => {
+  const handleCreateOrUpdate = async (data: ReqCreateBannerDTO | ReqUpdateBannerDTO) => {
     try {
       setActionLoading(true);
-      if ('bannerId' in dto && dto.bannerId) {
-        await bannerService.updateBanner(dto.bannerId, dto as ReqUpdateBannerDTO);
+      if (editingBanner) {
+        await bannerService.updateBanner(editingBanner.bannerId, {
+          ...data,
+          bannerId: editingBanner.bannerId,
+        });
       } else {
-        await bannerService.createBanner(dto as ReqCreateBannerDTO);
+        await bannerService.createBanner(data as ReqCreateBannerDTO);
       }
       setIsFormOpen(false);
       setEditingBanner(null);
       await fetchBanners();
     } catch (err) {
       console.error('Lỗi lưu banner:', err);
-      alert('Không thể lưu banner. Vui lòng kiểm tra lại kết nối!');
+      alert('Không thể lưu banner. Vui lòng kiểm tra lại quyền hạn hoặc dữ liệu.');
     } finally {
       setActionLoading(false);
-    }
-  };
-
-  const handleToggleStatus = async (id: number, currentStatus: boolean) => {
-    try {
-      // Optimistic update in UI
-      setBanners((prev) =>
-        prev.map((b) => (b.bannerId === id ? { ...b, isActive: !currentStatus } : b))
-      );
-      await bannerService.toggleStatus(id, !currentStatus);
-    } catch (err) {
-      console.error('Lỗi cập nhật trạng thái banner:', err);
-      await fetchBanners();
     }
   };
 
@@ -105,27 +95,48 @@ export default function BannerManagement() {
       await fetchBanners();
     } catch (err) {
       console.error('Lỗi xóa banner:', err);
-      alert('Xóa banner thất bại. Vui lòng thử lại!');
+      alert('Không thể xóa banner.');
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Stats calculation
+  const handleToggleStatus = async (id: number, currentStatus: boolean) => {
+    try {
+      await bannerService.toggleStatus(id, !currentStatus);
+      setBanners((prev) =>
+        prev.map((b) => (b.bannerId === id ? { ...b, isActive: !currentStatus } : b))
+      );
+    } catch (err) {
+      console.error('Lỗi cập nhật trạng thái:', err);
+      alert('Không thể cập nhật trạng thái.');
+    }
+  };
+
   const activeCount = banners.filter((b) => b.isActive).length;
   const inactiveCount = banners.filter((b) => !b.isActive).length;
 
   return (
-    <div className="space-y-6">
+    <div
+      className="p-6 space-y-6 min-h-full"
+      style={{
+        background: 'var(--background)',
+        color: 'var(--text)',
+      }}
+    >
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <LayoutTemplate className="text-blue-500" size={26} />
+          <h1
+            className="text-xl font-bold font-display tracking-tight flex items-center gap-2.5"
+            style={{ color: 'var(--text)' }}
+          >
+            <LayoutTemplate style={{ color: 'var(--primary)' }} size={24} />
             Quản lý Banner Trang chính
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Tùy biến tiêu đề, hình ảnh, văn bản mô tả, nút kêu gọi hành động và số liệu thống kê.
+          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+            Tùy biến toàn bộ nội dung, ảnh bìa, văn bản nổi bật, nút kêu gọi hành động và số liệu
+            thống kê.
           </p>
         </div>
 
@@ -135,7 +146,11 @@ export default function BannerManagement() {
             setEditingBanner(null);
             setIsFormOpen(true);
           }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-all shadow-lg shadow-blue-500/25 shrink-0"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-opacity hover:opacity-90 shadow-sm shrink-0"
+          style={{
+            background: 'var(--primary)',
+            color: 'var(--primary-foreground)',
+          }}
         >
           <Plus size={18} />
           Thêm Banner mới
@@ -144,42 +159,103 @@ export default function BannerManagement() {
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+        <div
+          className="rounded-2xl border p-4 flex items-center gap-4 transition-colors"
+          style={{
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
+          }}
+        >
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: 'var(--primary-light)',
+              color: 'var(--primary-text)',
+            }}
+          >
             <Layers size={22} />
           </div>
           <div>
-            <div className="text-2xl font-bold text-white font-mono">{totalCount}</div>
-            <div className="text-xs text-slate-400">Tổng số Banner</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: 'var(--text)' }}>
+              {totalCount}
+            </div>
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+              Tổng số Banner
+            </div>
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+        <div
+          className="rounded-2xl border p-4 flex items-center gap-4 transition-colors"
+          style={{
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
+          }}
+        >
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: 'var(--success-light)',
+              color: 'var(--success)',
+            }}
+          >
             <CheckCircle2 size={22} />
           </div>
           <div>
-            <div className="text-2xl font-bold text-emerald-400 font-mono">{activeCount}</div>
-            <div className="text-xs text-slate-400">Đang hoạt động trên web</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: 'var(--success)' }}>
+              {activeCount}
+            </div>
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+              Đang hoạt động trên web
+            </div>
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center shrink-0">
+        <div
+          className="rounded-2xl border p-4 flex items-center gap-4 transition-colors"
+          style={{
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
+          }}
+        >
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: 'var(--surface-secondary)',
+              color: 'var(--text-muted)',
+            }}
+          >
             <EyeOff size={22} />
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-300 font-mono">{inactiveCount}</div>
-            <div className="text-xs text-slate-400">Đang tạm ẩn</div>
+            <div
+              className="text-2xl font-bold font-mono"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {inactiveCount}
+            </div>
+            <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Đang tạm ẩn
+            </div>
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+      <div
+        className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl border"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
+      >
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search
+            size={16}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2"
+            style={{ color: 'var(--text-muted)' }}
+          />
           <input
             type="text"
             value={search}
@@ -188,24 +264,42 @@ export default function BannerManagement() {
               setPage(1);
             }}
             placeholder="Tìm kiếm theo tiêu đề, phụ đề..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border text-xs outline-none transition-colors"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+              color: 'var(--text)',
+            }}
           />
         </div>
 
         {/* Status Filter & Refresh */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-slate-800 border border-slate-700 rounded-xl p-1 text-xs">
+          <div
+            className="flex items-center rounded-xl p-1 text-xs border"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <button
               type="button"
               onClick={() => {
                 setStatusFilter('ALL');
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className="px-3 py-1.5 rounded-lg font-medium transition-colors"
+              style={
                 statusFilter === 'ALL'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+                  ? {
+                      background: 'var(--surface)',
+                      color: 'var(--text)',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    }
+                  : {
+                      color: 'var(--text-secondary)',
+                    }
+              }
             >
               Tất cả
             </button>
@@ -215,11 +309,18 @@ export default function BannerManagement() {
                 setStatusFilter('ACTIVE');
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className="px-3 py-1.5 rounded-lg font-medium transition-colors"
+              style={
                 statusFilter === 'ACTIVE'
-                  ? 'bg-emerald-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+                  ? {
+                      background: 'var(--success-light)',
+                      color: 'var(--success)',
+                      fontWeight: 600,
+                    }
+                  : {
+                      color: 'var(--text-secondary)',
+                    }
+              }
             >
               Đang bật
             </button>
@@ -229,11 +330,18 @@ export default function BannerManagement() {
                 setStatusFilter('INACTIVE');
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className="px-3 py-1.5 rounded-lg font-medium transition-colors"
+              style={
                 statusFilter === 'INACTIVE'
-                  ? 'bg-slate-700 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+                  ? {
+                      background: 'var(--surface)',
+                      color: 'var(--text-secondary)',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    }
+                  : {
+                      color: 'var(--text-secondary)',
+                    }
+              }
             >
               Đã ẩn
             </button>
@@ -242,7 +350,12 @@ export default function BannerManagement() {
           <button
             type="button"
             onClick={fetchBanners}
-            className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-colors"
+            className="p-2.5 rounded-xl border transition-colors hover:opacity-80"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+              color: 'var(--text-secondary)',
+            }}
             title="Làm mới"
           >
             <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
@@ -265,17 +378,28 @@ export default function BannerManagement() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-2 text-xs text-slate-400">
+        <div
+          className="flex items-center justify-between px-2 text-xs"
+          style={{ color: 'var(--text-secondary)' }}
+        >
           <div>
-            Trang <span className="font-semibold text-white">{page}</span> / {totalPages} (Tổng{' '}
-            {totalCount} banner)
+            Trang{' '}
+            <span className="font-semibold" style={{ color: 'var(--text)' }}>
+              {page}
+            </span>{' '}
+            / {totalPages} (Tổng {totalCount} banner)
           </div>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 rounded-lg border transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+                color: 'var(--text)',
+              }}
             >
               Trước
             </button>
@@ -283,7 +407,12 @@ export default function BannerManagement() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 rounded-lg border transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+                color: 'var(--text)',
+              }}
             >
               Sau
             </button>
@@ -305,14 +434,26 @@ export default function BannerManagement() {
 
       {/* Standalone Preview Modal */}
       {previewingBanner && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div
+            className="relative w-full max-w-4xl border rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+            style={{
+              background: 'var(--surface)',
+              borderColor: 'var(--border)',
+            }}
+          >
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">Xem trước Banner Trang chính</h3>
+              <h3 className="text-base font-bold" style={{ color: 'var(--text)' }}>
+                Xem trước Banner Trang chính
+              </h3>
               <button
                 type="button"
                 onClick={() => setPreviewingBanner(null)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                className="p-1.5 rounded-lg transition-colors hover:opacity-80"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  color: 'var(--text-secondary)',
+                }}
               >
                 <X size={18} />
               </button>
@@ -325,9 +466,17 @@ export default function BannerManagement() {
       {/* Delete Confirmation Modal */}
       {deleteConfirmId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-slate-900 border border-slate-800 p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white">Xác nhận xóa Banner?</h3>
-            <p className="text-xs text-slate-400">
+          <div
+            className="w-full max-w-sm rounded-2xl border p-6 shadow-2xl space-y-4"
+            style={{
+              background: 'var(--surface)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <h3 className="text-base font-bold" style={{ color: 'var(--text)' }}>
+              Xác nhận xóa Banner?
+            </h3>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               Banner này sẽ bị xóa hoàn toàn khỏi hệ thống và không còn xuất hiện trên trang chính.
               Bạn có chắc chắn muốn xóa không?
             </p>
@@ -336,7 +485,12 @@ export default function BannerManagement() {
                 type="button"
                 onClick={() => setDeleteConfirmId(null)}
                 disabled={actionLoading}
-                className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-medium"
+                className="px-4 py-2 rounded-xl border text-xs font-medium transition-colors"
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-secondary)',
+                  background: 'var(--surface)',
+                }}
               >
                 Hủy bỏ
               </button>
@@ -344,7 +498,10 @@ export default function BannerManagement() {
                 type="button"
                 onClick={handleDelete}
                 disabled={actionLoading}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                style={{
+                  background: 'var(--error)',
+                }}
               >
                 {actionLoading ? 'Đang xóa...' : 'Đồng ý xóa'}
               </button>

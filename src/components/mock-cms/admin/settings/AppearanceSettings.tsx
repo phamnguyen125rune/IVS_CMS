@@ -1,7 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Layout, Sliders, Search, Moon, Globe, Plus, Trash2 } from 'lucide-react';
+import {
+  Layout,
+  Sliders,
+  Search,
+  Moon,
+  Globe,
+  Plus,
+  Trash2,
+  Bell,
+  MousePointerClick,
+  Mail,
+  ListTree,
+  ShieldCheck,
+} from 'lucide-react';
 import type { GeneralInfo } from '@/types/setting.type';
 
 interface FooterColumnItem {
@@ -63,7 +76,7 @@ export default function AppearanceSettings({ info, onChange }: AppearanceSetting
   };
 
   const handleAddColumn = () => {
-    syncColumns([...columns, { title: 'Cột mới', links: [{ label: 'Liên kết', url: '/' }] }]);
+    syncColumns([...columns, { title: 'Cột mới', links: [{ label: 'Liên kết mới', url: '/' }] }]);
   };
 
   const handleRemoveColumn = (colIdx: number) => {
@@ -104,316 +117,548 @@ export default function AppearanceSettings({ info, onChange }: AppearanceSetting
       {/* ========================================================
           1. HEADER CUSTOMIZATION
           ======================================================== */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 space-y-5 shadow-xl">
-        <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold">
-            <Layout size={20} />
-          </div>
-          <div>
-            <h2 className="text-base font-bold text-white">Tùy chỉnh Header (Đầu trang)</h2>
-            <p className="text-xs text-slate-400">
-              Cấu hình thanh thông báo trên cùng (Topbar), nút CTA và các công tắc tiện ích
-            </p>
-          </div>
-        </div>
-
-        {/* Topbar Settings */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-            <div>
-              <div className="text-sm font-semibold text-white">Thanh thông báo Topbar</div>
-              <div className="text-xs text-slate-400">
-                Hiển thị dải băng thông báo & liên hệ nhanh ở mép trên cùng website
+      <SettingsSection
+        icon={Layout}
+        title="Tùy chỉnh Header (Đầu trang)"
+        description="Cấu hình dải băng thông báo trên cùng, nút kêu gọi hành động (CTA) và các nút tiện ích."
+      >
+        <div className="space-y-6">
+          {/* Topbar Toggle Card */}
+          <div
+            className="flex items-center justify-between rounded-xl border p-4 transition-colors"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-lg"
+                style={{
+                  background: 'var(--primary-light)',
+                  color: 'var(--primary-text)',
+                }}
+              >
+                <Bell size={16} />
+              </div>
+              <div>
+                <div className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                  Thanh thông báo Topbar
+                </div>
+                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  Hiển thị dải băng thông báo & liên hệ nhanh ở mép trên cùng của website
+                </div>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={info.showTopbar ?? true}
-                onChange={(e) => onChange('showTopbar', e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
-            </label>
+
+            <ToggleSwitch
+              checked={info.showTopbar ?? true}
+              onChange={(checked) => onChange('showTopbar', checked)}
+            />
           </div>
 
           {(info.showTopbar ?? true) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-950/40 border border-slate-800">
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  Nội dung thông báo (Announcement Text)
-                </label>
+            <div
+              className="grid grid-cols-1 gap-4 rounded-xl border p-4 md:grid-cols-2"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <Field
+                label="Nội dung thông báo (Announcement Text)"
+                hint="Dòng chữ nổi bật chạy trên thanh thông báo."
+              >
                 <input
                   type="text"
                   value={info.topbarAnnouncementText || ''}
                   onChange={(e) => onChange('topbarAnnouncementText', e.target.value)}
                   placeholder="VD: 🎉 Ưu đãi 20% cho giải pháp chuyển đổi số tháng này"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500"
+                  className={inputClass}
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  Đường dẫn liên kết thông báo (URL)
-                </label>
+              <Field
+                label="Đường dẫn liên kết (URL)"
+                hint="Link đích khi người dùng click vào thông báo."
+              >
                 <input
                   type="text"
                   value={info.topbarAnnouncementUrl || ''}
                   onChange={(e) => onChange('topbarAnnouncementUrl', e.target.value)}
                   placeholder="VD: /bai-viet/khuyen-mai"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500"
+                  className={inputClass}
                 />
-              </div>
+              </Field>
             </div>
           )}
-        </div>
 
-        {/* Header CTA Button */}
-        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
-          <div className="text-sm font-semibold text-white">
-            Nút bấm chính trên Header (CTA Button)
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Chữ trên nút (Text)
-              </label>
-              <input
-                type="text"
-                value={info.headerCtaText || ''}
-                onChange={(e) => onChange('headerCtaText', e.target.value)}
-                placeholder="VD: Tư vấn miễn phí"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500"
-              />
+          {/* Header CTA Button */}
+          <div
+            className="rounded-xl border p-4 space-y-4"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <MousePointerClick size={16} style={{ color: 'var(--primary)' }} />
+              <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                Nút kêu gọi hành động trên Navbar (CTA Button)
+              </span>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Đường dẫn liên kết (URL)
-              </label>
-              <input
-                type="text"
-                value={info.headerCtaUrl || ''}
-                onChange={(e) => onChange('headerCtaUrl', e.target.value)}
-                placeholder="VD: /lien-he"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500"
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label="Chữ trên nút (Text)">
+                <input
+                  type="text"
+                  value={info.headerCtaText || ''}
+                  onChange={(e) => onChange('headerCtaText', e.target.value)}
+                  placeholder="VD: Tư vấn miễn phí"
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field label="Đường dẫn liên kết (URL)">
+                <input
+                  type="text"
+                  value={info.headerCtaUrl || ''}
+                  onChange={(e) => onChange('headerCtaUrl', e.target.value)}
+                  placeholder="VD: /lien-he"
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+          </div>
+
+          {/* Feature Switches */}
+          <div>
+            <label
+              className="mb-2 block text-xs font-semibold"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Các nút tính năng tiện ích trên Header
+            </label>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <SwitchItem
+                icon={Search}
+                label="Nút Tìm kiếm"
+                checked={info.showHeaderSearch ?? true}
+                onChange={(checked) => onChange('showHeaderSearch', checked)}
+              />
+
+              <SwitchItem
+                icon={Moon}
+                label="Đổi theme Sáng/Tối"
+                checked={info.showThemeToggle ?? true}
+                onChange={(checked) => onChange('showThemeToggle', checked)}
+              />
+
+              <SwitchItem
+                icon={Globe}
+                label="Bộ chọn ngôn ngữ"
+                checked={info.showLanguageSwitch ?? true}
+                onChange={(checked) => onChange('showLanguageSwitch', checked)}
               />
             </div>
           </div>
         </div>
-
-        {/* Feature Switches */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span className="text-xs font-medium text-slate-300 flex items-center gap-2">
-              <Search size={14} className="text-slate-400" />
-              Nút Tìm kiếm
-            </span>
-            <input
-              type="checkbox"
-              checked={info.showHeaderSearch ?? true}
-              onChange={(e) => onChange('showHeaderSearch', e.target.checked)}
-              className="w-4 h-4 rounded text-blue-600 border-slate-700 bg-slate-800"
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span className="text-xs font-medium text-slate-300 flex items-center gap-2">
-              <Moon size={14} className="text-slate-400" />
-              Đổi theme Sáng/Tối
-            </span>
-            <input
-              type="checkbox"
-              checked={info.showThemeToggle ?? true}
-              onChange={(e) => onChange('showThemeToggle', e.target.checked)}
-              className="w-4 h-4 rounded text-blue-600 border-slate-700 bg-slate-800"
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span className="text-xs font-medium text-slate-300 flex items-center gap-2">
-              <Globe size={14} className="text-slate-400" />
-              Bộ chọn ngôn ngữ
-            </span>
-            <input
-              type="checkbox"
-              checked={info.showLanguageSwitch ?? true}
-              onChange={(e) => onChange('showLanguageSwitch', e.target.checked)}
-              className="w-4 h-4 rounded text-blue-600 border-slate-700 bg-slate-800"
-            />
-          </div>
-        </div>
-      </div>
+      </SettingsSection>
 
       {/* ========================================================
           2. FOOTER CUSTOMIZATION
           ======================================================== */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 space-y-6 shadow-xl">
-        <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
-            <Sliders size={20} />
-          </div>
-          <div>
-            <h2 className="text-base font-bold text-white">Tùy chỉnh Footer (Chân trang)</h2>
-            <p className="text-xs text-slate-400">
-              Quản lý các cột liên kết điều hướng, khối nhận bản tin và dòng bản quyền
-            </p>
-          </div>
-        </div>
-
-        {/* Newsletter Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-            <div>
-              <div className="text-sm font-semibold text-white">
-                Khối Đăng ký nhận tin (Newsletter)
+      <SettingsSection
+        icon={Sliders}
+        title="Tùy chỉnh Footer (Chân trang)"
+        description="Quản lý khối đăng ký nhận bản tin, danh sách cột liên kết điều hướng và dòng bản quyền."
+      >
+        <div className="space-y-6">
+          {/* Newsletter Section */}
+          <div
+            className="flex items-center justify-between rounded-xl border p-4 transition-colors"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-lg"
+                style={{
+                  background: 'var(--primary-light)',
+                  color: 'var(--primary-text)',
+                }}
+              >
+                <Mail size={16} />
               </div>
-              <div className="text-xs text-slate-400">
-                Cho phép người dùng để lại email nhận tin tức mới
+              <div>
+                <div className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                  Khối Đăng ký nhận tin (Newsletter)
+                </div>
+                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  Cho phép khách hàng để lại email nhận thông báo, tin tức khuyến mãi mới nhất
+                </div>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={info.showNewsletter ?? true}
-                onChange={(e) => onChange('showNewsletter', e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600" />
-            </label>
+
+            <ToggleSwitch
+              checked={info.showNewsletter ?? true}
+              onChange={(checked) => onChange('showNewsletter', checked)}
+            />
           </div>
 
           {(info.showNewsletter ?? true) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-950/40 border border-slate-800">
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  Tiêu đề khối
-                </label>
+            <div
+              className="grid grid-cols-1 gap-4 rounded-xl border p-4 md:grid-cols-2"
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <Field label="Tiêu đề khối">
                 <input
                   type="text"
                   value={info.newsletterTitle || ''}
                   onChange={(e) => onChange('newsletterTitle', e.target.value)}
                   placeholder="VD: Đăng ký nhận bản tin"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-500"
+                  className={inputClass}
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  Mô tả ngắn
-                </label>
+              <Field label="Mô tả ngắn">
                 <input
                   type="text"
                   value={info.newsletterDesc || ''}
                   onChange={(e) => onChange('newsletterDesc', e.target.value)}
                   placeholder="VD: Nhận thông tin cập nhật công nghệ và thông báo mới nhất."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-500"
+                  className={inputClass}
                 />
-              </div>
+              </Field>
             </div>
           )}
-        </div>
 
-        {/* Footer Link Columns Builder */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-white">Các cột liên kết chân trang</div>
-              <div className="text-xs text-slate-400">
-                Tự do tạo các nhóm danh mục liên kết (Điều hướng, Dịch vụ, Chính sách...)
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleAddColumn}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 text-xs font-medium transition-colors"
-            >
-              <Plus size={14} /> Thêm cột mới
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {columns.map((col, colIdx) => (
-              <div
-                key={colIdx}
-                className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3"
-              >
-                <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
-                  <input
-                    type="text"
-                    value={col.title}
-                    onChange={(e) => handleColumnTitleChange(colIdx, e.target.value)}
-                    placeholder="Tiêu đề cột (VD: Dịch vụ)"
-                    className="font-semibold text-sm text-white bg-transparent border-b border-slate-700 focus:border-blue-500 focus:outline-none px-1 py-0.5"
-                  />
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => handleAddLink(colIdx)}
-                      className="p-1 rounded text-blue-400 hover:bg-blue-500/10 text-xs inline-flex items-center gap-1"
-                      title="Thêm link vào cột này"
-                    >
-                      <Plus size={14} /> Link
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveColumn(colIdx)}
-                      className="p-1 rounded text-rose-400 hover:bg-rose-500/10"
-                      title="Xóa cả cột"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+          {/* Footer Link Columns Builder */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <ListTree size={16} style={{ color: 'var(--primary)' }} />
+                <div>
+                  <div className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                    Các cột liên kết chân trang
+                  </div>
+                  <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    Tự do tạo các nhóm danh mục liên kết (Điều hướng, Dịch vụ, Chính sách...)
                   </div>
                 </div>
+              </div>
 
-                {/* List of links */}
-                <div className="space-y-2">
-                  {col.links.map((link, linkIdx) => (
-                    <div key={linkIdx} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={link.label}
-                        onChange={(e) => handleLinkChange(colIdx, linkIdx, 'label', e.target.value)}
-                        placeholder="Tên link"
-                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-blue-500"
-                      />
-                      <input
-                        type="text"
-                        value={link.url}
-                        onChange={(e) => handleLinkChange(colIdx, linkIdx, 'url', e.target.value)}
-                        placeholder="/duong-dan"
-                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-blue-500"
-                      />
+              <button
+                type="button"
+                onClick={handleAddColumn}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-opacity"
+                style={{
+                  background: 'var(--primary)',
+                  color: 'var(--primary-foreground)',
+                }}
+              >
+                <Plus size={14} /> Thêm cột mới
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {columns.map((col, colIdx) => (
+                <div
+                  key={colIdx}
+                  className="rounded-xl border p-4 space-y-3"
+                  style={{
+                    background: 'var(--surface-secondary)',
+                    borderColor: 'var(--border)',
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-between gap-2 pb-2 border-b"
+                    style={{ borderColor: 'var(--border)' }}
+                  >
+                    <input
+                      type="text"
+                      value={col.title}
+                      onChange={(e) => handleColumnTitleChange(colIdx, e.target.value)}
+                      placeholder="Tiêu đề cột (VD: Dịch vụ)"
+                      className="font-semibold text-sm bg-transparent border-b outline-none px-1 py-0.5 focus:border-[var(--primary)]"
+                      style={{
+                        color: 'var(--text)',
+                        borderColor: 'var(--border-strong)',
+                      }}
+                    />
+                    <div className="flex items-center gap-1">
                       <button
                         type="button"
-                        onClick={() => handleRemoveLink(colIdx, linkIdx)}
-                        className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded"
+                        onClick={() => handleAddLink(colIdx)}
+                        className="p-1 rounded text-xs inline-flex items-center gap-1 transition-opacity hover:opacity-80"
+                        style={{
+                          background: 'var(--primary-light)',
+                          color: 'var(--primary-text)',
+                        }}
+                        title="Thêm link vào cột này"
                       >
-                        <Trash2 size={13} />
+                        <Plus size={13} /> Link
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveColumn(colIdx)}
+                        className="p-1 rounded transition-opacity hover:opacity-80"
+                        style={{
+                          background: 'var(--error-light)',
+                          color: 'var(--error)',
+                        }}
+                        title="Xóa cả cột"
+                      >
+                        <Trash2 size={14} />
                       </button>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* List of links */}
+                  <div className="space-y-2">
+                    {col.links.map((link, linkIdx) => (
+                      <div key={linkIdx} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={link.label}
+                          onChange={(e) =>
+                            handleLinkChange(colIdx, linkIdx, 'label', e.target.value)
+                          }
+                          placeholder="Tên link"
+                          className={`${inputClass} !py-1.5 !text-xs flex-1`}
+                        />
+                        <input
+                          type="text"
+                          value={link.url}
+                          onChange={(e) => handleLinkChange(colIdx, linkIdx, 'url', e.target.value)}
+                          placeholder="/duong-dan"
+                          className={`${inputClass} !py-1.5 !text-xs flex-1`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLink(colIdx, linkIdx)}
+                          className="p-1.5 rounded transition-opacity hover:opacity-80 shrink-0"
+                          style={{
+                            background: 'var(--error-light)',
+                            color: 'var(--error)',
+                          }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div
+            className="rounded-xl border p-4 space-y-2"
+            style={{
+              background: 'var(--surface-secondary)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={16} style={{ color: 'var(--primary)' }} />
+              <label className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                Dòng chữ bản quyền (Copyright text)
+              </label>
+            </div>
+            <input
+              type="text"
+              value={info.footerCopyright || ''}
+              onChange={(e) => onChange('footerCopyright', e.target.value)}
+              placeholder="VD: © 2026 CMS Technology. Tất cả quyền được bảo lưu."
+              className={inputClass}
+            />
           </div>
         </div>
-
-        {/* Copyright */}
-        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2">
-          <label className="block text-xs font-medium text-slate-300">
-            Dòng chữ bản quyền (Copyright)
-          </label>
-          <input
-            type="text"
-            value={info.footerCopyright || ''}
-            onChange={(e) => onChange('footerCopyright', e.target.value)}
-            placeholder="VD: © 2026 CMS Technology. Tất cả quyền được bảo lưu."
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500"
-          />
-        </div>
-      </div>
+      </SettingsSection>
     </div>
   );
 }
+
+/* =========================================================
+   SETTINGS SECTION HELPER
+========================================================= */
+
+function SettingsSection({
+  icon: Icon,
+  title,
+  description,
+  children,
+}: {
+  icon: React.ComponentType<{ size?: number }>;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      className="overflow-hidden rounded-2xl border"
+      style={{
+        background: 'var(--surface)',
+        borderColor: 'var(--border)',
+      }}
+    >
+      {/* Section header */}
+      <div
+        className="flex items-start gap-3 border-b px-6 py-5"
+        style={{
+          borderColor: 'var(--border)',
+          background: 'var(--surface-secondary)',
+        }}
+      >
+        <div
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+          style={{
+            background: 'var(--primary-light)',
+            color: 'var(--primary-text)',
+          }}
+        >
+          <Icon size={18} />
+        </div>
+
+        <div>
+          <h2 className="font-display font-semibold" style={{ color: 'var(--text)' }}>
+            {title}
+          </h2>
+
+          <p className="mt-0.5 text-sm" style={{ color: 'var(--text-secondary)' }}>
+            {description}
+          </p>
+        </div>
+      </div>
+
+      {/* Section body */}
+      <div className="p-6">{children}</div>
+    </section>
+  );
+}
+
+/* =========================================================
+   FIELD HELPER
+========================================================= */
+
+function Field({
+  label,
+  hint,
+  children,
+  className = '',
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <label
+        className="mb-1.5 block text-xs font-semibold"
+        style={{ color: 'var(--text-secondary)' }}
+      >
+        {label}
+      </label>
+
+      {children}
+
+      {hint && (
+        <p className="mt-1 text-[11px]" style={{ color: 'var(--text-muted)' }}>
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* =========================================================
+   SWITCH ITEM HELPER
+========================================================= */
+
+function SwitchItem({
+  icon: Icon,
+  label,
+  checked,
+  onChange,
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <div
+      className="flex items-center justify-between rounded-xl border p-3.5 transition-colors"
+      style={{
+        background: 'var(--surface)',
+        borderColor: 'var(--border)',
+      }}
+    >
+      <span
+        className="flex items-center gap-2 text-xs font-medium"
+        style={{ color: 'var(--text)' }}
+      >
+        <span style={{ color: 'var(--text-secondary)' }}>
+          <Icon size={14} />
+        </span>
+        {label}
+      </span>
+      <ToggleSwitch checked={checked} onChange={onChange} />
+    </div>
+  );
+}
+
+/* =========================================================
+   TOGGLE SWITCH COMPONENT
+========================================================= */
+
+function ToggleSwitch({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="sr-only peer"
+      />
+      <div
+        className={`w-11 h-6 rounded-full peer transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${
+          checked ? 'after:translate-x-full' : ''
+        }`}
+        style={{
+          background: checked ? 'var(--primary)' : 'var(--border-strong)',
+        }}
+      />
+    </label>
+  );
+}
+
+/* =========================================================
+   INPUT STYLE
+========================================================= */
+
+const inputClass = `
+  w-full rounded-xl border
+  px-3.5 py-2.5
+  text-sm outline-none
+  transition-colors
+  bg-[var(--surface)]
+  text-[var(--text)]
+  border-[var(--border)]
+  placeholder:text-[var(--text-placeholder)]
+  focus:border-[var(--primary)]
+`;

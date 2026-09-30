@@ -81,14 +81,15 @@ export default function BannerFormModal({
         highlightText: '',
         subtitle: '',
         description: '',
-        imageUrl: '',
+        imageUrl:
+          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=560&h=420&fit=crop&auto=format',
         mobileImageUrl: '',
-        primaryBtnText: '',
-        primaryBtnUrl: '',
-        secondaryBtnText: '',
-        secondaryBtnUrl: '',
+        primaryBtnText: 'Tư vấn miễn phí',
+        primaryBtnUrl: '/lien-he',
+        secondaryBtnText: 'Xem dự án',
+        secondaryBtnUrl: '/du-an',
         statsJson: '[]',
-        floatingBadgeText: '',
+        floatingBadgeText: 'Đã phục vụ 500+ doanh nghiệp',
         position: 'HOME_HERO',
         displayOrder: 0,
         isActive: true,
@@ -101,66 +102,71 @@ export default function BannerFormModal({
     }
   }, [initialData, isOpen]);
 
-  // Sync stats array to statsJson in formData
-  const updateStats = (newStats: StatsItem[]) => {
-    setStats(newStats);
-    setFormData((prev) => ({
-      ...prev,
-      statsJson: JSON.stringify(newStats),
-    }));
+  const handleStatsChange = (index: number, field: 'num' | 'label', val: string) => {
+    const updated = [...stats];
+    updated[index][field] = val;
+    setStats(updated);
+    setFormData((prev) => ({ ...prev, statsJson: JSON.stringify(updated) }));
   };
 
   const handleAddStat = () => {
-    updateStats([...stats, { num: '', label: '' }]);
+    const updated = [...stats, { num: '100+', label: 'Chỉ số mới' }];
+    setStats(updated);
+    setFormData((prev) => ({ ...prev, statsJson: JSON.stringify(updated) }));
   };
 
   const handleRemoveStat = (index: number) => {
-    updateStats(stats.filter((_, i) => i !== index));
+    const updated = stats.filter((_, i) => i !== index);
+    setStats(updated);
+    setFormData((prev) => ({ ...prev, statsJson: JSON.stringify(updated) }));
   };
 
-  const handleStatChange = (index: number, field: 'num' | 'label', value: string) => {
-    const updated = [...stats];
-    updated[index][field] = value;
-    updateStats(updated);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim()) {
-      alert('Vui lòng nhập tiêu đề banner');
+      alert('Vui lòng nhập tiêu đề chính của Banner.');
       return;
     }
-    if (!formData.imageUrl.trim()) {
-      alert('Vui lòng nhập đường dẫn hình ảnh banner');
-      return;
-    }
-
-    if (initialData) {
-      await onSubmit({
-        ...formData,
-        bannerId: initialData.bannerId,
-      });
-    } else {
-      await onSubmit(formData);
-    }
+    onSubmit({
+      ...formData,
+      statsJson: JSON.stringify(stats),
+    });
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-5xl my-8 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div
+        className="relative w-full max-w-5xl my-8 border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        style={{
+          background: 'var(--surface)',
+          borderColor: 'var(--border)',
+        }}
+      >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-20">
+        <div
+          className="flex items-center justify-between px-6 py-4 border-b sticky top-0 z-20"
+          style={{
+            background: 'var(--surface-secondary)',
+            borderColor: 'var(--border)',
+          }}
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center font-bold"
+              style={{
+                background: 'var(--primary-light)',
+                color: 'var(--primary-text)',
+              }}
+            >
               <Sparkles size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-base font-bold" style={{ color: 'var(--text)' }}>
                 {initialData ? 'Chỉnh sửa Banner' : 'Thêm mới Banner'}
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                 Tùy chỉnh toàn diện nội dung, hình ảnh, nút bấm và số liệu thống kê
               </p>
             </div>
@@ -168,26 +174,44 @@ export default function BannerFormModal({
 
           <div className="flex items-center gap-2">
             {/* View Switcher on smaller screens / preview tabs */}
-            <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs">
+            <div
+              className="flex items-center p-0.5 rounded-lg border text-xs"
+              style={{
+                background: 'var(--surface-tertiary)',
+                borderColor: 'var(--border)',
+              }}
+            >
               <button
                 type="button"
                 onClick={() => setActiveTab('form')}
-                className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                className="px-3 py-1.5 rounded-md font-medium transition-colors"
+                style={
                   activeTab === 'form'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
+                    ? {
+                        background: 'var(--primary)',
+                        color: 'var(--primary-foreground)',
+                      }
+                    : {
+                        color: 'var(--text-secondary)',
+                      }
+                }
               >
                 Nhập liệu
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('preview')}
-                className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                className="px-3 py-1.5 rounded-md font-medium transition-colors"
+                style={
                   activeTab === 'preview'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
+                    ? {
+                        background: 'var(--primary)',
+                        color: 'var(--primary-foreground)',
+                      }
+                    : {
+                        color: 'var(--text-secondary)',
+                      }
+                }
               >
                 Xem trước
               </button>
@@ -196,7 +220,11 @@ export default function BannerFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-2 rounded-lg transition-colors hover:opacity-80"
+              style={{
+                background: 'var(--surface)',
+                color: 'var(--text-secondary)',
+              }}
             >
               <X size={20} />
             </button>
@@ -207,7 +235,7 @@ export default function BannerFormModal({
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {activeTab === 'preview' ? (
             <div className="space-y-4">
-              <div className="text-xs text-slate-400 font-medium">
+              <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                 Mô phỏng hiển thị trên giao diện trang chủ:
               </div>
               <BannerLivePreview banner={formData} />
@@ -220,15 +248,27 @@ export default function BannerFormModal({
               </div>
 
               {/* Group 1: Nội dung chính */}
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider">
+              <div
+                className="rounded-xl border p-5 space-y-4"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                <h3
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{ color: 'var(--primary-text)' }}
+                >
                   1. Nội dung văn bản
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Tiêu đề chính <span className="text-red-400">*</span>
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Tiêu đề chính <span style={{ color: 'var(--error)' }}>*</span>
                     </label>
                     <input
                       type="text"
@@ -236,41 +276,50 @@ export default function BannerFormModal({
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       placeholder="VD: Kiến tạo tương lai số"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500"
+                      className={modalInputClass}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Chữ tô màu nổi bật (Highlight)
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Chữ nhấn mạnh (Tô màu nổi bật)
                     </label>
                     <input
                       type="text"
                       value={formData.highlightText}
                       onChange={(e) => setFormData({ ...formData, highlightText: e.target.value })}
                       placeholder="VD: cho doanh nghiệp của bạn"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500"
+                      className={modalInputClass}
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Phụ đề / Huy hiệu trên cùng (Badge)
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Tiêu đề phụ / Tagline
                     </label>
                     <input
                       type="text"
                       value={formData.subtitle}
                       onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                       placeholder="VD: Đã phục vụ 500+ doanh nghiệp trên toàn quốc"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500"
+                      className={modalInputClass}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Thẻ nổi góc ảnh (Floating Badge)
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Huy hiệu nổi góc ảnh (Floating Badge)
                     </label>
                     <input
                       type="text"
@@ -278,78 +327,112 @@ export default function BannerFormModal({
                       onChange={(e) =>
                         setFormData({ ...formData, floatingBadgeText: e.target.value })
                       }
-                      placeholder="VD: Đánh giá 5 sao từ 500+ doanh nghiệp"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500"
+                      placeholder="VD: ⭐ Đánh giá 4.9/5 từ khách hàng"
+                      className={modalInputClass}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                    Đoạn văn bản mô tả
+                  <label
+                    className="block text-xs font-semibold mb-1.5"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    Đoạn văn miêu tả chi tiết
                   </label>
                   <textarea
                     rows={3}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="VD: CMS cung cấp giải pháp công nghệ toàn diện giúp doanh nghiệp tăng trưởng bền vững..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500 resize-none"
+                    placeholder="Mô tả tóm tắt dịch vụ, sứ mệnh hoặc giá trị cốt lõi..."
+                    className={`${modalInputClass} resize-none`}
                   />
                 </div>
               </div>
 
-              {/* Group 2: Hình ảnh Banner */}
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider">
+              {/* Group 2: Hình ảnh */}
+              <div
+                className="rounded-xl border p-5 space-y-4"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                <h3
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{ color: 'var(--primary-text)' }}
+                >
                   2. Hình ảnh Banner
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Ảnh Desktop (URL) <span className="text-red-400">*</span>
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Ảnh hiển thị chính (Desktop URL)
                     </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        required
-                        value={formData.imageUrl}
-                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                        placeholder="https://... hoặc /uploads/..."
-                        className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      value={formData.imageUrl}
+                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                      placeholder="https://... hoặc /images/banner.png"
+                      className={modalInputClass}
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Ảnh Mobile (Tùy chọn)
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Ảnh cho điện thoại (Mobile URL - Tùy chọn)
                     </label>
                     <input
                       type="text"
                       value={formData.mobileImageUrl}
                       onChange={(e) => setFormData({ ...formData, mobileImageUrl: e.target.value })}
-                      placeholder="URL ảnh crop riêng cho điện thoại..."
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500"
+                      placeholder="Nếu để trống sẽ tự dùng ảnh Desktop"
+                      className={modalInputClass}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Group 3: Nút kêu gọi hành động (CTA) */}
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider">
-                  3. Nút kêu gọi hành động (Buttons)
+              <div
+                className="rounded-xl border p-5 space-y-4"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                <h3
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{ color: 'var(--primary-text)' }}
+                >
+                  3. Nút kêu gọi hành động (Call To Action)
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Primary Button */}
-                  <div className="space-y-3 p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span className="text-xs font-medium text-slate-200 block">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div
+                    className="p-3.5 rounded-xl border space-y-3"
+                    style={{
+                      background: 'var(--surface)',
+                      borderColor: 'var(--border)',
+                    }}
+                  >
+                    <div className="text-xs font-bold" style={{ color: 'var(--text)' }}>
                       Nút chính (Primary CTA)
-                    </span>
+                    </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Tên nút</label>
+                      <label
+                        className="block text-[11px] mb-1"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        Chữ trên nút
+                      </label>
                       <input
                         type="text"
                         value={formData.primaryBtnText}
@@ -357,11 +440,16 @@ export default function BannerFormModal({
                           setFormData({ ...formData, primaryBtnText: e.target.value })
                         }
                         placeholder="VD: Tư vấn miễn phí"
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                        className={modalInputClass}
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Đường dẫn</label>
+                      <label
+                        className="block text-[11px] mb-1"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        Đường dẫn (URL)
+                      </label>
                       <input
                         type="text"
                         value={formData.primaryBtnUrl}
@@ -369,18 +457,28 @@ export default function BannerFormModal({
                           setFormData({ ...formData, primaryBtnUrl: e.target.value })
                         }
                         placeholder="VD: /lien-he"
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                        className={modalInputClass}
                       />
                     </div>
                   </div>
 
-                  {/* Secondary Button */}
-                  <div className="space-y-3 p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span className="text-xs font-medium text-slate-200 block">
+                  <div
+                    className="p-3.5 rounded-xl border space-y-3"
+                    style={{
+                      background: 'var(--surface)',
+                      borderColor: 'var(--border)',
+                    }}
+                  >
+                    <div className="text-xs font-bold" style={{ color: 'var(--text)' }}>
                       Nút phụ (Secondary CTA)
-                    </span>
+                    </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Tên nút</label>
+                      <label
+                        className="block text-[11px] mb-1"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        Chữ trên nút
+                      </label>
                       <input
                         type="text"
                         value={formData.secondaryBtnText}
@@ -388,11 +486,16 @@ export default function BannerFormModal({
                           setFormData({ ...formData, secondaryBtnText: e.target.value })
                         }
                         placeholder="VD: Xem dự án"
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                        className={modalInputClass}
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Đường dẫn</label>
+                      <label
+                        className="block text-[11px] mb-1"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        Đường dẫn (URL)
+                      </label>
                       <input
                         type="text"
                         value={formData.secondaryBtnUrl}
@@ -400,89 +503,138 @@ export default function BannerFormModal({
                           setFormData({ ...formData, secondaryBtnUrl: e.target.value })
                         }
                         placeholder="VD: /du-an"
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                        className={modalInputClass}
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Group 4: Khối số liệu thống kê (Stats Counter) */}
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4">
+              {/* Group 4: Thống kê số liệu (Stats) */}
+              <div
+                className="rounded-xl border p-5 space-y-4"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
+                }}
+              >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider">
-                    4. Số liệu thống kê đính kèm (Stats)
+                  <h3
+                    className="text-xs font-bold uppercase tracking-wider"
+                    style={{ color: 'var(--primary-text)' }}
+                  >
+                    4. Số liệu thống kê chân Banner
                   </h3>
                   <button
                     type="button"
                     onClick={handleAddStat}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-opacity"
+                    style={{
+                      background: 'var(--primary-light)',
+                      color: 'var(--primary-text)',
+                    }}
                   >
-                    <Plus size={14} /> Thêm chỉ số
+                    <Plus size={13} /> Thêm số liệu
                   </button>
                 </div>
 
-                <div className="space-y-2.5">
-                  {stats.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic">
-                      Chưa có số liệu thống kê nào. Nhấn &quot;+ Thêm chỉ số&quot; để thêm.
-                    </p>
-                  ) : (
-                    stats.map((s, idx) => (
-                      <div key={idx} className="flex items-center gap-3">
-                        <input
-                          type="text"
-                          value={s.num}
-                          onChange={(e) => handleStatChange(idx, 'num', e.target.value)}
-                          placeholder="Số liệu (VD: 500+)"
-                          className="w-36 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500 font-mono"
-                        />
-                        <input
-                          type="text"
-                          value={s.label}
-                          onChange={(e) => handleStatChange(idx, 'label', e.target.value)}
-                          placeholder="Nhãn (VD: Khách hàng tin dùng)"
-                          className="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveStat(idx)}
-                          className="p-2 text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
-                          title="Xóa dòng"
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {stats.map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-3 rounded-xl border space-y-2 relative"
+                      style={{
+                        background: 'var(--surface)',
+                        borderColor: 'var(--border)',
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveStat(index)}
+                        className="absolute top-2 right-2 p-1 rounded transition-colors hover:opacity-80"
+                        style={{
+                          background: 'var(--error-light)',
+                          color: 'var(--error)',
+                        }}
+                        title="Xóa"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                      <div>
+                        <label
+                          className="block text-[11px] mb-1"
+                          style={{ color: 'var(--text-secondary)' }}
                         >
-                          <Trash2 size={16} />
-                        </button>
+                          Số lượng (Num)
+                        </label>
+                        <input
+                          type="text"
+                          value={item.num}
+                          onChange={(e) => handleStatsChange(index, 'num', e.target.value)}
+                          placeholder="500+"
+                          className={`${modalInputClass} !py-1.5 !text-xs font-bold`}
+                        />
                       </div>
-                    ))
-                  )}
+                      <div>
+                        <label
+                          className="block text-[11px] mb-1"
+                          style={{ color: 'var(--text-secondary)' }}
+                        >
+                          Nhãn mô tả (Label)
+                        </label>
+                        <input
+                          type="text"
+                          value={item.label}
+                          onChange={(e) => handleStatsChange(index, 'label', e.target.value)}
+                          placeholder="Khách hàng"
+                          className={`${modalInputClass} !py-1.5 !text-xs`}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Group 5: Cấu hình hiển thị */}
-              <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider">
+              <div
+                className="rounded-xl border p-5 space-y-4"
+                style={{
+                  background: 'var(--surface-secondary)',
+                  borderColor: 'var(--border)',
+                }}
+              >
+                <h3
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{ color: 'var(--primary-text)' }}
+                >
                   5. Vị trí & Trạng thái
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Vị trí đặt
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Vị trí hiển thị
                     </label>
                     <select
                       value={formData.position}
                       onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                      className="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                      className={modalInputClass}
                     >
-                      <option value="HOME_HERO">Trang chủ - Hero trên cùng (HOME_HERO)</option>
-                      <option value="HOME_MIDDLE">Trang chủ - Giữa trang (HOME_MIDDLE)</option>
-                      <option value="ABOUT_HERO">Trang Giới thiệu (ABOUT_HERO)</option>
+                      <option value="HOME_HERO">HOME_HERO (Đầu trang chủ)</option>
+                      <option value="ABOUT_HERO">ABOUT_HERO (Trang giới thiệu)</option>
+                      <option value="SERVICE_HERO">SERVICE_HERO (Trang dịch vụ)</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                      Thứ tự hiển thị (Số nhỏ xếp trước)
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Thứ tự hiển thị (Nhỏ xếp trước)
                     </label>
                     <input
                       type="number"
@@ -490,22 +642,33 @@ export default function BannerFormModal({
                       onChange={(e) =>
                         setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })
                       }
-                      className="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                      className={modalInputClass}
                     />
                   </div>
 
-                  <div className="pt-4 sm:pt-0">
-                    <label className="flex items-center gap-3 cursor-pointer">
+                  <div>
+                    <label
+                      className="block text-xs font-semibold mb-1.5"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      Trạng thái hoạt động
+                    </label>
+                    <div className="flex items-center gap-2 pt-2">
                       <input
                         type="checkbox"
+                        id="is_active"
                         checked={formData.isActive}
                         onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                        className="w-4 h-4 rounded border-slate-700 text-blue-600 focus:ring-blue-500 bg-slate-800"
+                        className="w-4 h-4 rounded text-blue-600"
                       />
-                      <span className="text-xs font-medium text-slate-200">
-                        Kích hoạt hiển thị ngay
-                      </span>
-                    </label>
+                      <label
+                        htmlFor="is_active"
+                        className="text-xs cursor-pointer font-medium"
+                        style={{ color: 'var(--text)' }}
+                      >
+                        Bật hiển thị trên website
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -514,12 +677,23 @@ export default function BannerFormModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-800 bg-slate-900 sticky bottom-0 z-20">
+        <div
+          className="flex items-center justify-end gap-3 px-6 py-4 border-t sticky bottom-0 z-20"
+          style={{
+            background: 'var(--surface-secondary)',
+            borderColor: 'var(--border)',
+          }}
+        >
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-colors"
+            className="px-5 py-2.5 rounded-xl border text-xs font-semibold transition-colors"
+            style={{
+              borderColor: 'var(--border)',
+              color: 'var(--text-secondary)',
+              background: 'var(--surface)',
+            }}
           >
             Hủy bỏ
           </button>
@@ -527,12 +701,28 @@ export default function BannerFormModal({
             type="submit"
             form="banner-form"
             disabled={loading}
-            className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-blue-500/25 disabled:opacity-50"
+            className="px-6 py-2.5 rounded-xl text-xs font-semibold transition-opacity disabled:opacity-50"
+            style={{
+              background: 'var(--primary)',
+              color: 'var(--primary-foreground)',
+            }}
           >
-            {loading ? 'Đang lưu...' : initialData ? 'Lưu thay đổi' : 'Tạo mới Banner'}
+            {loading ? 'Đang lưu...' : initialData ? 'Cập nhật Banner' : 'Tạo mới Banner'}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+const modalInputClass = `
+  w-full rounded-xl border
+  px-3.5 py-2
+  text-xs outline-none
+  transition-colors
+  bg-[var(--surface)]
+  text-[var(--text)]
+  border-[var(--border)]
+  placeholder:text-[var(--text-placeholder)]
+  focus:border-[var(--primary)]
+`;
