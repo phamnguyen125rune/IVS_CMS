@@ -89,7 +89,6 @@ export default function BannerTable({
         >
           <tr>
             <th className="py-3.5 px-4">Banner</th>
-            <th className="py-3.5 px-4">Vị trí</th>
             <th className="py-3.5 px-4 text-center">Thứ tự</th>
             <th className="py-3.5 px-4 text-center">Nút CTA</th>
             <th className="py-3.5 px-4 text-center">Trạng thái</th>
@@ -153,20 +152,6 @@ export default function BannerTable({
                     )}
                   </div>
                 </div>
-              </td>
-
-              {/* Position */}
-              <td className="py-4 px-4">
-                <span
-                  className="px-2.5 py-1 rounded-lg text-xs font-medium border"
-                  style={{
-                    background: 'var(--surface-secondary)',
-                    color: 'var(--text-secondary)',
-                    borderColor: 'var(--border)',
-                  }}
-                >
-                  {item.position || 'HOME_HERO'}
-                </span>
               </td>
 
               {/* Order */}

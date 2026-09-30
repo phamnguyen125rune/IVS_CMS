@@ -607,28 +607,10 @@ export default function BannerFormModal({
                   className="text-xs font-bold uppercase tracking-wider"
                   style={{ color: 'var(--primary-text)' }}
                 >
-                  5. Vị trí & Trạng thái
+                  5. Thứ tự & Trạng thái hoạt động
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label
-                      className="block text-xs font-semibold mb-1.5"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Vị trí hiển thị
-                    </label>
-                    <select
-                      value={formData.position}
-                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                      className={modalInputClass}
-                    >
-                      <option value="HOME_HERO">HOME_HERO (Đầu trang chủ)</option>
-                      <option value="ABOUT_HERO">ABOUT_HERO (Trang giới thiệu)</option>
-                      <option value="SERVICE_HERO">SERVICE_HERO (Trang dịch vụ)</option>
-                    </select>
-                  </div>
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label
                       className="block text-xs font-semibold mb-1.5"
