@@ -263,84 +263,139 @@ export default function ClientFooter({ language }: ClientFooterProps) {
           </div>
 
           {/* =================================================
-              NAVIGATION
+              DYNAMIC FOOTER COLUMNS
           ================================================== */}
+          {(() => {
+            let dynamicCols: { title: string; links: { label: string; url: string }[] }[] = [];
+            try {
+              if (generalInfo.footerColumnsJson) {
+                const parsed = JSON.parse(generalInfo.footerColumnsJson);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  dynamicCols = parsed;
+                }
+              }
+            } catch {
+              dynamicCols = [];
+            }
 
-          <div>
-            <h4
-              className="
-                mb-4
-                font-display
-                text-sm
-                font-semibold
-              "
-              style={{
-                color: 'var(--dark-text)',
-              }}
-            >
-              Điều hướng
-            </h4>
-
-            <ul className="space-y-2.5">
-              {navigationLinks.map(([label, path]) => (
-                <li key={path}>
-                  <Link
-                    href={getLocalizedPath(path)}
+            if (dynamicCols.length > 0) {
+              return dynamicCols.map((col, idx) => (
+                <div key={idx}>
+                  <h4
                     className="
+                      mb-4
+                      font-display
                       text-sm
-                      transition-colors
-                      hover:text-[var(--primary)]
+                      font-semibold
                     "
                     style={{
-                      color: 'var(--dark-text-muted)',
+                      color: 'var(--dark-text)',
                     }}
                   >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+                    {col.title}
+                  </h4>
 
-          {/* =================================================
-              SERVICES
-          ================================================== */}
+                  <ul className="space-y-2.5">
+                    {col.links.map((link, lIdx) => (
+                      <li key={lIdx}>
+                        <Link
+                          href={getLocalizedPath(link.url || '/')}
+                          className="
+                            text-sm
+                            transition-colors
+                            hover:text-[var(--primary)]
+                          "
+                          style={{
+                            color: 'var(--dark-text-muted)',
+                          }}
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ));
+            }
 
-          <div>
-            <h4
-              className="
-                mb-4
-                font-display
-                text-sm
-                font-semibold
-              "
-              style={{
-                color: 'var(--dark-text)',
-              }}
-            >
-              Dịch vụ
-            </h4>
-
-            <ul className="space-y-2.5">
-              {services.map((service) => (
-                <li key={service}>
-                  <a
-                    href="#"
+            return (
+              <>
+                {/* Fallback Navigation */}
+                <div>
+                  <h4
                     className="
+                      mb-4
+                      font-display
                       text-sm
-                      transition-colors
-                      hover:text-[var(--primary)]
+                      font-semibold
                     "
                     style={{
-                      color: 'var(--dark-text-muted)',
+                      color: 'var(--dark-text)',
                     }}
                   >
-                    {service}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+                    Điều hướng
+                  </h4>
+
+                  <ul className="space-y-2.5">
+                    {navigationLinks.map(([label, path]) => (
+                      <li key={path}>
+                        <Link
+                          href={getLocalizedPath(path)}
+                          className="
+                            text-sm
+                            transition-colors
+                            hover:text-[var(--primary)]
+                          "
+                          style={{
+                            color: 'var(--dark-text-muted)',
+                          }}
+                        >
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Fallback Services */}
+                <div>
+                  <h4
+                    className="
+                      mb-4
+                      font-display
+                      text-sm
+                      font-semibold
+                    "
+                    style={{
+                      color: 'var(--dark-text)',
+                    }}
+                  >
+                    Dịch vụ
+                  </h4>
+
+                  <ul className="space-y-2.5">
+                    {services.map((service) => (
+                      <li key={service}>
+                        <Link
+                          href={getLocalizedPath('/du-an')}
+                          className="
+                            text-sm
+                            transition-colors
+                            hover:text-[var(--primary)]
+                          "
+                          style={{
+                            color: 'var(--dark-text-muted)',
+                          }}
+                        >
+                          {service}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            );
+          })()}
 
           {/* =================================================
               CONTACT
@@ -461,6 +516,52 @@ export default function ClientFooter({ language }: ClientFooterProps) {
       </div>
 
       {/* =====================================================
+          NEWSLETTER
+      ====================================================== */}
+      {(generalInfo.showNewsletter ?? true) && (
+        <div
+          className="border-t border-b px-6 py-10"
+          style={{
+            borderColor: 'var(--dark-border)',
+            background: 'rgba(255, 255, 255, 0.02)',
+          }}
+        >
+          <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-1 text-center md:text-left">
+              <h3 className="text-base font-bold text-white">
+                {generalInfo.newsletterTitle || 'Đăng ký nhận bản tin'}
+              </h3>
+              <p className="text-xs" style={{ color: 'var(--dark-text-secondary)' }}>
+                {generalInfo.newsletterDesc ||
+                  'Nhận thông tin cập nhật công nghệ và thông báo quan trọng.'}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 w-full max-w-md">
+              <input
+                type="email"
+                placeholder="Nhập địa chỉ email của bạn..."
+                className="flex-1 px-4 py-2.5 rounded-xl border text-xs focus:outline-none focus:border-blue-500"
+                style={{
+                  background: 'var(--dark-surface)',
+                  borderColor: 'var(--dark-border)',
+                  color: 'var(--dark-text)',
+                }}
+              />
+              <button
+                type="button"
+                className="px-5 py-2.5 rounded-xl text-xs font-semibold text-white transition-opacity hover:opacity-90 shrink-0"
+                style={{
+                  background: 'var(--primary)',
+                }}
+              >
+                Đăng ký
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================
           SUB FOOTER
       ====================================================== */}
 
@@ -489,7 +590,8 @@ export default function ClientFooter({ language }: ClientFooterProps) {
               color: 'var(--dark-text-muted)',
             }}
           >
-            © {new Date().getFullYear()} {generalInfo.companyName || 'CMS'}. Bảo lưu mọi quyền.
+            {generalInfo.footerCopyright ||
+              `© ${new Date().getFullYear()} ${generalInfo.companyName || 'CMS'}. Bảo lưu mọi quyền.`}
           </p>
 
           {legalLinks.length > 0 && (

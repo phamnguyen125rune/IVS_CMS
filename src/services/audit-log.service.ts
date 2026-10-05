@@ -43,7 +43,7 @@ export const auditLogService = {
     const endpoint = `/api/v1/audit-logs/export?${query.toString()}`;
 
     if (typeof window !== 'undefined') {
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, { credentials: 'include' });
       if (!response.ok) {
         throw new Error('Không thể tải file xuất dữ liệu CSV');
       }

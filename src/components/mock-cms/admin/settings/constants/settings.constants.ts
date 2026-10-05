@@ -52,6 +52,19 @@ export const DEFAULT_GENERAL_INFO: GeneralInfo = {
   mapEmbedUrl: '',
 
   footerLinks: '',
+  showTopbar: true,
+  topbarAnnouncementText: '',
+  topbarAnnouncementUrl: '',
+  headerCtaText: 'Tư vấn miễn phí',
+  headerCtaUrl: '/lien-he',
+  showHeaderSearch: true,
+  showThemeToggle: true,
+  showLanguageSwitch: true,
+  footerCopyright: '© 2026 CMS Technology. Tất cả quyền được bảo lưu.',
+  showNewsletter: true,
+  newsletterTitle: 'Đăng ký nhận bản tin',
+  newsletterDesc: 'Nhận thông tin cập nhật công nghệ và thông báo mới nhất.',
+  footerColumnsJson: '',
 };
 
 export const MOCK_LOGS = [

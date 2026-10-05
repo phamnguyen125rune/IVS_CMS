@@ -4,7 +4,17 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { Search, ChevronDown, Globe, Share2, ExternalLink, Menu, X } from 'lucide-react';
+import {
+  Search,
+  ChevronDown,
+  Globe,
+  Share2,
+  ExternalLink,
+  Menu,
+  X,
+  Phone,
+  Mail,
+} from 'lucide-react';
 import { settingService } from '@/services/setting.service';
 import type { GeneralInfo } from '@/types/setting.type';
 import ThemeToggle from '@/components/theme/ThemeToggle';
@@ -210,55 +220,101 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
         borderColor: 'var(--border, #e2e8f0)',
       }}
     >
-      <div
-        className="
-          hidden
-          items-center
-          justify-end
-          border-b
-          px-6
-          py-1.5
-          text-xs
-          md:flex
-        "
-        style={{
-          background: 'var(--dark-background)',
-          borderColor: 'var(--dark-border)',
-        }}
-      >
+      {(generalInfo.showTopbar ?? true) && (
         <div
           className="
-            flex
+            hidden
             items-center
-            gap-3
+            justify-between
+            border-b
+            px-6
+            py-1.5
+            text-xs
+            md:flex
           "
           style={{
-            color: 'var(--dark-text-secondary)',
+            background: 'var(--dark-background)',
+            borderColor: 'var(--dark-border)',
           }}
         >
-          <a
-            href="#"
-            className="
-              transition-colors
-              hover:text-[var(--primary)]
-            "
-            aria-label="Chia sẻ"
+          {/* Left: Announcement or Contacts */}
+          <div
+            className="flex items-center gap-4 text-xs"
+            style={{ color: 'var(--dark-text-secondary)' }}
           >
-            <Share2 size={12} />
-          </a>
+            {generalInfo.topbarAnnouncementText ? (
+              generalInfo.topbarAnnouncementUrl ? (
+                <Link
+                  href={getLocalizedPath(generalInfo.topbarAnnouncementUrl)}
+                  className="hover:text-[var(--primary)] transition-colors font-medium text-white/90 flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {generalInfo.topbarAnnouncementText}
+                </Link>
+              ) : (
+                <span className="font-medium text-white/90 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {generalInfo.topbarAnnouncementText}
+                </span>
+              )
+            ) : null}
 
-          <a
-            href="#"
+            {generalInfo.companyPhoneNumber && (
+              <a
+                href={`tel:${generalInfo.companyPhoneNumber}`}
+                className="inline-flex items-center gap-1 hover:text-[var(--primary)] transition-colors"
+              >
+                <Phone size={11} />
+                <span>{generalInfo.companyPhoneNumber}</span>
+              </a>
+            )}
+
+            {generalInfo.email && (
+              <a
+                href={`mailto:${generalInfo.email}`}
+                className="inline-flex items-center gap-1 hover:text-[var(--primary)] transition-colors"
+              >
+                <Mail size={11} />
+                <span>{generalInfo.email}</span>
+              </a>
+            )}
+          </div>
+
+          {/* Right: Quick Links / Socials */}
+          <div
             className="
-              transition-colors
-              hover:text-[var(--primary)]
+              flex
+              items-center
+              gap-3
             "
-            aria-label="Liên kết bên ngoài"
+            style={{
+              color: 'var(--dark-text-secondary)',
+            }}
           >
-            <ExternalLink size={12} />
-          </a>
+            {generalInfo.facebookLink && (
+              <a
+                href={generalInfo.facebookLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-[var(--primary)]"
+                aria-label="Facebook"
+              >
+                <ExternalLink size={12} />
+              </a>
+            )}
+            <a
+              href="#"
+              className="
+                transition-colors
+                hover:text-[var(--primary)]
+              "
+              aria-label="Chia sẻ"
+            >
+              <Share2 size={12} />
+            </a>
+          </div>
         </div>
-      </div>
+      )}
 
       <div
         className="flex items-center justify-between px-6 py-3"
@@ -380,142 +436,148 @@ export default function ClientNavbar({ language }: ClientNavbarProps) {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 overflow-visible">
-          <ThemeToggle />
+          {(generalInfo.showThemeToggle ?? true) && <ThemeToggle />}
 
-          <div className="relative">
+          {(generalInfo.showLanguageSwitch ?? true) && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setLangOpen(!langOpen)}
+                className="
+                  flex
+                  items-center
+                  gap-1.5
+                  rounded-lg
+                  border
+                  px-3
+                  py-2
+                  text-sm
+                  font-medium
+                  transition-colors
+                  hover:bg-[var(--hover)]
+                  hover:text-[var(--primary)]
+                "
+                style={{
+                  color: 'var(--text)',
+                  borderColor: 'var(--border)',
+                  background: langOpen ? 'var(--active)' : 'transparent',
+                }}
+                aria-label="Chọn ngôn ngữ"
+                aria-expanded={langOpen}
+              >
+                <Globe size={14} />
+
+                <span>{activeLang.flag}</span>
+
+                <ChevronDown
+                  size={12}
+                  style={{
+                    color: langOpen ? 'var(--primary)' : 'var(--text-secondary)',
+                  }}
+                />
+              </button>
+
+              {/* Language dropdown */}
+
+              {langOpen && (
+                <div
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-50
+                    mt-1
+                    w-44
+                    rounded-xl
+                    border
+                    py-1.5
+                    shadow-xl
+                  "
+                  style={{
+                    background: 'var(--surface)',
+                    borderColor: 'var(--border)',
+                  }}
+                >
+                  {languages.map((lang) => {
+                    const isActive = activeLang.code === lang.code;
+
+                    return (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className="
+                          flex
+                          w-full
+                          items-center
+                          gap-3
+                          px-4
+                          py-2
+                          text-sm
+                          transition-colors
+                          hover:bg-[var(--hover)]
+                          hover:text-[var(--primary)]
+                        "
+                        style={{
+                          color: isActive ? 'var(--primary-text)' : 'var(--text-secondary)',
+                          background: isActive ? 'var(--active)' : undefined,
+                          fontWeight: isActive ? 500 : undefined,
+                        }}
+                      >
+                        <span>{lang.flag}</span>
+
+                        <span>{lang.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {(generalInfo.showHeaderSearch ?? true) && (
             <button
               type="button"
-              onClick={() => setLangOpen(!langOpen)}
+              onClick={() => setSearchOpen(!searchOpen)}
               className="
-                flex
-                items-center
-                gap-1.5
                 rounded-lg
-                border
-                px-3
-                py-2
-                text-sm
-                font-medium
+                p-2
                 transition-colors
                 hover:bg-[var(--hover)]
                 hover:text-[var(--primary)]
               "
               style={{
                 color: 'var(--text)',
-                borderColor: 'var(--border)',
-                background: langOpen ? 'var(--active)' : 'transparent',
               }}
-              aria-label="Chọn ngôn ngữ"
-              aria-expanded={langOpen}
+              aria-label="Tìm kiếm"
             >
-              <Globe size={14} />
-
-              <span>{activeLang.flag}</span>
-
-              <ChevronDown
-                size={12}
-                style={{
-                  color: langOpen ? 'var(--primary)' : 'var(--text-secondary)',
-                }}
-              />
+              <Search size={18} />
             </button>
+          )}
 
-            {/* Language dropdown */}
-
-            {langOpen && (
-              <div
-                className="
-                  absolute
-                  right-0
-                  top-full
-                  z-50
-                  mt-1
-                  w-44
-                  rounded-xl
-                  border
-                  py-1.5
-                  shadow-xl
-                "
-                style={{
-                  background: 'var(--surface)',
-                  borderColor: 'var(--border)',
-                }}
-              >
-                {languages.map((lang) => {
-                  const isActive = activeLang.code === lang.code;
-
-                  return (
-                    <button
-                      key={lang.code}
-                      type="button"
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className="
-                        flex
-                        w-full
-                        items-center
-                        gap-3
-                        px-4
-                        py-2
-                        text-sm
-                        transition-colors
-                        hover:bg-[var(--hover)]
-                        hover:text-[var(--primary)]
-                      "
-                      style={{
-                        color: isActive ? 'var(--primary-text)' : 'var(--text-secondary)',
-                        background: isActive ? 'var(--active)' : undefined,
-                        fontWeight: isActive ? 500 : undefined,
-                      }}
-                    >
-                      <span>{lang.flag}</span>
-
-                      <span>{lang.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setSearchOpen(!searchOpen)}
-            className="
-              rounded-lg
-              p-2
-              transition-colors
-              hover:bg-[var(--hover)]
-              hover:text-[var(--primary)]
-            "
-            style={{
-              color: 'var(--text)',
-            }}
-            aria-label="Tìm kiếm"
-          >
-            <Search size={18} />
-          </button>
-
-          <Link
-            href={getLocalizedPath('/lien-he')}
-            className="
-              hidden
-              items-center
-              rounded-lg
-              px-4
-              py-2
-              text-sm
-              font-semibold
-              transition-colors
-              hover:bg-[var(--primary-hover)]
-              md:flex
-            "
-            style={{
-              background: 'var(--primary)',
-              color: 'white',
-            }}
-          >
-            Liên hệ ngay
-          </Link>
+          {generalInfo.headerCtaText && (
+            <Link
+              href={getLocalizedPath(generalInfo.headerCtaUrl || '/lien-he')}
+              className="
+                hidden
+                items-center
+                rounded-lg
+                px-4
+                py-2
+                text-sm
+                font-semibold
+                transition-colors
+                hover:bg-[var(--primary-hover)]
+                md:flex
+              "
+              style={{
+                background: 'var(--primary)',
+                color: 'white',
+              }}
+            >
+              {generalInfo.headerCtaText}
+            </Link>
+          )}
 
           <button
             type="button"

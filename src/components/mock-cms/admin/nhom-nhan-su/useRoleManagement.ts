@@ -6,6 +6,8 @@ import { RolePermissions, RoleUser2 } from '@/types';
 
 import { useRole } from './useRole';
 
+const userService = new UserService();
+
 export function useRoleManagement() {
   // =========================================================
   // ROLE API
@@ -31,7 +33,6 @@ export function useRoleManagement() {
   // =========================================================
   // SELECTED ROLE
   // =========================================================
-  const userService = new UserService();
 
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 

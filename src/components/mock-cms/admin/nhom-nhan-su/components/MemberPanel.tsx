@@ -1,7 +1,7 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
-import { RefreshCw, Save, Search, Trash2, UserPlus, Users } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { RefreshCw, Save, Search, Trash2, UserPlus } from 'lucide-react';
 
 import { RolePermissions, RoleUser2 } from '@/types';
 

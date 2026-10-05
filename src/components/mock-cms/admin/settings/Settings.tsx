@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { type SettingsTabKey } from './constants/settings.constants';
 
 import GeneralSettings from './GeneralSettings';
+import AppearanceSettings from './AppearanceSettings';
 import SettingsTabs from './SettingsTabs';
 import SystemLogs from './SystemLogs';
 
@@ -176,14 +177,7 @@ export default function Settings() {
           {/* =================================================
               APPEARANCE
           ================================================== */}
-          {activeTab === 'appearance' && (
-            <EmptyTab
-              title="Giao diện"
-              description="
-                Cấu hình giao diện hệ thống.
-              "
-            />
-          )}
+          {activeTab === 'appearance' && <AppearanceSettings info={info} onChange={handleChange} />}
 
           {/* =================================================
               LOGS
