@@ -1,8 +1,10 @@
 'use client';
 
 import {
+  AlertTriangle,
   Calendar,
   Check,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   // Clock,
@@ -12,6 +14,7 @@ import {
   RefreshCw,
   Search,
   X,
+  XCircle,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -317,16 +320,66 @@ export default function SystemLogs() {
   };
 
   const getStatusBadge = (code: number) => {
+    if (code >= 200 && code < 300) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+          <CheckCircle2 size={12} /> {code}
+        </span>
+      );
+    }
+    if (code >= 400 && code < 500) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+          <AlertTriangle size={12} /> {code}
+        </span>
+      );
+    }
+    if (code >= 500) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/10 px-2 py-0.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
+          <XCircle size={12} /> {code}
+        </span>
+      );
+    }
     return (
-      <span className="font-mono text-xs" style={{ color: 'var(--text)' }}>
+      <span className="rounded-md bg-gray-500/10 px-2 py-0.5 text-xs font-medium text-gray-400">
         {code}
       </span>
     );
   };
 
   const getActionBadge = (action: string) => {
+    const act = (action || '').toUpperCase();
+    if (act.includes('ERROR') || act.includes('FAIL') || act.includes('EXCEPTION')) {
+      return (
+        <span className="rounded bg-rose-500/10 px-2 py-0.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
+          {action}
+        </span>
+      );
+    }
+    if (act.includes('CREATE') || act.includes('ADD')) {
+      return (
+        <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+          {action}
+        </span>
+      );
+    }
+    if (act.includes('UPDATE') || act.includes('EDIT')) {
+      return (
+        <span className="rounded bg-sky-500/10 px-2 py-0.5 text-xs font-semibold text-sky-600 dark:text-sky-400">
+          {action}
+        </span>
+      );
+    }
+    if (act.includes('DELETE') || act.includes('REMOVE')) {
+      return (
+        <span className="rounded bg-rose-500/10 px-2 py-0.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
+          {action}
+        </span>
+      );
+    }
     return (
-      <span className="text-xs font-medium" style={{ color: 'var(--text)' }}>
+      <span className="rounded bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-600 dark:text-purple-400">
         {action}
       </span>
     );
